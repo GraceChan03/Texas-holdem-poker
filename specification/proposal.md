@@ -1,5 +1,7 @@
 # Proposal
 
+(This proposal is the same as the one was approved, except for some formatting)
+
 An online Texas Hold’em Poker entertainment platform with extra features. The rules can be found at https://en.wikipedia.org/wiki/Texas_hold_%27em.
 
 #### Basic functions:
@@ -16,3 +18,11 @@ An online Texas Hold’em Poker entertainment platform with extra features. The 
 5. Dashboard: Scoreboards, matching players of similar levels, etc.
 Dashboard: Checking personal history, comparing to global MAX, MEDIAN, MEAN, etc
 6. Matching players (Game): Human VS machine; matching different rooms according to initial credit(i.e. 100 credits/ 200 credits); matching different rooms according to the preferred number of players(i.e. 4P rooms/10P rooms); ...
+
+# Functionality
+
+See also [Product backlog](https://docs.google.com/a/andrew.cmu.edu/spreadsheets/d/1uMEWvXBT5bNIX06gBb_KE99MrlW8SU37tavY0iCz6rQ/edit?usp=sharing)
+
+# Data models
+
+# Wireframes
