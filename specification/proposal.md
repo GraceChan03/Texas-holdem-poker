@@ -2,7 +2,7 @@
 
 (This proposal is the same as the one was approved, except for some formatting)
 
-An online Texas Hold’em Poker entertainment platform with extra features. The rules can be found at https://en.wikipedia.org/wiki/Texas_hold_%27em.
+An online Texas Hold’em Poker entertainment platform with extra features. The rules can be found at [Texas hold 'em - Wikipedia](https://en.wikipedia.org/wiki/Texas_hold_%27em).
 
 #### Basic functions:
 1. Account: The users may be able to create their account, login and start a game.
