@@ -124,36 +124,38 @@ class BalanceHistory(models.Model):
 ```
 
 # Wireframes
-![Account Changepassword](/specification/wireframe/account_changepassword.png)
 
-![Account Changeprofile](/specification/wireframe/account_changeprofile.png)
+![Game Init](/specification/wireframe/game_init.png "Game Init")
 
-![Account Login](/specification/wireframe/account_login.png)
+![Game Init Succeed](/specification/wireframe/game_init_succeed.png "Game Init Succeed")
 
-![Account Register](/specification/wireframe/account_register.png)
+![Game Join](/specification/wireframe/game_join.png "Game Join")
 
-![Credits Coupon](/specification/wireframe/credits_coupon.png)
+![Game Ongoing](/specification/wireframe/game_ongoing.png "Game Ongoing")
 
-![Credits Google Pay Added](/specification/wireframe/credits_google_pay_added.png)
+![Game Result](/specification/wireframe/game_result.png "Game Result")
 
-![Dashboard Scoreboard](/specification/wireframe/dashboard_scoreboard.png)
+![Game Win](/specification/wireframe/game_win.png "Game Win")
 
-![Dashboard Userhistory](/specification/wireframe/dashboard_userhistory.png)
+![Account Changepassword](/specification/wireframe/account_changepassword.png "Account Changepassword")
 
-![Game Init](/specification/wireframe/game_init.png)
+![Account Changeprofile](/specification/wireframe/account_changeprofile.png "Account Changeprofile")
 
-![Game Init Succeed](/specification/wireframe/game_init_succeed.png)
+![Account Login](/specification/wireframe/account_login.png "Account Login")
 
-![Game Join](/specification/wireframe/game_join.png)
+![Account Register](/specification/wireframe/account_register.png "Account Register")
 
-![Game Ongoing](/specification/wireframe/game_ongoing.png)
+![Social Invitefriends](/specification/wireframe/social_invitefriends.png "Social Invitefriends")
 
-![Game Result](/specification/wireframe/game_result.png)
+![Social Makingfriends](/specification/wireframe/social_makingfriends.png "Social Makingfriends")
 
-![Game Win](/specification/wireframe/game_win.png)
+![Social Searchinguser](/specification/wireframe/social_searchinguser.png "Social Searchinguser")
 
-![Social Invitefriends](/specification/wireframe/social_invitefriends.png)
+![Dashboard Scoreboard](/specification/wireframe/dashboard_scoreboard.png "Dashboard Scoreboard")
 
-![Social Makingfriends](/specification/wireframe/social_makingfriends.png)
+![Dashboard Userhistory](/specification/wireframe/dashboard_userhistory.png "Dashboard Userhistory")
 
-![Social Searchinguser](/specification/wireframe/social_searchinguser.png)
+![Credits Coupon](/specification/wireframe/credits_coupon.png "Credits Coupon")
+
+![Credits Google Pay Added](/specification/wireframe/credits_google_pay_added.png "Credits Google Pay Added")
+
