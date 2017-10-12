@@ -1,3 +1,5 @@
+# Proposal
+
 An online Texas Hold’em Poker entertainment platform with extra features. The rules can be found at https://en.wikipedia.org/wiki/Texas_hold_%27em.
 
 #### Basic functions:
