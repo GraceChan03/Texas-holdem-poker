@@ -21,9 +21,10 @@ Dashboard: Checking personal history, comparing to global MAX, MEDIAN, MEAN, etc
 
 # Functionality
 
-See also [Product backlog](https://docs.google.com/a/andrew.cmu.edu/spreadsheets/d/1uMEWvXBT5bNIX06gBb_KE99MrlW8SU37tavY0iCz6rQ/edit?usp=sharing)
+Check product backlog at [PDF version](/product_backlog.pdf) or [Google Sheet](https://docs.google.com/a/andrew.cmu.edu/spreadsheets/d/1uMEWvXBT5bNIX06gBb_KE99MrlW8SU37tavY0iCz6rQ/edit?usp=sharing)
 
 # Data models
+
 ```
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
