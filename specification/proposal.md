@@ -124,3 +124,36 @@ class BalanceHistory(models.Model):
 ```
 
 # Wireframes
+![Account Changepassword](/specification/wireframe/account_changepassword.png)
+
+![Account Changeprofile](/specification/wireframe/account_changeprofile.png)
+
+![Account Login](/specification/wireframe/account_login.png)
+
+![Account Register](/specification/wireframe/account_register.png)
+
+![Credits Coupon](/specification/wireframe/credits_coupon.png)
+
+![Credits Google Pay Added](/specification/wireframe/credits_google_pay_added.png)
+
+![Dashboard Scoreboard](/specification/wireframe/dashboard_scoreboard.png)
+
+![Dashboard Userhistory](/specification/wireframe/dashboard_userhistory.png)
+
+![Game Init](/specification/wireframe/game_init.png)
+
+![Game Init Succeed](/specification/wireframe/game_init_succeed.png)
+
+![Game Join](/specification/wireframe/game_join.png)
+
+![Game Ongoing](/specification/wireframe/game_ongoing.png)
+
+![Game Result](/specification/wireframe/game_result.png)
+
+![Game Win](/specification/wireframe/game_win.png)
+
+![Social Invitefriends](/specification/wireframe/social_invitefriends.png)
+
+![Social Makingfriends](/specification/wireframe/social_makingfriends.png)
+
+![Social Searchinguser](/specification/wireframe/social_searchinguser.png)
