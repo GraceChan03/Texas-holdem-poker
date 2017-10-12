@@ -125,7 +125,7 @@ class BalanceHistory(models.Model):
 
 # Wireframes
 
-Hove your mouse on the image and you can see its title.
+Hover your mouse on the image and you can see its title.
 
 ![Game Init](/specification/wireframe/game_init.png "Game Init")
 
