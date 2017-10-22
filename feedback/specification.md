@@ -20,7 +20,7 @@ Commit graded: 24839970cbea4963e90ab8d22facea323b25cd18
 This poker game requires a lot of websockets technologies. However, in your specifiction you did not describe this part. Think through the whole process before you start to code. In order to success, please focusing on your basic game function. Do not spend time on your addictional features until you have finished your basic game function. And your credit function is unnecessery. 
 
 ---
-#### Total score (/30)
+#### Total score (29/30)
 ---
 Graded by: Sheng Qian (sqian@andrew.cmu.edu)
 
