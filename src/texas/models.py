@@ -38,20 +38,20 @@ class Chat(models.Model):
 
 
 # Game
-class Room(models.Model):
-    # The user who creates the room
+class Game(models.Model):
+    # The user who creates the game room
     creator = models.ForeignKey(User)
     # The code for the others to enter
-    room_no = models.CharField()
+    game_no = models.CharField()
     # The number of the players to enter
     player_num = models.IntegerField()
     players = models.ManyToManyField(User)
 
 
-class Game(models.Model):
-    # Game info
-    room = models.ForeignKey(Room)
-    game_id = models.IntegerField()
+class GameRound(models.Model):
+    # Game Round info
+    game = models.ForeignKey(Game)
+    game_round_id = models.IntegerField()
 
     # Cards are stored as string and parsed one by one
     # Dealer
@@ -64,7 +64,7 @@ class Game(models.Model):
 # Store the users' bets in a game
 class PlayerHistory(models.Model):
     time = models.DateTimeField(auto_now_add=True)
-    game = models.ForeignKey(Game)
+    game = models.ForeignKey(GameRound)
     user = models.ForeignKey(User)
     operation = models.CharField()
     amount = models.IntegerField()
