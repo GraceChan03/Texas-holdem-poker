@@ -1,4 +1,55 @@
 {% extends "base.html" %}
 {% block navbar %}
-
+    <!-- Fixed navbar -->
+    <nav class="navbar navbar-default navbar-fixed-top">
+        <div class="container">
+            <div class="navbar-header">
+                <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar"
+                        aria-expanded="false" aria-controls="navbar">
+                    <span class="sr-only">Toggle navigation</span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
+                <a class="navbar-brand" href="#">CMU Texas</a>
+            </div>
+            <div id="navbar" class="navbar-collapse collapse">
+                <ul class="nav navbar-nav">
+                    {% block nav-home %}<li><a href="/">Home</a></li>{% endblock %}
+                    {% block new-game %}<li class="dropdown">{% endblock %}
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false">New Game <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/new_game">Open a room</a></li>
+                            <li><a href="/game_join">Join a room</a></li>
+                        </ul>
+                    </li>
+                    {% block scoreboard %}<li><a href="/scoreboard">Scoreboard</a></li>{% endblock %}
+                    {% block about %}<li><a href="/about">About</a></li>{% endblock %}
+                    <form class="navbar-form navbar-right" method = "post" action="/search_friend">
+                        {% csrf_token %}
+                        <input type="text" class="form-control" placeholder="Search user..">
+                        <button type="submit" class="btn btn-danger"> Search </button>
+                    </form>
+                </ul>
+                <ul class="nav navbar-nav navbar-right">
+                    {% block account %}
+                    <li class="dropdown">
+                    {% endblock %}
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true"
+                           aria-expanded="false">Account <span class="caret"></span></a>
+                        <ul class="dropdown-menu">
+                            <li><a href="/myfriends">My friends</a></li>
+                            <li><a href="/dashboard">My dashboard</a></li>
+                            <li role="separator" class="divider"></li>
+                            <li class="dropdown-header">My profile</li>
+                            <li><a href="/edit_profile">Account Settings</a></li>
+                            <li><a href="/profile">Profile</a></li>
+                            <li><a href="/logout">Logout</a></li>
+                        </ul>
+                    </li>
+                </ul>
+            </div><!--/.nav-collapse -->
+        </div>
+    </nav>
 {% endblock %}

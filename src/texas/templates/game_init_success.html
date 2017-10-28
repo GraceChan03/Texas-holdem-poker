@@ -1,10 +1,29 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{% extends "base_nav.html" %}
+{% load staticfiles %}
+{% block title %}New Game{% endblock %}
+{% block new-game %}
+    <li class="dropdown active">{% endblock %}
+{% block content %}
+    <div class="container">
+        <!-- Content here -->
+        <div class="login-container">
+            <div class="login-title-div">
+                <h3 class="login-title">Congratulation!</h3>
+            </div>
+            <div class="login-outer">
+                <div class="login-inner">
+                    <h4>A game with
+                        X
+                        players and
+                        $X00
+                        for entry is initialized. The room number is
+                    00001
+                    . Tell your friend the room number and start enjoying the game!</h4><br><br><br>
+                        <a class="btn btn-success" href="/game_ongoing">
+                            Enter the room!
+                        </a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

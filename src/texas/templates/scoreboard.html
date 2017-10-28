@@ -1,10 +1,108 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-
-</body>
-</html>
+{% extends "base_nav.html" %}
+{% load staticfiles %}
+{% block title %}Scoreboard{% endblock %}
+{% block css %}
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{% static 'css/scoreboard.css' %}" type="text/css">{% endblock %}
+{% block scoreboard %}
+    <li class="active"><a href="/scoreboard">Scoreboard</a></li>{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-12">
+                <br><br><br><br><br>
+            </div>
+            <div class="col-md-12" style="margin-top: 20px;">
+                <div class="pricing-table">
+                    <div class="panel panel-primary" style="border: none;">
+                        <div class="controle-header panel-heading panel-heading-landing">
+                            <h1 class="panel-title panel-title-landing">
+                                National Ranking
+                            </h1>
+                        </div>
+                        <div class="controle-panel-heading panel-heading panel-heading-landing-box">
+                            Your ranking :
+                        </div>
+                        <div class="panel-body panel-body-landing">
+                            <table class="table">
+                                <tr>
+                                    <td width="50px">1.</td>
+                                    <td>name</td>
+                                    <td>score</td>
+                                </tr>
+                                <tr>
+                                    <td width="50px">2.</td>
+                                    <td>name</td>
+                                    <td>score</td>
+                                </tr>
+                                <tr>
+                                    <td width="50px">3.</td>
+                                    <td>name</td>
+                                    <td>score</td>
+                                </tr>
+                                <tr>
+                                    <td width="50px">4.</td>
+                                    <td>name</td>
+                                    <td>score</td>
+                                </tr>
+                                <tr>
+                                    <td width="50px">5.</td>
+                                    <td>name</td>
+                                    <td>score</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="panel-footer panel-footer-landing">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12" style="margin-top: 20px;">
+                <div class="pricing-table">
+                    <div class="panel panel-primary" style="border: none;">
+                        <div class="controle-header panel-heading panel-heading-landing">
+                            <h1 class="panel-title panel-title-landing">
+                                Friends Ranking
+                            </h1>
+                        </div>
+                        <div class="controle-panel-heading panel-heading panel-heading-landing-box">
+                            Your ranking:
+                        </div>
+                        <div class="panel-body panel-body-landing">
+                            <table class="table">
+{#                                Maximum 5 rankings here, u can add link to the name or not #}
+                                <tr>
+                                    <td width="50px">1.</td>
+                                    <td>name</td>
+                                    <td>score</td>
+                                </tr>
+                                <tr>
+                                    <td width="50px">2.</td>
+                                    <td>name</td>
+                                    <td>score</td>
+                                </tr>
+                                <tr>
+                                    <td width="50px">3.</td>
+                                    <td>name</td>
+                                    <td>score</td>
+                                </tr>
+                                <tr>
+                                    <td width="50px">4.</td>
+                                    <td>name</td>
+                                    <td>score</td>
+                                </tr>
+                                <tr>
+                                    <td width="50px">5.</td>
+                                    <td>name</td>
+                                    <td>score</td>
+                                </tr>
+                            </table>
+                        </div>
+                        <div class="panel-footer panel-footer-landing">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

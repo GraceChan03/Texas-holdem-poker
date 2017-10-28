@@ -1,10 +1,66 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base_nav.html" %}
+{% load staticfiles %}
+{% block title %}New Game{% endblock %}
+{% block new-game %}
+    <li class="dropdown active">{% endblock %}
+{% block content %}
+    <div class="container">
+        <!-- Content here -->
+        <div class="login-container">
+            <div class="login-title-div">
+                <h3 class="login-title">Please Specify..</h3>
+            </div>
 
-</body>
-</html>
+            <div class="login-outer">
+                <div class="login-inner">
+                    <form method="POST" action="/new_game">
+                        {% csrf_token %}
+                        {#                        {% for field in login_form.visible_fields %}#}
+                        {#                            <fieldset>#}
+                        {#                                {{ field }}#}
+                        {#                            </fieldset><br>#}
+                        {#                        {% endfor %}#}
+                        <label for="">The amount of entry funds</label>
+                        <br/>
+                        <select name='options' class="form-control width_select habitaciones">
+                            <option value='1'>100</option>
+                            <option value='2'>200</option>
+                            <option value='3'>400</option>
+                            <option value='4'>600</option>
+                            <option value='5'>800</option>
+                            <option value='6'>1000</option>
+                        </select>
+                        <br>
+                        <label for="">The number of players</label>
+                        <br/>
+                        <select name='options' class="form-control width_select habitaciones">
+                            <option value='1'>3</option>
+                            <option value='2'>4</option>
+                            <option value='3'>5</option>
+                            <option value='4'>6</option>
+                            <option value='5'>7</option>
+                            <option value='6'>8</option>
+                        </select>
+                        <br>
+                        <button type="submit" class="btn-red">
+                            Start a new game
+                        </button>
+                        {#                        <p class="error-msg">#}
+                        {#                            {% for key, error in login_form.errors.items %}#}
+                        {#                                {{ error }}#}
+                        {#                            {% endfor %}#}
+                        {#                            {% if valid_error %}#}
+                        {#                                {{ valid_error }}#}
+                        {#                            {% endif %}#}
+                        {#                        </p>#}
+                    </form>
+                    <div class="alert alert-light login-alert-div" role="alert">
+                        <hr class="login-alert">
+                        <span class="login-link">Already have a room number?</span>
+                        <a href="/game_join" class="alert-link login-link">Join Room</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

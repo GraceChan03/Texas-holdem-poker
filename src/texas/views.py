@@ -376,7 +376,7 @@ def new_game(request):
     context = {}
     user = request.user
     # edit here
-    return render(request, 'game_init.html', context)
+    return render(request, 'new_game.html', context)
 
 # @login_required(login_url='login')
 def dashboard(request):
@@ -432,4 +432,11 @@ def game_result(request):
     user = request.user
     # edit here
     return render(request, 'game_result.html', context)
+
+# @login_required(login_url='login')
+def about(request):
+    context = {}
+    user = request.user
+    # edit here
+    return render(request, 'about.html', context)
 

@@ -1,10 +1,100 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base_nav.html" %}
+{% load staticfiles %}
+{% block title %}My dashboard{% endblock %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/userscore.css' %}" type="text/css">{% endblock %}
+{% block account %}
+    <li class="dropdown active">
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <br><br><br><br>
 
-</body>
-</html>
+        <div class="row">
+            <h2>UserName's game record</h2>
+            <table class="points_table">
+                <thead>
+{#                I DON'T KNOW WHY THIS LINE CAN'T BE IN THE RIGHT POSITION, I WILL FIX IT SOME TIME#}
+                <tr>
+                    <th class="col-xs-2">Date</th>
+                    <th class="col-xs-5">Ranking</th>
+                    <th class="col-xs-5">Balance</th>
+                </tr>
+                </thead>
+
+                <tbody class="points_table_scrollbar">
+                <tr class="odd">
+                    <td class="col-xs-2">datetime</td>
+                    <td class="col-xs-5">number</td>
+                    <td class="col-xs-5">number</td>
+                </tr>
+
+                <tr class="even">
+                    <td class="col-xs-2">datetime</td>
+                    <td class="col-xs-5">number</td>
+                    <td class="col-xs-5">number</td>
+                </tr>
+
+                <tr class="odd">
+                    <td class="col-xs-2">datetime</td>
+                    <td class="col-xs-5">number</td>
+                    <td class="col-xs-5">number</td>
+                </tr>
+
+                <tr class="even">
+                    <td class="col-xs-2">datetime</td>
+                    <td class="col-xs-5">number</td>
+                    <td class="col-xs-5">number</td>
+                </tr>
+
+                <tr class="odd">
+                    <td class="col-xs-2">datetime</td>
+                    <td class="col-xs-5">number</td>
+                    <td class="col-xs-5">number</td>
+                </tr>
+
+                <tr class="even">
+                    <td class="col-xs-2">datetime</td>
+                    <td class="col-xs-5">number</td>
+                    <td class="col-xs-5">number</td>
+                </tr>
+
+                <tr class="odd">
+                    <td class="col-xs-2">datetime</td>
+                    <td class="col-xs-5">number</td>
+                    <td class="col-xs-5">number</td>
+                </tr>
+
+                <tr class="even">
+                    <td class="col-xs-2">datetime</td>
+                    <td class="col-xs-5">number</td>
+                    <td class="col-xs-5">number</td>
+                </tr>
+
+                <tr class="odd">
+                    <td class="col-xs-2">datetime</td>
+                    <td class="col-xs-5">number</td>
+                    <td class="col-xs-5">number</td>
+                </tr>
+                <tr class="odd">
+                    <td class="col-xs-2">datetime</td>
+                    <td class="col-xs-5">number</td>
+                    <td class="col-xs-5">number</td>
+                </tr>
+
+                <tr class="even">
+                    <td class="col-xs-2">datetime</td>
+                    <td class="col-xs-5">number</td>
+                    <td class="col-xs-5">number</td>
+                </tr>
+
+                <tr class="odd">
+                    <td class="col-xs-2">datetime</td>
+                    <td class="col-xs-5">number</td>
+                    <td class="col-xs-5">number</td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+{% endblock %}

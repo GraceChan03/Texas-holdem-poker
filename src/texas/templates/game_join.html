@@ -1,10 +1,49 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base_nav.html" %}
+{% load staticfiles %}
+{% block title %}Join Game{% endblock %}
+{% block new-game %}
+    <li class="dropdown active">{% endblock %}
+{% block content %}
+    <div class="container">
+        <!-- Content here -->
+        <div class="login-container">
+            <div class="login-title-div">
+                <h3 class="login-title">Please Specify..</h3>
+            </div>
 
-</body>
-</html>
+            <div class="login-outer">
+                <div class="login-inner">
+                    <form method="POST" action="/new_game">
+                        {% csrf_token %}
+                        {#                        {% for field in login_form.visible_fields %}#}
+                        {#                            <fieldset>#}
+                        {#                                {{ field }}#}
+                        {#                            </fieldset><br>#}
+                        {#                        {% endfor %}#}
+                        <label for="">The room number:</label>
+                        <br><br>
+                        <input type="text" name="room_number" placeholder="RoomNumber" class="grumblr-input-text"
+                               maxlength="20" id="room_number" required/>
+                        <br><br><br>
+                        <button type="submit" class="btn-red">
+                            Start a new game
+                        </button>
+                        {#                        <p class="error-msg">#}
+                        {#                            {% for key, error in login_form.errors.items %}#}
+                        {#                                {{ error }}#}
+                        {#                            {% endfor %}#}
+                        {#                            {% if valid_error %}#}
+                        {#                                {{ valid_error }}#}
+                        {#                            {% endif %}#}
+                        {#                        </p>#}
+                    </form>
+                    <div class="alert alert-light login-alert-div" role="alert">
+                        <hr class="login-alert">
+                        <span class="login-link">Haven't got a room number?</span>
+                        <a href="/new_game" class="alert-link login-link">New Room</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

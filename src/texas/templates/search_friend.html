@@ -1,10 +1,110 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base_nav.html" %}
+{% load staticfiles %}
+{% block title %}Search friend{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-12">
+                <br><br><br><br><br>
+            </div>
+            <div class="row">
+                {#               this part should be modified a litte after function finished, for now just display all the friend, name should have a link  #}
+                <div class="col-xs-12 col-sm-offset-3 col-sm-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="title pull-left">Search Results</h4>
+                            <br><br>
+                        </div>
 
-</body>
-</html>
+                        <ul class="list-group" id="contact-list">
+                            <li class="list-group-item">
+                                <div class="col-xs-12 col-sm-3">
+                                    <img src="http://api.randomuser.me/portraits/men/49.jpg" alt="Scott Stevens"
+                                         class="img-responsive img-circle"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-9"><br>
+                                    <span class="name">Scott Stevens</span><br/><br/>
+                                    {#                                    add friend link?#}
+                                    <a href="#" class="btn btn-info">Add</a>
+                                </div>
+                                <div class="clearfix"></div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="col-xs-12 col-sm-3">
+                                    <img src="http://api.randomuser.me/portraits/men/97.jpg" alt="Seth Frazier"
+                                         class="img-responsive img-circle"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-9"><br/>
+                                    <span class="name">Seth Frazier</span><br/><br/>
+                                    {#                                    add friend link?#}
+                                    <a href="#" class="btn btn-info">Add</a>
+                                </div>
+                                <div class="clearfix"></div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="col-xs-12 col-sm-3">
+                                    <img src="http://api.randomuser.me/portraits/women/90.jpg" alt="Jean Myers"
+                                         class="img-responsive img-circle"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-9"><br/>
+                                    <span class="name">Jean Myers</span><br/><br/>
+                                    {#                                    add friend link?#}
+                                    <a href="#" class="btn btn-info">Add</a>
+                                </div>
+                                <div class="clearfix"></div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="col-xs-12 col-sm-3">
+                                    <img src="http://api.randomuser.me/portraits/men/24.jpg" alt="Todd Shelton"
+                                         class="img-responsive img-circle"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-9"><br/>
+                                    <span class="name">Todd Shelton</span><br/><br/>
+                                    {#                                    add friend link?#}
+                                    <a href="#" class="btn btn-info">Add</a>
+                                </div>
+                                <div class="clearfix"></div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="col-xs-12 col-sm-3">
+                                    <img src="http://api.randomuser.me/portraits/women/34.jpg" alt="Rosemary Porter"
+                                         class="img-responsive img-circle"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-9"><br/>
+                                    <span class="name">Rosemary Porter</span><br/><br/>
+                                    {#                                    add friend link?#}
+                                    <a href="#" class="btn btn-info">Add</a>
+                                </div>
+                                <div class="clearfix"></div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="col-xs-12 col-sm-3">
+                                    <img src="http://api.randomuser.me/portraits/women/56.jpg" alt="Debbie Schmidt"
+                                         class="img-responsive img-circle"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-9"><br/>
+                                    <span class="name">Debbie Schmidt</span><br/><br/>
+                                    {#                                    add friend link?#}
+                                    <a href="#" class="btn btn-info">Add</a>
+                                </div>
+                                <div class="clearfix"></div>
+                            </li>
+                            <li class="list-group-item">
+                                <div class="col-xs-12 col-sm-3">
+                                    <img src="http://api.randomuser.me/portraits/women/76.jpg" alt="Glenda Patterson"
+                                         class="img-responsive img-circle"/>
+                                </div>
+                                <div class="col-xs-12 col-sm-9"><br/>
+                                    <span class="name">Glenda Patterson</span><br/><br/>
+                                    {#                                    add friend link?#}
+                                    <a href="#" class="btn btn-info">Add</a>
+                                </div>
+                                <div class="clearfix"></div>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

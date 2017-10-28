@@ -1,0 +1,29 @@
+{% extends "base_nav.html" %}
+{% load staticfiles %}
+{% block title %}About{% endblock %}
+{% block about %}
+    <li class="active"><a href="/about">About</a></li>{% endblock %}
+{% block content %}
+    <div class="container">
+        <!-- Content here -->
+        <div class="login-container">
+
+            <div class="login-title-div">
+                <h3 class="login-title">About</h3>
+            </div>
+
+            <div class="login-outer">
+                <div class="login-inner">
+                    <h4>Instruction or something</h4>
+                    <div class="alert alert-light login-alert-div" role="alert">
+                        <hr class="login-alert">
+                        <span class="login-link">Need Help?</span>
+                        {# link to a email or something                       #}
+                        <a href="#" class="alert-link login-link">Connect us!</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
