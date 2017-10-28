@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+        <!-- Content here -->
+        <div class="login-container">
+
+            <div class="login-title-div">
+                <h3 class="login-title">Welcome to CMU-Texas</h3>
+            </div>
+
+            <div class="login-outer">
+                <div class="login-inner">
+                    <form method="POST" action="login">
+                        {% csrf_token %}
+                        {% for field in login_form.visible_fields %}
+                            <fieldset>
+                                {{ field }}
+                            </fieldset><br>
+                        {% endfor %}
+                        <button type="submit" class="btn-red">
+                            Log in
+                        </button>
+                        <p class="error-msg">
+                            {% for key, error in login_form.errors.items %}
+                                {{ error }}
+                            {% endfor %}
+                            {% if valid_error %}
+                                {{ valid_error }}
+                            {% endif %}
+                        </p>
+                    </form>
+                    <div class="alert alert-light login-alert-div" role="alert">
+                        <a href="/forget_password" class="alert-link login-link">Forgot your password?</a>
+                        <hr class="login-alert">
+                        <span class="login-link">Not on CMU-Texas yet?</span>
+                        <a href="register" class="alert-link login-link">Sign up</a>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

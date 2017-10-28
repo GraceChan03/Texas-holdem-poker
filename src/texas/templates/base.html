@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="Grumblr for web application">
+    <meta name="author" content="Zhenyu Li">
+    <link rel="icon" href="/static/media/default/favicon.png">
+    <title>{% block title %}Welcome to CMU-Texas{% endblock %}</title>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css"
+          integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M"
+          crossorigin="anonymous">
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'css/texas.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/bootstrap.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/bootstrap-theme.css' %}" type="text/css">
+</head>
+{% block body %}
+    <body>
+    {% block navbar %}
+    {% endblock %}
+    {% block content %}
+    {% endblock %}
+
+
+    <footer>
+        <p>© 2017 Team318, All rights reserved</p>
+    </footer>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src={% static 'js/bootstrap.js' %}></script>
+    <script src={% static 'js/texas.js' %}></script>
+    <script src={% static 'js/ie10-viewport-bug-workaround.js' %}></script>
+    <script src={% static 'js/jquery-3.2.1.min.js' %}></script>
+    </body>
+{% endblock %}
+</html>

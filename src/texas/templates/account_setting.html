@@ -1,0 +1,196 @@
+{% extends "base_function.html" %}
+
+{% block title %}Account Setting{% endblock %}
+
+{% block middle_area %}
+<div class="container">
+    <div class="row justify-content-md-center home-middlearea">
+        <!-- user information -->
+        <div class="col-6 col-lg-4">
+            <div class="card home-profile-card">
+                <div class="home-profile-photo">
+                    <img class="card-img-top" src="{{login_user.userinfo.card_background_src}}" alt="Background">
+                </div>
+                <div class="card-body">
+                    <div class="profile-photo-m home-profile-user">
+                        <a href="profile/{{login_user.username}}">
+                            <img src="{{login_user.userinfo.profile_photo_src}}" class="img-thumbnail rounded-circle"
+                                 alt="Profile Photo">
+                        </a>
+                    </div>
+                    <div>
+                        <a href="profile/{{login_user.username}}" class="namecard-username">{{login_user.username}}</a>
+                        <a href="profile/{{login_user.username}}" class="home-profile-usern">@{{login_user.first_name}}{{login_user.last_name}}</a>
+                    </div>
+                    <div class="row home-profile-info">
+                        <div class="col">
+                            <p class="profile-tag">Posts</p>
+                            <p class="profile-tag-number">{{post_count}}</p>
+                        </div>
+                        <div class="col">
+                            <p class="profile-tag">Following</p>
+                            <p class="profile-tag-number">{{following}}</p>
+                        </div>
+                        <div class="col">
+                            <p class="profile-tag">Followers</p>
+                            <p class="profile-tag-number">{{followers}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="card">
+                <div class="vertical-tab">
+                    <button class="tablinks" onclick="openSetting(event, 'Profile')" id="defaultOpen">Profile</button>
+                    <button class="tablinks" onclick="openSetting(event, 'Account')">Account</button>
+                </div>
+            </div>
+
+
+        </div>
+        <div class="col-7">
+
+            <div class="card vertical-tabcontent" id="Profile">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <span class="profile-edit-title">Edit profile</span>
+                        <hr>
+                        <form method="POST" action="/edit_profile">
+                            {% csrf_token %}
+                            {% for field in edit_profile_form.visible_fields %}
+                            <fieldset>
+                                <span class="profile-edit-label">{{ field.label_tag }}</span>
+                                {{ field }}
+                            </fieldset>
+                            {% endfor %}
+                            <button type="submit" class="btn-red btn-post">
+                                Save
+                            </button>
+                            <p class="error-msg">
+                                {% for key, error in edit_profile_form.errors.items %}
+                                {{error}}
+                                {% endfor %}
+                            </p>
+                        </form>
+                    </li>
+                    <li class="list-group-item">
+                        <span class="profile-edit-title">Profile image</span>
+                        <hr>
+                        <div class="row profile-edit-imagediv">
+                            <div class="profile-photo-xl">
+                                <!--{{login_user.userinfo.profile_photo_src}}-->
+                                <!--static/grumblr/sources/qie.jpg-->
+                                <img src="{{login_user.userinfo.profile_photo_src}}" class="img-thumbnail"
+                                     alt="Profile Photo">
+
+                            </div>
+                            <div class="profile-upload-photo">
+                                <form action="/upload_profileimg" method="post" enctype="multipart/form-data">
+                                    {% for field in upload_photo_form.visible_fields %}
+                                        {{ field }}
+                                    {% endfor %}
+                                    <br>
+                                    <button type="submit" class="btn-red btn-post profile-upload-btn">Save</button>
+                                    {% csrf_token %}
+                                </form>
+                            </div>
+                        </div>
+                    </li>
+                    <li class="list-group-item">
+                        <span class="profile-edit-title">Profile background</span>
+                        <hr>
+                        <div class="row profile-edit-imagediv">
+                            <div class="profile-photo-xl">
+                                <!--{{login_user.userinfo.profile_photo_src}}-->
+                                <!--static/grumblr/sources/qie.jpg-->
+                                <img src="{{login_user.userinfo.card_background_src}}" class="img-thumbnail"
+                                     alt="Background Photo">
+
+                            </div>
+                            <div class="profile-upload-photo">
+                                <form action="/upload_bgimg" method="post" enctype="multipart/form-data">
+                                    {% for field in upload_bg_form.visible_fields %}
+                                        {{ field }}
+                                    {% endfor %}
+                                    <br>
+                                    <button type="submit" class="btn-red btn-post profile-upload-btn">Save</button>
+                                    {% csrf_token %}
+                                </form>
+                            </div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+
+            <div class="card vertical-tabcontent" id="Account">
+                <ul class="list-group">
+                    <li class="list-group-item">
+                        <span class="profile-edit-title">Change password</span>
+                        <hr>
+
+                        <form method="post" action="/change_password">
+                            {% for field in change_password_form.visible_fields %}
+                            <fieldset>
+                                <span class="profile-edit-label">{{ field.label_tag }}</span>
+                                {{ field }}
+                                {% if field.name == "old_password" %}
+                                <a href="/forget_password" class="alert-link login-link">Forgot your password?</a>
+                                {% endif %}
+                            </fieldset>
+
+                            {% endfor %}
+                            <button type="submit" class="btn-red btn-post">
+                                Save
+                            </button>
+                            <p class="error-msg">
+                                {% for key, error in change_password_form.errors.items %}
+                                {{error}}
+                                {% endfor %}
+                            </p>
+                            {% csrf_token %}
+                        </form>
+                    </li>
+                    <li class="list-group-item">
+                        <span class="profile-edit-title">Email</span>
+                        <hr>
+                        <form method="post" action="/change_email">
+                            {% for field in email_form.visible_fields %}
+                            <fieldset>
+                                <span class="profile-edit-label">{{ field.label_tag }}</span>
+                                {{ field }}
+                            </fieldset>
+                            {% endfor %}
+                            <button type="submit" class="btn-red btn-post">
+                                Save
+                            </button>
+                            <p class="error-msg">
+                                {% for key, error in email_form.errors.items %}
+                                {{error}}
+                                {% endfor %}
+                            </p>
+                            {% csrf_token %}
+                        </form>
+                    </li>
+                </ul>
+            </div>
+            <script>
+                function openSetting(evt, settingName) {
+                    var i, tabcontent, tablinks;
+                    tabcontent = document.getElementsByClassName("vertical-tabcontent");
+                    for (i = 0; i < tabcontent.length; i++) {
+                        tabcontent[i].style.display = "none";
+                    }
+                    tablinks = document.getElementsByClassName("tablinks");
+                    for (i = 0; i < tablinks.length; i++) {
+                        tablinks[i].className = tablinks[i].className.replace(" active", "");
+                    }
+                    document.getElementById(settingName).style.display = "block";
+                    evt.currentTarget.className += " active";
+                }
+
+                document.getElementById("defaultOpen").click();
+            </script>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

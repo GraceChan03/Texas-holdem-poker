@@ -1,0 +1,71 @@
+{% extends "base_function.html" %}
+
+{% block title %}My Grumblr{% endblock %}
+
+{% load static %}
+<script src="{% static 'js/jquery-3.2.1.min.js' %}" type="text/javascript"></script>
+<script src="{% static 'js/texas.js' %}" type="text/javascript"></script>
+{% block middle_area %}
+<div class="container">
+    <div class="row justify-content-md-center home-middlearea">
+        <!-- user information -->
+        <div class="col-6 col-lg-4">
+            <div class="card home-profile-card">
+                <div class="home-profile-photo">
+                    <img class="card-img-top" src="{{login_user.userinfo.card_background_src}}" alt="Background">
+                </div>
+                <div class="card-body">
+                    <div class="profile-photo-m home-profile-user">
+                        <a href="profile/{{login_user.username}}">
+                            <img src="{{login_user.userinfo.profile_photo_src}}" class="img-thumbnail rounded-circle"
+                                 alt="Profile Photo">
+                        </a>
+                    </div>
+                    <div>
+                        <a href="profile/{{login_user.username}}" class="namecard-username">{{login_user.username}}</a>
+                        <a href="profile/{{login_user.username}}" class="home-profile-usern">@{{login_user.first_name}}{{login_user.last_name}}</a>
+                    </div>
+                    <div class="row home-profile-info">
+                        <div class="col">
+                            <p class="profile-tag">Posts</p>
+                            <p class="profile-tag-number">{{post_count}}</p>
+                        </div>
+                        <div class="col">
+                            <p class="profile-tag">Following</p>
+                            <p class="profile-tag-number">{{following}}</p>
+                        </div>
+                        <div class="col">
+                            <p class="profile-tag">Followers</p>
+                            <p class="profile-tag-number">{{followers}}</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-7">
+
+            <div class="card post-form">
+                <form>
+                    {% csrf_token %}
+                    <div class="form-group">
+                        {% for field in post_form.visible_fields %}
+                        {{ field }}
+                        {% endfor %}
+                    </div>
+                    <div class="row">
+                        <div class="col-auto mr-auto">
+
+                        </div>
+                        <div class="col-auto">
+                            <button type="button" class="btn-red btn-post" id="btn_post">Submit</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+
+
+
+        </div>
+    </div>
+</div>
+{% endblock %}

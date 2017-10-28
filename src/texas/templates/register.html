@@ -1,0 +1,44 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container">
+    <!-- Content here -->
+    <div class="login-container">
+
+      <div class="login-title-div">
+        <h3 class="login-title">Join CMU-Texas today</h3>
+      </div>
+
+      <div class="login-outer">
+        <div class="login-inner">
+          <form method="POST" action="register">
+            {% csrf_token %}
+            {% for field in register_form.visible_fields %}
+              <fieldset>
+                {{ field }}
+              </fieldset><br>
+            {% endfor %}
+            <button type="submit" class="btn-red">
+              Sign up
+            </button>
+            <p class="error-msg">
+              {% for key, error in register_form.errors.items %}
+                {{error}}
+              {% endfor %}
+            </p>
+          </form>
+          <div class="alert alert-light login-alert-div" role="alert">
+            <!--<span class="login-link">By signing up, you agree to the -->
+              <!--<a href="" class="alert-link">Terms of Service</a> and -->
+              <!--<a href="" class="alert-link">Privacy Policy</a></span>-->
+            <hr class="login-alert">
+            <span class="login-link">Already a member?</span>
+            <a href="login" class="alert-link login-link">Log in</a>
+          </div>
+        </div>
+      </div>   
+            
+    </div>
+    </div>
+
+{% endblock %}

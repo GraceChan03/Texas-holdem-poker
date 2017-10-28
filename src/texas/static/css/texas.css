@@ -1,0 +1,531 @@
+.grumblr-input-text {
+    background-color: #f0f0f0;
+    border: 0px;
+    box-shadow: none;
+    position: relative;
+    border-radius: 3px;
+    font-weight: bold;
+    padding: 10px;
+    width: 100%;
+    color: #333;
+    font-size: 14px;
+    outline: none;
+    -webkit-font-smoothing: antialiased;
+}
+
+.grumblr-input-password {
+    background-color: #f0f0f0;
+    border: 0px;
+    box-shadow: none;
+    position: relative;
+    -webkit-font-smoothing: antialiased;
+    border-radius: 3px;
+    font-weight: bold;
+    padding: 10px;
+    width: 100%;
+    color: #333;
+    font-size: 14px;
+    outline: none;
+    transition: opacity 0.5s linear;
+    display: flex;
+    opacity: 1;
+    align-items: center;
+    justify-content: space-between;
+    height: 100%;
+}
+
+.login-container {
+    position: relative;
+    top: 130px;
+    background-color: #fff;
+    border-radius: 8px;
+    position: relative;
+    text-align: center;
+    width: 350px;
+    margin: auto;
+    min-height: 400px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
+    padding: 20px 10px;
+}
+
+.login-title {
+    padding: 15px auto;
+    color: #555;
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.login-link {
+    font-size: 12px;
+}
+
+.login-title-div {
+    margin: 15px;
+}
+
+.login-outer {
+    padding: 20px 10px;
+}
+
+.login-inner {
+    margin: 0 auto;
+    width: 268px;
+}
+
+.login-alert {
+    width: 140px;
+    margin: 8px auto;
+}
+
+.login-alert-div {
+    margin-top: 20px;
+}
+
+fieldset {
+    position: relative;
+    margin-bottom: 20px;
+}
+
+.btn-red {
+    border: 0px;
+    height: 36px;
+    display: inline-block;
+    border-radius: 4px;
+    -webkit-font-smoothing: antialiased;
+    padding: 0 18px;
+    font-size: 18px;
+    font-weight: bold;
+    position: relative;
+    vertical-align: middle;
+    text-align: center;
+    background-color: #bd081c;
+    color: #fff;
+    width: 100%;
+}
+
+.btn-global-post {
+    width: 80px;
+    font-size: 14px;
+}
+
+.btn-logout {
+    width: 80px;
+    font-size: 14px;
+    margin: 4px
+}
+
+.btn-profile {
+    font-size: 14px;
+    margin: 8px;
+    width: 90px;
+}
+
+.btn-post {
+    width: 90px;
+    font-size: 14px;
+}
+
+.btn-reply {
+    width: 70px;
+    font-size: 12px;
+    height: 30px;
+    margin: 0 10px;
+}
+
+.profile-tag {
+    color: black;
+    font-size: 12px;
+    padding: 0;
+    margin: 0;
+}
+
+.profile-tag-number {
+    color: black;
+    font-size: 18px;
+    padding: 0;
+    margin: 0;
+}
+
+.icon {
+    width: 12px;
+    height: 12px;
+    margin: 0%;
+}
+
+.icon-text {
+    padding: 0%;
+    margin: 0 10px;
+    vertical-align: middle;
+    font-size: 14px;
+}
+
+.svg-style {
+    margin: 10px;
+    width: 20px;
+    height: 20px;
+}
+
+.profile-photo-xs {
+    height: 35px;
+    width: 35px;
+    padding: 0px;
+}
+
+.profile-photo-s {
+    height: 50px;
+    width: 50px;
+}
+
+.profile-photo-m {
+    height: 60px;
+    width: 60px;
+}
+
+.profile-photo-mm {
+    height: 60px;
+    width: 60px;
+    padding: 0px;
+}
+
+.profile-photo-l {
+    height: 100px;
+    width: 100px;
+}
+
+.profile-photo-xl {
+    height: 150px;
+    width: 150px;
+}
+
+.profile-photo-header {
+    margin-left: 20px;
+    margin-right: 20px;
+    padding: auto;
+}
+
+.center-align {
+    margin: 0 auto
+}
+
+a {
+    color: black
+}
+
+.bg-color {
+    background-color: #e3f2fd;
+}
+
+.navbar-fix {
+    background-color: #ffffff;
+    height: 60px
+}
+
+.namecard-username {
+    font-weight: bold;
+    margin: 5px;
+    color: black;
+    font-size: 20px;
+}
+
+.post-username {
+    margin: 0%;
+    color: black;
+}
+
+.post {
+    margin: 0% 25px auto 0;
+    padding: 0%;
+}
+
+.post-time {
+    font-size: 12px;
+    margin: 0%;
+    margin-bottom: 5px;
+}
+
+.post-content {
+    font-size: 15px;
+}
+
+.post-picture {
+    width: 100%;
+}
+
+.post-card {
+    padding: 0px;
+    margin: 12px auto;
+}
+
+.post-card-row {
+    padding: 12px;
+}
+
+.error-msg {
+    color: red;
+    font-size: 12px;
+}
+
+.profile-card-button {
+    color: black;
+    text-align: center;
+    align-self: center;
+    display: block
+}
+
+.no-post-warn {
+    height: 90px;
+    line-height: 90px;
+    text-align: center;
+}
+
+.home {
+    font-weight: bold;
+}
+
+.home-middlearea {
+    margin: 10px;
+}
+
+.home-profile-card {
+    height: 300px;
+    margin-bottom: 20px;
+}
+
+.home-profile-photo {
+    height: 150px;
+    overflow: hidden;
+}
+
+.home-profile-user {
+    margin-top: -50px;
+}
+
+.home-profile-usern {
+    font-size: 13px;
+    color: darkgrey
+}
+
+.home-profile-info {
+    margin: 5px;
+}
+
+.post-form {
+    padding: 12px;
+}
+
+.post-div {
+    margin: 5px;
+}
+
+.post-pp {
+    padding: 0;
+}
+
+.profile-info-div {
+    padding: 10px
+}
+
+.profile-card {
+    height: 380px;
+    padding: 0%;
+}
+
+.profile-card-bg {
+    overflow: hidden;
+    height: 330px
+}
+
+.profile-card-body {
+    padding: 0;
+    height: 0
+}
+
+.profile-card-div {
+    margin-top: -250px;
+}
+
+.profile-card-info {
+    width: 100px;
+    margin: 0 auto
+}
+
+.profile-pinfo {
+    width: 900px
+}
+
+.profile-pinfo-card {
+    padding: 7px 15px;
+    margin: 12px auto
+}
+
+.profile-pinfo-row {
+    margin: 5px;
+}
+
+.profile-login-username {
+    text-align: center;
+    font-weight: bold;
+    font-size: 18px
+}
+
+.grumblr-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.grumblr-dropdown-content {
+    display: none;
+    position: absolute;
+    width: 200px;
+    box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+    z-index: 1;
+}
+
+.grumblr-dropdown:hover .grumblr-dropdown-content {
+    display: block;
+}
+
+.grumblr-dropdown-content a {
+    color: black;
+    text-decoration: none;
+    display: block;
+    font-size: 14px;
+}
+
+.profile-edit-title {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.profile-edit-label {
+    display: inline-block;
+    width: 140px;
+    text-align: right;
+}
+
+.profile-edit-imagediv {
+    padding: 20px;
+}
+
+.profile-upload-photo {
+    padding: 0 10px;
+    font-size: 14px;
+}
+
+.profile-upload-btn {
+    margin-top: 10px;
+}
+
+.profile-btn {
+    width: 300px;
+    margin: 0 auto
+}
+
+/* Style the tab */
+div.tab {
+    overflow: hidden;
+    border: 1px solid #ccc;
+    background-color: #f1f1f1;
+}
+
+/* Style the buttons inside the tab */
+div.tab button {
+    background-color: inherit;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 14px 16px;
+    transition: 0.3s;
+    font-size: 17px;
+}
+
+/* Change background color of buttons on hover */
+div.tab button:hover {
+    background-color: #ddd;
+}
+
+/* Create an active/current tablink class */
+div.tab button.active {
+    background-color: #ccc;
+}
+
+/* Style the tab content */
+.tabcontent {
+    display: none;
+    /*padding: 6px 12px;*/
+    /*border: 1px solid #ccc;*/
+    border-top: none;
+}
+
+div.vertical-tab {
+    float: left;
+    width: 100%;
+}
+
+/* Style the buttons inside the tab */
+div.vertical-tab button {
+    display: block;
+    background-color: inherit;
+    color: black;
+    padding: 22px 16px;
+    width: 100%;
+    border: none;
+    outline: none;
+    text-align: left;
+    font-size: 14px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+div.vertical-tab button:hover {
+    background-color: #ddd;
+}
+
+/* Create an active/current "tab button" class */
+div.vertical-tab button.active {
+    background-color: #ccc;
+}
+
+.comments {
+    background-color: #F5F5F5;
+    /*margin: ;*/
+    padding: 10px 20px;
+}
+
+.comment-input {
+    width: 100%;
+    /*min-width: 100px;*/
+}
+
+.comment-username {
+    font-size: 14px;
+    color: #FF4500;
+}
+
+.comment-content {
+    font-size: 14px;
+}
+
+/* Footer */
+footer {
+    background-color: #787878;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 35px;
+    text-align: center;
+    color: #CCC;
+}
+
+footer p {
+    padding: 10.5px;
+    margin: 0px;
+    line-height: 100%;
+}
+
+body, html {
+    height: 100%;
+    background-image: linear-gradient(#F3FAFA, rgb(252, 250, 242));
+}
