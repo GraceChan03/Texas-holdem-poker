@@ -1,10 +1,168 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base_nav.html" %}
+{% load staticfiles %}
+{#need to specify the room number here?#}
+{% block title %}Room Number{% endblock %}
+{% block new-game %}
+    <li class="dropdown active">{% endblock %}
+{% block content %}
+    <div class="container fluid">
+        <div class="row">
+            <div class="col-md-4">
+                <!-- Content here -->
+                <div class="game-container">
+                    <div class="login-title-div pull-left">
+                        <h5 class="login-title">Pools: $CMD 50 <span>Player NAME win!</span></h5>
+                    </div>
+                    <div class="login-title-div pull-right">
+                        <a class="btn btn-success" href="#">Combination Menu</a>
+                    </div>
+                    <div class="pool-container">
+                        {#  when putting many div the format will go wrong... you guys do ur own work and I will think about how to fix it #}
+                        <div class="poker-container"></div>
+                    </div>
+                    <br>
+                    <div class="underpool-container">
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-3">
+                                <img src="http://api.randomuser.me/portraits/men/49.jpg" alt="Scott Stevens"
+                                     class="img-responsive img-circle"/><span
+                                    class="login-link">Scott Stevens</span><br/>
+                            </div>
+                            <div class="col-xs-12 col-sm-3"><br><br>
+                                <h5 class="login-title">You bet $CMD<span>10</span></h5>
+                            </div>
+                            <div class="col-xs-12 col-sm-3">
+                                <span>Card 1:</span>
+                            </div>
+                            <div class="col-xs-12 col-sm-3">
+                                <span>Card 2:</span>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-xs-12 col-sm-3">
+                                <select name='options' class="form-control width_select habitaciones">
+                                    <option value='1'>5</option>
+                                    <option value='2'>10</option>
+                                    <option value='3'>20</option>
+                                    <option value='4'>40</option>
+                                    <option value='5'>80</option>
+                                    <option value='6'>100</option>
+                                </select>
+                            </div>
+                            <div class="col-xs-12 col-sm-3">
+                                <a class="btn btn-success" href="#">Bet</a>
+                            </div>
+                            <div class="col-xs-12 col-sm-3">
+                                <a class="btn btn-info" href="#">Check</a>
+                            </div>
+                            <div class="col-xs-12 col-sm-3">
+                                <a class="btn btn-default" href="#">Fold</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-2 col-md-offset-4">
+                <div class="player-container">
+                    <div class="login-title-div">
+                        <h5 class="login-title">Players</h5>
+                    </div>
+                    {#I think its better to sort people by its turn every round. And maybe change its name color to indicate big blind or small blind#}
+                    <div class="login-outer">
+                        <div class="login-inner">
+                            <ul class="list-group" id="contact-list">
+                                <li class="list-group-item">
+                                    <div class="col-xs-12 col-sm-3">
+                                        <img src="http://api.randomuser.me/portraits/men/49.jpg" alt="Scott Stevens"
+                                             class="img-responsive img-circle"/><span
+                                            class="login-link">Scott Stevens</span><br/>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <span>Current Fund:</span><br/><br/>
+                                        <span>Current Move:</span><br/>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="col-xs-12 col-sm-3">
+                                        <img src="http://api.randomuser.me/portraits/men/97.jpg" alt="Seth Frazier"
+                                             class="img-responsive img-circle"/><span
+                                            class="login-link">Jean Myers</span><br/>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <span>Current Fund:</span><br/><br/>
+                                        <span>Current Move:</span><br/>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="col-xs-12 col-sm-3">
+                                        <img src="http://api.randomuser.me/portraits/women/90.jpg" alt="Jean Myers"
+                                             class="img-responsive img-circle"/><span
+                                            class="login-link">Jean Myers</span><br/>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <span>Current Fund:</span><br/><br/>
+                                        <span>Current Move:</span><br/>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="col-xs-12 col-sm-3">
+                                        <img src="http://api.randomuser.me/portraits/men/24.jpg" alt="Todd Shelton"
+                                             class="img-responsive img-circle"/><span
+                                            class="login-link">Todd Shelton</span><br/>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <span>Current Fund:</span><br/><br/>
+                                        <span>Current Move:</span><br/>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="col-xs-12 col-sm-3">
+                                        <img src="http://api.randomuser.me/portraits/women/34.jpg" alt="Rosemary Porter"
+                                             class="img-responsive img-circle"/><span
+                                            class="login-link">Rosemary Porter</span><br/>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <span>Current Fund:</span><br/><br/>
+                                        <span>Current Move:</span><br/>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="col-xs-12 col-sm-3">
+                                        <img src="http://api.randomuser.me/portraits/women/56.jpg" alt="Debbie Schmidt"
+                                             class="img-responsive img-circle"/><span
+                                            class="login-link">Debbie Schmidt</span><br/>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-9">
 
-</body>
-</html>
+                                        <span>Current Fund:</span><br/><br/>
+                                        <span>Current Move:</span><br/>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </li>
+                                <li class="list-group-item">
+                                    <div class="col-xs-12 col-sm-3">
+                                        <img src="http://api.randomuser.me/portraits/women/76.jpg"
+                                             alt="Glenda Patterson"
+                                             class="img-responsive img-circle"/><span
+                                            class="login-link">Glenda Patterson</span>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <span>Current Fund:</span><br/><br/>
+                                        <span>Current Move:</span><br/>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </li>
+                            </ul>
+                            <a class="btn btn-danger">Exit the room</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

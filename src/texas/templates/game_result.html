@@ -1,10 +1,100 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base_nav.html" %}
+{% load staticfiles %}
+{% block title %}Result{% endblock %}
+{% block new-game %}
+    <li class="dropdown active">{% endblock %}
+{% block content %}
+    <div class="container">
+        <!-- Content here -->
+        <div class="login-container">
+            <div class="login-title-div">
+                <h3 class="login-title">Scoreboard</h3>
+            </div>
 
-</body>
-</html>
+            <div class="login-outer">
+                <div class="login-inner">
+                    <ol class="list-group" id="contact-list">
+                        <li class="list-group-item">
+                            <div class="col-xs-12 col-sm-3">
+                                <img src="http://api.randomuser.me/portraits/men/49.jpg" alt="Scott Stevens"
+                                     class="img-responsive img-circle"/><span
+                                    class="login-link">Scott Stevens</span><br/>
+                            </div>
+                            <div class="col-xs-12 col-sm-9">
+                                <h6 class="login-title">500</h6>
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="col-xs-12 col-sm-3">
+                                <img src="http://api.randomuser.me/portraits/men/97.jpg" alt="Seth Frazier"
+                                     class="img-responsive img-circle"/><span
+                                    class="login-link">Jean Myers</span><br/>
+                            </div>
+                            <div class="col-xs-12 col-sm-9">
+                                <h6 class="login-title">400</h6>
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="col-xs-12 col-sm-3">
+                                <img src="http://api.randomuser.me/portraits/women/90.jpg" alt="Jean Myers"
+                                     class="img-responsive img-circle"/><span
+                                    class="login-link">Jean Myers</span><br/>
+                            </div>
+                            <div class="col-xs-12 col-sm-9">
+                                <h6 class="login-title">300</h6>
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="col-xs-12 col-sm-3">
+                                <img src="http://api.randomuser.me/portraits/men/24.jpg" alt="Todd Shelton"
+                                     class="img-responsive img-circle"/><span
+                                    class="login-link">Todd Shelton</span><br/>
+                            </div>
+                            <div class="col-xs-12 col-sm-9">
+                                <h6 class="login-title">200</h6>
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="col-xs-12 col-sm-3">
+                                <img src="http://api.randomuser.me/portraits/women/34.jpg" alt="Rosemary Porter"
+                                     class="img-responsive img-circle"/><span
+                                    class="login-link">Rosemary Porter</span><br/>
+                            </div>
+                            <div class="col-xs-12 col-sm-9">
+                                <h6 class="login-title">100</h6>
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="col-xs-12 col-sm-3">
+                                <img src="http://api.randomuser.me/portraits/women/56.jpg" alt="Debbie Schmidt"
+                                     class="img-responsive img-circle"/><span
+                                    class="login-link">Debbie Schmidt</span><br/>
+                            </div>
+                            <div class="col-xs-12 col-sm-9">
+                                <h6 class="login-title">50</h6>
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
+                        <li class="list-group-item">
+                            <div class="col-xs-12 col-sm-3">
+                                <img src="http://api.randomuser.me/portraits/women/76.jpg"
+                                     alt="Glenda Patterson"
+                                     class="img-responsive img-circle"/><span
+                                    class="login-link">Glenda Patterson</span>
+                            </div>
+                            <div class="col-xs-12 col-sm-9">
+                                <h6 class="login-title">0</h6>
+                            </div>
+                            <div class="clearfix"></div>
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
