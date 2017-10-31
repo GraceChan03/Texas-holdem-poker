@@ -1,14 +1,17 @@
 from django.conf.urls import url
-from . import views
+from . import views, views_account
 from .forms import *
 
 urlpatterns = [
-    url(r'^register$', views.register, name='register'),
-    url(r'^login$', views.login, name='login'),
+    url(r'^register$', views_account.register, name='register'),
+    url(r'^login$', views_account.login, name='login'),
+    url(r'^logout$', views_account.logout, name='logout'),
+    url(r'^activate/(?P<user_name>.+)/(?P<token>.+)$', views_account.activate, name='activate'),
+
     url(r'^$', views.home, name='homepage'),
-    url(r'^logout$', views.logout, name='logout'),
+
     url(r'^profile/(?P<user_name>.+)$', views.profile, name='profile'),
-    url(r'^activate/(?P<user_name>.+)/(?P<token>.+)$', views.activate, name='activate'),
+
     url(r'^change_email$', views.change_email, name='change_email'),
 
     url(r'^account_setting$', views.account_setting),
