@@ -4,6 +4,7 @@ from __future__ import unicode_literals
 # Use django Auth Sys
 from django.contrib.auth.models import User
 from django.db import models
+import uuid
 
 # Create your models here.
 
@@ -26,13 +27,11 @@ class UserInfo(models.Model):
     sign = models.CharField(max_length=100, null=True)
 
     balance = models.IntegerField(default=0, null=True)
+    friends = models.ManyToManyField(User, related_name='friends')
 
     def __unicode__(self):
         return self.user_id
 
-class Friends(models.Model):
-    user = models.ForeignKey(User, related_name='owner')
-    friends = models.ManyToManyField(User, related_name='friends')
 
 class Chat(models.Model):
     from_user = models.ForeignKey(User,related_name="from_user")
@@ -46,10 +45,16 @@ class Game(models.Model):
     # The user who creates the game room
     creator = models.ForeignKey(User,related_name="creator")
     # The code for the others to enter
-    game_no = models.CharField(max_length=200)
+    game_no = models.CharField(max_length=200, unique=True)
     # The number of the players to enter
     player_num = models.IntegerField()
+    # The least fund that a player should have to join the game
+    entry_funds = models.IntegerField()
     players = models.ManyToManyField(User,related_name="players")
+
+    def __init__(self):
+        super(Game, self).__init__()
+        self.game_no = str(self.id).zfill(5)
 
 
 class GameRound(models.Model):
