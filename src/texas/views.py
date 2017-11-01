@@ -36,17 +36,14 @@ def profile(request, user_name):
             today = date.today()
             born = userinfo.dob
             context['age'] = today.year - born.year - ((today.month, today.day) < (born.month, born.day))
-        context['friends'] = count_friends(user)
+        context['friends'] = userinfo.friends.count()
         # keep information about the user logged in
         login_user = User.objects.get(username=request.user)
         context['login_user'] = login_user
         # If the user profile page is not for logged in user,
         # check if the logged in user is following the current user
-        if user.id != login_user.id and Friends.objects.filter(user=login_user):
-            following = Friends.objects.get(user=login_user).following.all()
-            # following
-            if following.filter(username=user_name):
-                context['follow'] = True
+        if user.id != login_user.id and userinfo.friends.filter(username=request.user):
+            context['follow'] = True
         return render(request, 'profile.html', context)
     else:
         return HttpResponseRedirect('/')
@@ -225,14 +222,7 @@ def add_friend(request, user_name):
     user = request.user
     if User.objects.filter(username=user_name):
         friend = User.objects.get(username=user_name)
-        # user has followed some other users
-        if Friends.objects.filter(user=user):
-            new_friend = Friends.objects.get(user=user)
-        else:
-            new_friend = Friends(user=user)
-            new_friend.save()
-        new_friend.friends.add(friend)
-        new_friend.save()
+        user.userinfo.friends.add(friend)
         return redirect('/profile/' + user_name)
     else:
         return HttpResponseRedirect('/')
@@ -241,89 +231,19 @@ def add_friend(request, user_name):
 def delete_friend(request, user_name):
     user = request.user
     # check if the user exists in follow table
-    if Friends.objects.filter(user=user) and User.objects.filter(username=user_name):
-        friends = Friends.objects.get(user=user).following
+    if User.objects.filter(username=user_name):
         deletedfriend = User.objects.get(username=user_name)
-        friends.remove(deletedfriend)
+        user.friends.remove(deletedfriend)
     return redirect('/profile/' + user_name)
 
 
 
-
-def count_friends(user):
-    if Friends.objects.filter(user=user):
-        friends = Friends.objects.get(user=user).friends.all()
-        if friends:
-            return friends.count()
-    return 0
-
-# @login_required(login_url='login')
+@login_required(login_url='login')
 # url not written
 def my_friend(request):
     # show all friends list
     return
 
-# @login_required(login_url='login')
-def new_game(request):
-    context = {}
-    user = request.user
-    # edit here
-    return render(request, 'new_game.html', context)
-
-# @login_required(login_url='login')
-def dashboard(request):
-    context = {}
-    user = request.user
-    # edit here
-    return render(request, 'dashboard.html', context)
-# @login_required(login_url='login')
-def myfriends(request):
-    context = {}
-    user = request.user
-    # edit here
-    return render(request, 'myfriends.html', context)
-
-# @login_required(login_url='login')
-def scoreboard(request):
-    context = {}
-    user = request.user
-    # edit here
-    return render(request, 'scoreboard.html', context)
-
-# @login_required(login_url='login')
-def search_friend(request):
-    context = {}
-    user = request.user
-    # edit here
-    return render(request, 'search_friend.html', context)
-
-# @login_required(login_url='login')
-def game_join(request):
-    context = {}
-    user = request.user
-    # edit here
-    return render(request, 'game_join.html', context)
-
-# @login_required(login_url='login')
-def game_init_success(request):
-    context = {}
-    user = request.user
-    # edit here
-    return render(request, 'game_init_success.html', context)
-
-# @login_required(login_url='login')
-def game_ongoing(request):
-    context = {}
-    user = request.user
-    # edit here
-    return render(request, 'game_ongoing.html', context)
-
-# @login_required(login_url='login')
-def game_result(request):
-    context = {}
-    user = request.user
-    # edit here
-    return render(request, 'game_result.html', context)
 
 # @login_required(login_url='login')
 def about(request):
