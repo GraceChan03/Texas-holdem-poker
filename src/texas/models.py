@@ -51,6 +51,7 @@ class Game(models.Model):
     # The least fund that a player should have to join the game
     entry_funds = models.IntegerField()
     players = models.ManyToManyField(User,related_name="players")
+    is_active = models.BooleanField(default=True)
 
 
 
