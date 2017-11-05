@@ -3,7 +3,10 @@ from __future__ import unicode_literals
 
 # Use django Auth Sys
 from django.contrib.auth.models import User
+from django.core.validators import validate_comma_separated_integer_list
 from django.db import models
+import deuces
+import json
 import uuid
 
 # Create your models here.
@@ -58,7 +61,6 @@ class Game(models.Model):
 class GameRound(models.Model):
     # Game Round info
     game = models.ForeignKey(Game)
-    game_round_id = models.IntegerField()
 
     # Cards are stored as string and parsed one by one
     # Dealer
@@ -66,6 +68,23 @@ class GameRound(models.Model):
 
     # Player info
     player_cards = models.CharField(max_length=200)
+
+    def start(self, **kwargs):
+        new_deck = deuces.Deck()
+        board = new_deck.draw(5)
+        board_str = ''
+        for card in board:
+            board_str += str(card) + ','
+        self.dealer_cards = board_str[:-1]
+
+        player_hands_dict = {}
+        num = self.game.player_num
+        # for i in xrange(num):
+        #     player_hands_dict[i] = new_deck.draw(2)
+        for player in self.game.players.all():
+            print player.id
+            player_hands_dict[player.id] = new_deck.draw(2)
+        self.player_cards = json.dumps(player_hands_dict)
 
 
 # Store the users' bets in a game
