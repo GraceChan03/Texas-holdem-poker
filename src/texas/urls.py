@@ -35,9 +35,7 @@ urlpatterns = [
     # url(r'^get_coupon/(?P<user_name>.+)$', views.get_coupon, name='get_coupon'),
     # should with game id
     url(r'^game_join$', views_game.game_join, name='game_join'),
-    #     this url might not be used but for testing, u can choose render?
-    url(r'^game_init_success$', views_game.game_init_success, name='game_init_success'),
-    url(r'^game_ongoing$', views_game.game_ongoing, name='game_ongoing'),
+    url(r'^game_ongoing/(?P<game_no>.+)$', views_game.game_ongoing, name='game_ongoing'),
     url(r'^game_result$', views_game.game_result, name='game_result'),
     url(r'^about$', views.about, name='about'),
 ]

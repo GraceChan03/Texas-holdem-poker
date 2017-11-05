@@ -52,9 +52,6 @@ class Game(models.Model):
     entry_funds = models.IntegerField()
     players = models.ManyToManyField(User,related_name="players")
 
-    def __init__(self):
-        super(Game, self).__init__()
-        self.game_no = str(self.id).zfill(5)
 
 
 class GameRound(models.Model):
