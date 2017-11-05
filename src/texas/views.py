@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail, BadHeaderError
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from datetime import date
 from django.contrib import auth
 from django.urls import reverse
@@ -13,6 +13,7 @@ from django.urls import reverse
 from texas.forms import *
 from texas.models import *
 from texas.util import send_email
+from mimetypes import guess_type
 
 
 @login_required(login_url='login')
@@ -22,6 +23,10 @@ def home(request):
     # context['post_form'] = PostForm()
     return render(request, "homepage.html", context)
 
+def get_profile_image(request, id):
+    user = get_object_or_404(User, id=id)
+    image = user.userinfo.profile_photo_src
+    return HttpResponse(image, guess_type(image.name))
 
 @login_required(login_url='login')
 def profile(request, user_name):

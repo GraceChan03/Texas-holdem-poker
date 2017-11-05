@@ -24,9 +24,10 @@
                     <div class="underpool-container">
                         <div class="row">
                             <div class="col-xs-12 col-sm-3">
-                                <img src="http://api.randomuser.me/portraits/men/49.jpg" alt="Scott Stevens"
-                                     class="img-responsive img-circle"/><span
-                                    class="login-link">{{ login_user.username }}</span><br/>
+                                <img src="{% url 'get_profile_image' login_user.id %}" alt="Scott Stevens"
+                                     class="img-responsive img-circle"/>
+                                <span class="login-link">{{ login_user.username }}</span><br/>
+                                <input type="hidden" value="{{ login_user.username }}" id="username">
                             </div>
                             <div class="col-xs-12 col-sm-3"><br><br>
                                 <h5 class="login-title">You bet $CMD<span>10</span></h5>
@@ -71,94 +72,28 @@
                     <div class="login-outer">
                         <div class="login-inner">
                             <ul class="list-group" id="contact-list">
-                                <li class="list-group-item">
-                                    <div class="col-xs-12 col-sm-3">
-                                        <img src="http://api.randomuser.me/portraits/men/49.jpg" alt="Scott Stevens"
-                                             class="img-responsive img-circle"/><span
-                                            class="login-link">Scott Stevens</span><br/>
-                                    </div>
-                                    <div class="col-xs-12 col-sm-9">
-                                        <span>Current Fund:</span><br/><br/>
-                                        <span>Current Move:</span><br/>
-                                    </div>
-                                    <div class="clearfix"></div>
-                                </li>
-                                <li class="list-group-item">
-                                    <div class="col-xs-12 col-sm-3">
-                                        <img src="http://api.randomuser.me/portraits/men/97.jpg" alt="Seth Frazier"
-                                             class="img-responsive img-circle"/><span
-                                            class="login-link">Jean Myers</span><br/>
-                                    </div>
-                                    <div class="col-xs-12 col-sm-9">
-                                        <span>Current Fund:</span><br/><br/>
-                                        <span>Current Move:</span><br/>
-                                    </div>
-                                    <div class="clearfix"></div>
-                                </li>
-                                <li class="list-group-item">
-                                    <div class="col-xs-12 col-sm-3">
-                                        <img src="http://api.randomuser.me/portraits/women/90.jpg" alt="Jean Myers"
-                                             class="img-responsive img-circle"/><span
-                                            class="login-link">Jean Myers</span><br/>
-                                    </div>
-                                    <div class="col-xs-12 col-sm-9">
-                                        <span>Current Fund:</span><br/><br/>
-                                        <span>Current Move:</span><br/>
-                                    </div>
-                                    <div class="clearfix"></div>
-                                </li>
-                                <li class="list-group-item">
-                                    <div class="col-xs-12 col-sm-3">
-                                        <img src="http://api.randomuser.me/portraits/men/24.jpg" alt="Todd Shelton"
-                                             class="img-responsive img-circle"/><span
-                                            class="login-link">Todd Shelton</span><br/>
-                                    </div>
-                                    <div class="col-xs-12 col-sm-9">
-                                        <span>Current Fund:</span><br/><br/>
-                                        <span>Current Move:</span><br/>
-                                    </div>
-                                    <div class="clearfix"></div>
-                                </li>
-                                <li class="list-group-item">
-                                    <div class="col-xs-12 col-sm-3">
-                                        <img src="http://api.randomuser.me/portraits/women/34.jpg" alt="Rosemary Porter"
-                                             class="img-responsive img-circle"/><span
-                                            class="login-link">Rosemary Porter</span><br/>
-                                    </div>
-                                    <div class="col-xs-12 col-sm-9">
-                                        <span>Current Fund:</span><br/><br/>
-                                        <span>Current Move:</span><br/>
-                                    </div>
-                                    <div class="clearfix"></div>
-                                </li>
-                                <li class="list-group-item">
-                                    <div class="col-xs-12 col-sm-3">
-                                        <img src="http://api.randomuser.me/portraits/women/56.jpg" alt="Debbie Schmidt"
-                                             class="img-responsive img-circle"/><span
-                                            class="login-link">Debbie Schmidt</span><br/>
-                                    </div>
-                                    <div class="col-xs-12 col-sm-9">
-
-                                        <span>Current Fund:</span><br/><br/>
-                                        <span>Current Move:</span><br/>
-                                    </div>
-                                    <div class="clearfix"></div>
-                                </li>
-                                <li class="list-group-item">
-                                    <div class="col-xs-12 col-sm-3">
-                                        <img src="http://api.randomuser.me/portraits/women/76.jpg"
-                                             alt="Glenda Patterson"
-                                             class="img-responsive img-circle"/><span
-                                            class="login-link">Glenda Patterson</span>
-                                    </div>
-                                    <div class="col-xs-12 col-sm-9">
-                                        <span>Current Fund:</span><br/><br/>
-                                        <span>Current Move:</span><br/>
-                                    </div>
-                                    <div class="clearfix"></div>
-                                </li>
+                                {% if players %}
+                                    {% for player in players %}
+                                        <li class="list-group-item">
+                                            <div class="col-xs-12 col-sm-3">
+                                                <img src="{% url 'get_profile_image' player.id %}"
+                                                     alt="Scott Stevens"
+                                                     class="img-responsive img-circle"/><span
+                                                    class="login-link">{{ player.username }}</span><br/>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-9">
+                                                {% if start %}
+                                                    <span>Current Fund:</span><br/><br/>
+                                                    <span>Current Move:</span><br/>
+                                                {% endif %}
+                                            </div>
+                                            <div class="clearfix"></div>
+                                        </li>
+                                    {% endfor %}
+                                {% endif %}
                             </ul>
-                            <a class="btn btn-danger">Exit the room</a>
+                            <a class="btn btn-danger" href="{% url 'exit_room' game_no login_user.id %}">Exit the
+                                room</a>
                         </div>
                     </div>
                 </div>
@@ -166,3 +101,6 @@
         </div>
     </div>
 {% endblock %}
+<script type="text/javascript" src='{% static "jquery-3.2.1.min.js" %}'></script>
+<script type="text/javascript" src='{% static "reconnecting-websocket.min.js" %}'></script>
+<script type="text/javascript" src='{% static "connect.js" %}'></script>

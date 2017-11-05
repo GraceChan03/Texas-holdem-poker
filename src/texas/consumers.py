@@ -3,6 +3,8 @@ import logging
 from channels import Group
 from channels.sessions import channel_session
 from texas.models import Game
+from django.contrib.auth.models import User
+from django.core import serializers
 
 log = logging.getLogger(__name__)
 
@@ -14,7 +16,10 @@ def ws_connect(message):
     # and if the Room exists. Otherwise, bails (meaning this is a some othersort
     # of websocket). So, this is effectively a version of _get_object_or_404.
     try:
-        prefix, game_no = message['path'].decode('ascii').strip('/').split('/')
+        path = message['path'].strip('/').split('/')
+        prefix = path[0]
+        username = path[1]
+        game_no = path[-1]
         if prefix != 'bet':
             log.debug('invalid ws path=%s', message['path'])
             return
@@ -30,8 +35,17 @@ def ws_connect(message):
     # This may be a FIXME?
     message.reply_channel.send({"accept": True})
     Group('bet-' + game_no, channel_layer=message.channel_layer).add(message.reply_channel)
-
     message.channel_session['bet'] = game.game_no
+    # add the user info to channel
+    try:
+       user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        log.debug('no username=%s', username)
+        return
+
+    data = {"photo_src": str(user.userinfo.profile_photo_src), "username": user.username}
+    Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(data)})
+
 
 
 @channel_session

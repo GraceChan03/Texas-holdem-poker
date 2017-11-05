@@ -113,9 +113,9 @@ USE_L10N = True
 USE_TZ = True
 
 # Image upload
-MEDIA_ROOT = BASE_DIR + '/static/media/'
+MEDIA_ROOT = BASE_DIR + '/texas/'
 
-MEDIA_URL = '/static/media/'
+MEDIA_URL = '/texas/'
 
 # Configure django to print emails rather than sending them
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'

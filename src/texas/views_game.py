@@ -5,7 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator
 from django.core.mail import send_mail, BadHeaderError
 from django.http import HttpResponseRedirect, HttpResponse
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from datetime import date
 from django.contrib import auth
 from django.urls import reverse
@@ -46,17 +46,28 @@ def game_join(request):
         return render(request, 'game_join.html', {'room_no_error': 'The room number does not exist'})
     # before add user into game room, check if he/she has sufficient balance
     game = Game.objects.get(game_no=game_no)
-    game.players.add(request.user)
+    if not game.players.filter(username=request.user.username) and \
+                    game.player_num == game.players.count():
+        return render(request, 'game_join.html', {'room_full_error': 'The room is full'})
+    if not game.players.filter(username=request.user.username):
+        game.players.add(request.user)
     return redirect("/game_ongoing/" + game_no)
 
-# @login_required(login_url='login')
+@login_required(login_url='login')
 def game_ongoing(request, game_no):
     context = {}
     # edit here
     context['game_no'] = game_no
     context['login_user'] = request.user
+    players = Game.objects.get(game_no=game_no).players.all()
+    context['players'] = players
     return render(request, 'game_ongoing.html', context)
 
+@login_required(login_url='login')
+def exit_room(request, game_no, id):
+    player = get_object_or_404(User, id=id)
+    game = get_object_or_404(Game, game_no=game_no)
+    game.players.remove(player)
 
 # @login_required(login_url='login')
 def dashboard(request):

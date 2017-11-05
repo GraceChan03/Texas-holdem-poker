@@ -7,6 +7,7 @@ urlpatterns = [
     url(r'^login$', views_account.login, name='login'),
     url(r'^logout$', views_account.logout, name='logout'),
     url(r'^activate/(?P<user_name>.+)/(?P<token>.+)$', views_account.activate, name='activate'),
+    url(r'^get_profile_image/(?P<id>.+)$', views.get_profile_image, name='get_profile_image'),
 
     url(r'^$', views.home, name='homepage'),
 
@@ -36,6 +37,7 @@ urlpatterns = [
     # should with game id
     url(r'^game_join$', views_game.game_join, name='game_join'),
     url(r'^game_ongoing/(?P<game_no>.+)$', views_game.game_ongoing, name='game_ongoing'),
+    url(r'^exit_room/(?P<game_no>.+)/(?P<id>.+)$', views_game.exit_room, name='exit_room'),
     url(r'^game_result$', views_game.game_result, name='game_result'),
     url(r'^about$', views.about, name='about'),
 ]

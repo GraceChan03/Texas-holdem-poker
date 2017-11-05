@@ -24,7 +24,10 @@
                             Start a new game
                         </button>
                         {% if room_no_error %}
-                            <span>{{ room_no_error }}</span>
+                            <span>{{ room_full_error }}</span>
+                        {% endif %}
+                        {% if room_no_error %}
+                            <span>{{ room_full_error }}</span>
                         {% endif %}
                     </form>
                     <div class="alert alert-light login-alert-div" role="alert">
