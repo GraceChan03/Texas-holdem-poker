@@ -28,6 +28,7 @@ def ws_connect(message):
 
     # Need to be explicit about the channel layer so that testability works
     # This may be a FIXME?
+    message.reply_channel.send({"accept": True})
     Group('bet-' + game_no, channel_layer=message.channel_layer).add(message.reply_channel)
 
     message.channel_session['bet'] = game.game_no
@@ -37,16 +38,17 @@ def ws_connect(message):
 def ws_receive(message):
     # Look up the room from the channel session, bailing if it doesn't exist
     try:
-        game_no = message.channel_session['bet']
+        game_no = message.channel_session['room_id']
         game = Game.objects.get(game_no=game_no)
     except KeyError:
-        log.debug('no bet in channel_session')
+        log.debug('no game room number in channel_session')
         return
     except Game.DoesNotExist:
         log.debug('recieved game room number, but room does not exist. room number=%s', game_no)
         return
 
-    # Parse out a chat message from the content text, bailing if it doesn't
+
+    # Parse out a message from the content text, bailing if it doesn't
     # conform to the expected message format.
     try:
         data = json.loads(message['text'])   #!!! change to specific html label

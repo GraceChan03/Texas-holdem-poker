@@ -12,6 +12,10 @@ local_settings.py
 *.py[cod]
 migrations
 
+# Database stuff
+*.sqlite3
+db.sqlite3
+
 # C extensions
 *.so
 
