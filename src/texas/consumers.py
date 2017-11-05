@@ -6,7 +6,6 @@ from texas.models import *
 from django.contrib.auth.models import User
 from django.core import serializers
 import deuces
-import json
 
 log = logging.getLogger(__name__)
 
