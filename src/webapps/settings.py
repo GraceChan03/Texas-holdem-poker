@@ -130,7 +130,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "asgi_redis.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [os.environ.get('REDIS_URL', 'redis://172.17.0.3:6379')],
+            "hosts": [os.environ.get('REDIS_URL', 'redis://localhost:6379')],
         },
         "ROUTING": "webapps.routing.channel_routing",
     },

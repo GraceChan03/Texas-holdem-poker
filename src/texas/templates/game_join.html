@@ -13,13 +13,8 @@
 
             <div class="login-outer">
                 <div class="login-inner">
-                    <form method="POST" action="/new_game">
+                    <form method="POST" action="/game_join">
                         {% csrf_token %}
-                        {#                        {% for field in login_form.visible_fields %}#}
-                        {#                            <fieldset>#}
-                        {#                                {{ field }}#}
-                        {#                            </fieldset><br>#}
-                        {#                        {% endfor %}#}
                         <label for="">The room number:</label>
                         <br><br>
                         <input type="text" name="room_number" placeholder="RoomNumber" class="grumblr-input-text"
@@ -28,14 +23,9 @@
                         <button type="submit" class="btn-red">
                             Start a new game
                         </button>
-                        {#                        <p class="error-msg">#}
-                        {#                            {% for key, error in login_form.errors.items %}#}
-                        {#                                {{ error }}#}
-                        {#                            {% endfor %}#}
-                        {#                            {% if valid_error %}#}
-                        {#                                {{ valid_error }}#}
-                        {#                            {% endif %}#}
-                        {#                        </p>#}
+                        {% if room_no_error %}
+                            <span>{{ room_no_error }}</span>
+                        {% endif %}
                     </form>
                     <div class="alert alert-light login-alert-div" role="alert">
                         <hr class="login-alert">

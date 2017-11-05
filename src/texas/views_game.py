@@ -35,6 +35,28 @@ def new_game(request):
         # new socket here?
         return render(request, 'game_init_success.html',{"game_no": game_no, "entry_funds": entry_funds, "players": no_players})
 
+@login_required(login_url='login')
+def game_join(request):
+    context = {}
+    if request.method == 'GET':
+        return render(request, 'game_join.html')
+    # edit here
+    game_no = request.POST['room_number']
+    if not Game.objects.filter(game_no=game_no):
+        return render(request, 'game_join.html', {'room_no_error': 'The room number does not exist'})
+    # before add user into game room, check if he/she has sufficient balance
+    game = Game.objects.get(game_no=game_no)
+    game.players.add(request.user)
+    return redirect("/game_ongoing/" + game_no)
+
+# @login_required(login_url='login')
+def game_ongoing(request, game_no):
+    context = {}
+    # edit here
+    context['game_no'] = game_no
+    context['login_user'] = request.user
+    return render(request, 'game_ongoing.html', context)
+
 
 # @login_required(login_url='login')
 def dashboard(request):
@@ -62,21 +84,6 @@ def search_friend(request):
     user = request.user
     # edit here
     return render(request, 'search_friend.html', context)
-
-# @login_required(login_url='login')
-def game_join(request):
-    context = {}
-    user = request.user
-    # edit here
-    return render(request, 'game_join.html', context)
-
-
-# @login_required(login_url='login')
-def game_ongoing(request):
-    context = {}
-    user = request.user
-    # edit here
-    return render(request, 'game_ongoing.html', context)
 
 # @login_required(login_url='login')
 def game_result(request):
