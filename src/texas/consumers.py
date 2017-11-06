@@ -33,7 +33,6 @@ def ws_connect(message):
         return
 
     # Need to be explicit about the channel layer so that testability works
-    # This may be a FIXME?
     message.reply_channel.send({"accept": True})
     Group('bet-' + game_no, channel_layer=message.channel_layer).add(message.reply_channel)
     message.channel_session['bet'] = game.game_no
@@ -58,6 +57,7 @@ def ws_connect(message):
         new_game_dict['message_type'] = "round-update"
         new_game_dict['event'] = "new-game"
         new_game_dict['round_id'] = new_game_round.id
+        new_game_dict['player_order'] = new_game_round.player_order
 
         dealer_string = str(new_game_round.dealer_cards)
         dealer_pretty_string = ''
@@ -74,8 +74,11 @@ def ws_connect(message):
             player_dict[player] = cards
         new_game_dict['player_cards'] = player_dict
 
+        # Send cards to everyone
         Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(new_game_dict)})
 
+        # Tell everyone it's whose turn
+        # Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(new_game_dict)})
 
 @channel_session
 def ws_receive(message):
@@ -87,7 +90,7 @@ def ws_receive(message):
         log.debug('no game room number in channel_session')
         return
     except Game.DoesNotExist:
-        log.debug('recieved game room number, but room does not exist. room number=%s', game_no)
+        log.debug('received game room number, but room does not exist. room number=%s', game_no)
         return
 
 
@@ -99,13 +102,13 @@ def ws_receive(message):
         log.debug("ws message isn't json text=%s", message['text'])
         return
 
-    if set(data.keys()) != set(('handle', 'message')):    #!!! change to specific html label
-        log.debug("ws message unexpected format data=%s", data)
-        return
+    # if set(data.keys()) != set(('handle', 'message')):    #!!! change to specific html label
+    #     log.debug("ws message unexpected format data=%s", data)
+    #     return
 
     if data:
-        log.debug('bet room=%s handle=%s message=%s',
-                  game.game_no, data['handle'], data['message'])
+        log.debug('bet room=%s data=%s',
+                  game.game_no, data)
         m = game.messages.create(**data)
 
         # See above for the note about Group

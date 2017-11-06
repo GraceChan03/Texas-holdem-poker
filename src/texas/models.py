@@ -58,7 +58,6 @@ class Game(models.Model):
     is_active = models.BooleanField(default=True)
 
 
-
 class GameRound(models.Model):
     # Game Round info
     game = models.ForeignKey(Game)
@@ -70,7 +69,28 @@ class GameRound(models.Model):
     # Player info
     player_cards = models.CharField(max_length=200)
 
+    # bet order
+    player_order = models.CharField(max_length=200, default='')
+
+    def set_player_order(self, prev=0, **kwarg):
+        ord = []
+        order_str = ''
+        for player in self.game.players.all():
+            ord.append(player.id)
+        for i in xrange(prev, len(ord)):
+            order_str += (',' + str(ord[i]))
+        if prev > 0:
+            order_str += (',' + str(ord[i]) for i in xrange(0, prev))
+        self.player_order = order_str[1:]
+
     def start(self, **kwargs):
+        if self.player_order == "" or not self.player_order:
+            prev = 0
+        else:
+            prev = int(self.player_order[0] + 1)
+            if prev == self.game.player_num:
+                prev = 0
+        self.set_player_order(prev)
         new_deck = deuces.Deck()
         board = new_deck.draw(5)
         board_str = ''
@@ -83,7 +103,6 @@ class GameRound(models.Model):
         # for i in xrange(num):
         #     player_hands_dict[i] = new_deck.draw(2)
         for player in self.game.players.all():
-            print(player.id)
             player_hands_dict[player.id] = new_deck.draw(2)
         self.player_cards = json.dumps(player_hands_dict)
 
