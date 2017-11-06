@@ -72,6 +72,37 @@ class GameRound(models.Model):
     # bet order
     player_order = models.CharField(max_length=200, default='')
 
+    # player active
+    player_active_dict = models.CharField(max_length=200, default='')
+
+    # player fund
+    player_fund_dict = models.CharField(max_length=200, default='')
+
+    # Current Approach
+    current_approach = models.IntegerField(default=3)
+
+    def set_player_entry_funds_dict(self):
+        dict = {}
+        for player in self.game.players.all():
+            dict[player.id] = self.game.entry_funds
+        self.player_fund_dict = json.dumps(dict)
+
+    def set_player_fund(self, player_id, fund):
+        dict = json.loads(self.player_fund_dict)
+        dict[player_id] = fund
+        self.player_fund_dict = json.dumps(dict)
+
+    def set_player_inactive(self, player_id):
+        dict = json.loads(self.player_active_dict)
+        dict[player_id] = False
+        self.player_active_dict = json.dumps(dict)
+
+    def set_player_active_dict(self):
+        dict = {}
+        for player in self.game.players.all():
+            dict[player.id] = True
+        self.player_active_dict = json.dumps(dict)
+
     def set_player_order(self, prev=0, **kwarg):
         ord = []
         order_str = ''
@@ -91,6 +122,7 @@ class GameRound(models.Model):
             if prev == self.game.player_num:
                 prev = 0
         self.set_player_order(prev)
+        self.set_player_active_dict()
         new_deck = deuces.Deck()
         board = new_deck.draw(5)
         board_str = ''
