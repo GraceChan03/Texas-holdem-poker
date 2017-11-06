@@ -6,11 +6,79 @@ Texas = {
         roundId: null,
         dealerCards: null,
 
-        setCard: function (cards) {
-            for (card in cards) {
-                var acard = card.split("");
-                var rank = acard[0];
-                var suit = acard[1];
+        setCard: function (card, $card) {
+            width = 75;
+            height = 125;
+            x = 0;
+            y = 0;
+            var acard = card.split("");
+            var rank = acard[0];
+            var suit = acard[1];
+
+            if (rank !== undefined && suit !== undefined) {
+                switch (suit) {
+                    case "s":
+                        // Spades
+                        x -= width;
+                        y -= height;
+                        break;
+                    case "c":
+                        // Clubs
+                        y -= height;
+                        break;
+                    case "d":
+                        // Diamonds
+                        x -= width;
+                        break;
+                    case "h":
+                        // Hearts
+                        break;
+                    default:
+                        throw "Invalid suit";
+                }
+
+                switch (rank) {
+                    case "A":
+                        rank = 1;
+                        break;
+                    case "T":
+                        rank = 10;
+                        break;
+                    case "J":
+                        rank = 11;
+                        break;
+                    case "Q":
+                        rank = 12;
+                        break;
+                    case "K":
+                        rank = 13;
+                        break;
+                    default:
+                        rank = parseInt(rank);
+                        break;
+                }
+
+                if (rank < 1 || rank > 13) {
+                    throw "Invalid rank";
+                }
+
+                x -= (rank - 1) * 2 * width + width;
+            }
+
+            $card.css('background-position', x + "px " + y + "px");
+        },
+
+        setPlayerCards: function (player_cards) {
+            for (card in player_cards) {
+                $card = $('#card' + card);
+                Texas.GameRound.setCard(player_cards[card], $card);
+            }
+        },
+
+        show3Cards: function (dealer_cards) {
+            for (i = 0; i < 3; i++) {
+                $card = $('#dealer_card' + i);
+                Texas.GameRound.setCard(dealer_cards[i], $card);
             }
         },
 
@@ -20,9 +88,13 @@ Texas = {
             // get cards info
             var current_player = $("#current-player").val();
             var my_player_cards = data.player_cards[current_player];
-            Texas.GameRound.dealerCards = data.dealer_cards;
             // set cards
-            Texas.GameRound.setCard(my_player_cards)
+            Texas.GameRound.setPlayerCards(my_player_cards);
+
+            var dealer_cards = data.dealer_cards.split(",");
+            Texas.GameRound.dealerCards = dealer_cards;
+            // show three dealer cards
+            Texas.GameRound.show3Cards(dealer_cards);
         },
 
         onRoundUpdate: function (data) {
@@ -36,9 +108,7 @@ Texas = {
         }
     },
 
-    Player: {
-
-    },
+    Player: {},
 
     Game: {
         gameNo: null,

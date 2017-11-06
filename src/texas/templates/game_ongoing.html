@@ -18,7 +18,11 @@
                     </div>
                     <div class="pool-container">
                         {#  when putting many div the format will go wrong... you guys do ur own work and I will think about how to fix it #}
-                        <div class="poker-container"></div>
+                        <div class="poker-container card-large" id="dealer_card0"></div>
+                        <div class="poker-container card-large" id="dealer_card1"></div>
+                        <div class="poker-container card-large" id="dealer_card2"></div>
+                        <div class="poker-container card-large" id="dealer_card3"></div>
+                        <div class="poker-container card-large" id="dealer_card4"></div>
                     </div>
                     <br>
                     <div class="underpool-container">
@@ -34,9 +38,11 @@
                             </div>
                             <div class="col-xs-12 col-sm-3">
                                 <span>Card 1:</span>
+                                <img class="card-large" id="card0">
                             </div>
                             <div class="col-xs-12 col-sm-3">
                                 <span>Card 2:</span>
+                                <img class="card-large" id="card1">
                             </div>
                         </div>
                         <div class="row">
