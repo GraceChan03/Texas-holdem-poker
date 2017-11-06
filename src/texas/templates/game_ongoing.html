@@ -13,9 +13,9 @@
                     <div class="login-title-div pull-left">
                         <h5 class="login-title"><span id="page_title">Welcome to room {{ game_no }}</span></h5>
                     </div>
-                    {#                    <div class="login-title-div pull-right">#}
-                    {#                        <a class="btn btn-success" href="#">Combination Menu</a>#}
-                    {#                    </div>#}
+                    <div class="login-title-div pull-right">
+                        <a class="btn btn-success" href="#">Combination Menu</a>
+                    </div>
                     <div class="pool-container">
                         {#  when putting many div the format will go wrong... you guys do ur own work and I will think about how to fix it #}
                         <table>
@@ -107,7 +107,7 @@
                                     {% endfor %}
                                 {% endif %}
                             </ul>
-                            <a class="btn btn-danger" href="{% url 'exit_room' game_no login_user.id %}">Exit the
+                            <a class="btn btn-danger" href="{% url 'new_game' %}">Exit the
                                 room</a>
                         </div>
                     </div>

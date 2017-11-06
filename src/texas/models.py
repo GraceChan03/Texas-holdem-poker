@@ -90,6 +90,18 @@ class GameRound(models.Model):
     def increment_current_approach_by_1(self):
         self.current_approach += 1
 
+    def only_active_user(self):
+        player_active_dict = json.loads(self.player_active_dict)
+        active_cnt = 0
+        for player in player_active_dict:
+            if player_active_dict[player]:
+                active_cnt += 1
+                active_user = player
+
+            if active_cnt > 1:
+                return None
+        return active_user
+
     def get_winner(self):
 
         board = list(eval(self.dealer_cards))
