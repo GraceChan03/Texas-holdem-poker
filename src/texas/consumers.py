@@ -85,7 +85,7 @@ def ws_connect(message):
 
         # Send cards to everyone
         Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(new_game_dict)})
-        message.channel_session['round_id'] = new_game_round.id
+        # message.channel_session['round_id'] = new_game_round.id
 
         # ----------- Send a new ws for [PLAYER-ACTION] ----------
         next_user_id = eval(player_order)[0]
@@ -140,24 +140,12 @@ def ws_receive(message):
     # Parse out a message from the content text, bailing if it doesn't
     # conform to the expected message format.
     try:
-        round_id = message.channel_session['round_id']
-        game_round = GameRound.objects.get(id=round_id)
-    except KeyError:
-        log.debug('no player id in channel_session')
-        return
-    except GameRound.DoesNotExist:
-        log.debug('received player id, but player does not exist. player id=%s', userid)
-        return
-
-    # Parse out a message from the content text, bailing if it doesn't
-    # conform to the expected message format.
-    try:
         data = json.loads(message['text'])   #!!! change to specific html label
     except ValueError:
         log.debug("ws message isn't json text=%s", message['text'])
         return
 
-    if set(data.keys()) != set(('message_type', 'bet')):    #!!! change to specific html label
+    if set(data.keys()) != set(('message_type', 'bet', 'round_id')):    #!!! change to specific html label
         log.debug("ws message unexpected format data=%s", data)
         return
 
@@ -171,6 +159,8 @@ def ws_receive(message):
             return
 
         bet = data['bet']
+        round_id = data['round_id']
+        game_round = GameRound.objects.get(id=round_id)
         # Fold
         if bet == -1:
             game_round.set_player_inactive(userid)
