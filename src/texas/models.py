@@ -84,6 +84,12 @@ class GameRound(models.Model):
     # Minimum bet
     min_bet = models.IntegerField(default=1)
 
+    def set_min_bet(self, min_bet):
+        self.min_bet = min_bet
+
+    def increment_current_approach_by_1(self):
+        self.current_approach += 1
+
     def get_winner(self):
 
         board = eval(self.dealer_cards)
