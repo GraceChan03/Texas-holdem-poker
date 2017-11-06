@@ -189,7 +189,7 @@ def ws_receive(message):
                 #   end of current approach, add dealer card
                 # -----------Send a new ws for [SHOW-Result-CARD] ---------
                 end_round_message = {}
-                end_round_message['message-type'] = "round-update"
+                end_round_message['message_type'] = "round-update"
                 end_round_message['event'] = "show-result"
                 winner = game_round.get_winner()
                 end_round_message['winner'] = winner
@@ -204,7 +204,7 @@ def ws_receive(message):
                 game_round.increment_current_approach_by_1()
                 # -----------Send a new ws for [ADD-DEALER-CARD] ---------
                 add_dealer_card_message = {}
-                add_dealer_card_message['message-type'] = "round-update"
+                add_dealer_card_message['message_type'] = "round-update"
                 add_dealer_card_message['event'] = "add-dealer-card"
 
                 # Tell client to add a card
