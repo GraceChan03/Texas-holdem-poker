@@ -86,7 +86,7 @@ Texas = {
         turnoverCard: function () {
             var turn = Texas.GameRound.dealerCardTurn;
             $card = $('#dealer_card' + turn);
-            Texas.GameRound.setCard(Texas.dealerCards[i], $card);
+            Texas.GameRound.setCard(Texas.GameRound.dealerCards[i], $card);
             Texas.GameRound.dealerCardTurn += 1;
         },
 
@@ -99,6 +99,11 @@ Texas = {
                     $('#my_fund').css('visibility', 'visible').text("My chips: " + funds[player]);
                 }
             }
+        },
+
+        gameOver: function (data) {
+            alert(data.winner + " wins! Congratulations!");
+            Texas.Player.disableLastTurn();
         },
 
         newRound: function (data) {
@@ -131,6 +136,9 @@ Texas = {
                 case 'add-dealer-card':
                     Texas.GameRound.turnoverCard();
                     break;
+                case 'game-over':
+                    Texas.GameRound.gameOver(data);
+                    break;
 
             }
         }
@@ -138,6 +146,7 @@ Texas = {
 
     Player: {
         betMode: false,
+        currPlayer: null,
 
         resetTimers: function () {
 
@@ -167,12 +176,21 @@ Texas = {
             Texas.Player.setBetInVisible();
         },
 
+        disableLastTurn: function () {
+            if (Texas.Player.currPlayer !== null) {
+                $('#txt_turn_' + Texas.Player.currPlayer).css('visibility', 'hidden');
+            }
+        },
+
         onPlayerAction: function (data) {
             isCurrentPlayer = data.player.userid.toString() === $('#current-player-id').val();
+
 
             if (isCurrentPlayer) {
                 Texas.Player.enableBetMode(data);
             }
+            Texas.Player.disableLastTurn();
+            Texas.Player.currPlayer = data.player.userid
             var id = data.player.userid;
             var username = data.player.username;
             $('#txt_turn_' + id).text(username + "'s turn").css('visibility', 'visible');
