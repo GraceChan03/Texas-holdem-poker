@@ -153,7 +153,7 @@ Texas = {
         },
 
         setBetVisible: function (data) {
-            $('#btn_check').css('visibility', 'visible');
+            // $('#btn_check').css('visibility', 'visible');
             $('#btn_fold').css('visibility', 'visible');
             $('#btn_bet').css('visibility', 'visible');
             var slider = $('#myRange');
@@ -171,7 +171,7 @@ Texas = {
         },
 
         setBetInVisible: function () {
-            $('#btn_check').css('visibility', 'hidden');
+            // $('#btn_check').css('visibility', 'hidden');
             $('#btn_fold').css('visibility', 'hidden');
             $('#btn_bet').css('visibility', 'hidden');
             $('#chips').css('visibility', 'hidden');
@@ -194,14 +194,19 @@ Texas = {
         },
 
         onPlayerAction: function (data) {
+
             isCurrentPlayer = data.player.userid.toString() === $('#current-player-id').val();
 
 
             if (isCurrentPlayer) {
                 Texas.Player.enableBetMode(data);
             }
+            // renew the pot
+            $('#pot').text("Pot: " + data.pot);
+            // disable last turn
             Texas.Player.disableLastTurn();
-            Texas.Player.currPlayer = data.player.userid
+            // enable this turn
+            Texas.Player.currPlayer = data.player.userid;
             var id = data.player.userid;
             var username = data.player.username;
             $('#txt_turn_' + id).text(username + "'s turn").css('visibility', 'visible');
