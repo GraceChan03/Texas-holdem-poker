@@ -5,6 +5,7 @@ Texas = {
     GameRound: {
         roundId: null,
         dealerCards: null,
+        dealerCardTurn: null,
 
         setCard: function (card, $card) {
             width = 75;
@@ -82,10 +83,20 @@ Texas = {
             }
         },
 
+        turnoverCard: function () {
+            var turn = Texas.GameRound.dealerCardTurn;
+            $card = $('#dealer_card' + turn);
+            Texas.GameRound.setCard(Texas.dealerCards[i], $card);
+            Texas.GameRound.dealerCardTurn += 1;
+        },
+
         setPlayerFunds: function (player_funds) {
             for (player in player_funds) {
                 $('#txt_fund_' + player).css('visibility', 'visible')
                     .text("Current Fund: " + player_funds[player]);
+                if (player.toString() === $('#current-player-id').val()) {
+                    $('#my_fund').css('visibility', 'visible').text("My chips: " + player_funds[player]);
+                }
             }
         },
 
@@ -101,6 +112,7 @@ Texas = {
 
             var dealer_cards = data.dealer_cards.split(",");
             Texas.GameRound.dealerCards = dealer_cards;
+            Texas.GameRound.dealerCardTurn = 3;
             // show three dealer cards
             Texas.GameRound.show3Cards(dealer_cards);
         },
@@ -115,6 +127,10 @@ Texas = {
                 case 'player-action':
                     Texas.Player.onPlayerAction(data);
                     break;
+                case 'add-dealer-card':
+                    Texas.GameRound.turnoverCard();
+                    break;
+
             }
         }
     },
