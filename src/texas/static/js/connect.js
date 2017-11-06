@@ -102,8 +102,8 @@ Texas = {
         },
 
         gameOver: function (data) {
-            alert(data.winner + " wins! Congratulations!");
             Texas.Player.disableLastTurn();
+            $('#page_title').text(data.winner + " wins! Congratulations!");
         },
 
         newRound: function (data) {
