@@ -15,12 +15,12 @@ Texas = {
         },
 
         newGame: function (data) {
-            Texas.GameRound.roundId = data.round.id;
+            Texas.GameRound.roundId = data.round_id;
 
             // get cards info
             var current_player = $("#current-player").val();
-            var my_player_cards = data.round.player_cards.get(current_player);
-            Texas.GameRound.dealerCards = data.round.dealer_cards;
+            var my_player_cards = data.player_cards[current_player];
+            Texas.GameRound.dealerCards = data.dealer_cards;
             // set cards
             Texas.GameRound.setCard(my_player_cards)
         },
@@ -56,7 +56,7 @@ Texas = {
             switch (data.event) {
                 case 'player-add':
                     var list = $("#contact-list");
-                    if (current_player !== data.userid) {
+                    if (current_player !== data.userid.toString()) {
                         var ele = $('<li class="list-group-item"></li>');
                         var div1 = $('<div class="col-xs-12 col-sm-3"></div>');
                         div1.append($("<img>").attr({
