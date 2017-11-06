@@ -191,7 +191,8 @@ def ws_receive(message):
                 end_round_message = {}
                 end_round_message['message_type'] = "round-update"
                 end_round_message['event'] = "game-over"
-                winner = game_round.get_winner()
+                winner_id = game_round.get_winner()
+                winner = User.objects.get(id=winner_id).username
                 end_round_message['winner'] = winner
 
                 # Tell client to add a card
