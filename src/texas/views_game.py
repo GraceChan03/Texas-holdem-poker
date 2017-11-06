@@ -39,16 +39,15 @@ def new_game(request):
 def game_join(request):
     context = {}
     if request.method == 'GET':
-        return render(request, 'game_join.html')
-    # edit here
-    game_no = request.POST['room_number']
-    if not Game.objects.filter(game_no=game_no):
-        return render(request, 'game_join.html', {'room_no_error': 'The room number does not exist'})
-    # before add user into game room, check if he/she has sufficient balance
+        context['join_room_form'] = JoinRoomForm()
+        return render(request, 'game_join.html', context)
+
+    form = JoinRoomForm(request.POST, username=request.user.username)
+    context['join_room_form'] = form
+    if not form.is_valid():
+        return render(request, 'game_join.html', context)
+    game_no = form.cleaned_data['room_number']
     game = Game.objects.get(game_no=game_no)
-    if not game.players.filter(username=request.user.username) and \
-                    game.player_num == game.players.count():
-        return render(request, 'game_join.html', {'room_full_error': 'The room is full'})
     if not game.players.filter(username=request.user.username):
         game.players.add(request.user)
     return redirect("/game_ongoing/" + game_no)

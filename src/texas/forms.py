@@ -123,3 +123,25 @@ class UploadProfileBackgroundForm(forms.Form):
 
 class EmailForm(forms.Form):
     email = forms.EmailField(label='Email', widget=forms.EmailInput())
+
+class JoinRoomForm(forms.Form):
+    room_number = forms.CharField(max_length=50, label='The room number',
+                               widget=forms.TextInput(attrs={'class': 'grumblr-input-text',
+                                                             'placeholder': 'RoomNumber'}))
+
+    def __init__(self, *args, **kwargs):
+        self.username = kwargs.pop('username', None)
+        super(JoinRoomForm, self).__init__(*args, **kwargs)
+
+    def clean(self):
+        cleaned_data = super(JoinRoomForm, self).clean()
+        game_no = self.cleaned_data.get('room_number')
+        if not Game.objects.filter(game_no=game_no):
+            raise forms.ValidationError("The room number does not exist.")
+        # before add user into game room, check if he/she has sufficient balance
+        game = Game.objects.get(game_no=game_no)
+        if not game.players.filter(username=self.username) and \
+                        game.player_num == game.players.count():
+            raise forms.ValidationError("The room is full.")
+
+        return cleaned_data
