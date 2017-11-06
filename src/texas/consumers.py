@@ -181,10 +181,11 @@ def ws_receive(message):
                 # Tell client to add a card
                 Group('bet-' + game_no, channel_layer=message.channel_layer).send(
                     {"text": json.dumps(end_round_message)})
+                return
 
         # Check
         elif bet == 0:
-        # don't need to change pot, min_bet
+            # don't need to change pot, min_bet
             pass
         # bet sth
         else:
@@ -215,7 +216,7 @@ def ws_receive(message):
                 # Tell client to add a card
                 Group('bet-' + game_no, channel_layer=message.channel_layer).send(
                     {"text": json.dumps(end_round_message)})
-
+                return
 
             else:
                 #   end of current approach, add dealer card
