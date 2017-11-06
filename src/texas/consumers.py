@@ -97,7 +97,7 @@ def ws_connect(message):
         player_action_dict['round_id'] = new_game_round.id
         player_action_dict['player'] = player
         player_action_dict['action'] = "bet"
-        player_action_dict['min_bet'] = 0.0
+        player_action_dict['min_bet'] = 0
         player_action_dict['max_bet'] = player['money']
 
         # Tell everyone it's whose turn
