@@ -81,6 +81,33 @@ class GameRound(models.Model):
     # Current Approach
     current_approach = models.IntegerField(default=3)
 
+    def get_winner(self):
+
+        board = eval(self.dealer_cards)
+        # create an evaluator
+        evaluator = deuces.Evaluator()
+
+        player_cards_dict = json.loads(self.player_cards)
+        player_active_dict = json.loads(self.player_active_dict)
+
+        best_rank = 7463
+        winners = []
+        for player in player_cards_dict:
+            if player_active_dict[player]:
+                hand = player_cards_dict[player]
+            # and rank your hand
+            rank = evaluator.evaluate(board, hand)
+
+            # detect winner
+            if rank == best_rank:
+                winners.append(player)
+                best_rank = rank
+            elif rank < best_rank:
+                winners = [player]
+                best_rank = rank
+
+        return winners
+
     def set_player_entry_funds_dict(self):
         dict = {}
         for player in self.game.players.all():
