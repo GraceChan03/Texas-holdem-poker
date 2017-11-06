@@ -39,6 +39,12 @@ INSTALLED_APPS = [
     'channels',
 ]
 
+# Config the url to use if the system requires the user to log in
+LOGIN_URL = '/login'
+
+# Default url to use after the user has logged in
+LOGIN_REDIRECT_URL = '/'
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',

@@ -5,8 +5,8 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.core.validators import validate_comma_separated_integer_list
 from django.db import models
-import deuces
 import json
+import deuces
 import uuid
 
 # Create your models here.
@@ -82,7 +82,7 @@ class GameRound(models.Model):
         # for i in xrange(num):
         #     player_hands_dict[i] = new_deck.draw(2)
         for player in self.game.players.all():
-            print player.id
+            print(player.id)
             player_hands_dict[player.id] = new_deck.draw(2)
         self.player_cards = json.dumps(player_hands_dict)
 

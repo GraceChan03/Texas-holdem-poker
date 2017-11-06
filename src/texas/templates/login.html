@@ -11,22 +11,24 @@
 
             <div class="login-outer">
                 <div class="login-inner">
-                    <form method="POST" action="login">
+                    <form method="POST" action="{% url 'login' %}">
                         {% csrf_token %}
-                        {% for field in login_form.visible_fields %}
-                            <fieldset>
-                                {{ field }}
-                            </fieldset><br>
-                        {% endfor %}
+                    <fieldset>
+                        <input type="text" id="inputUsername" name="username" class="grumblr-input-text" placeholder="Username"
+                       required autofocus>
+                    </fieldset>
+                    <br>
+                    <fieldset>
+                        <input type="password" id="inputPassword" name="password" class="grumblr-input-password" placeholder="Password"
+                       required>
+                    </fieldset>
+                        <br>
                         <button type="submit" class="btn-red">
                             Log in
                         </button>
                         <p class="error-msg">
-                            {% for key, error in login_form.errors.items %}
-                                {{ error }}
-                            {% endfor %}
-                            {% if valid_error %}
-                                {{ valid_error }}
+                            {% if form.errors %}
+                                <p>Your username and password didn't match. Please try again.</p>
                             {% endif %}
                         </p>
                     </form>

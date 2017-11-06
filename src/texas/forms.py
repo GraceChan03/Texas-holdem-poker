@@ -72,29 +72,6 @@ class ResetPasswordForm(forms.Form):
         # Generally return the cleaned data we got from our parent.
         return cleaned_data
 
-class LoginForm(forms.Form):
-    username = forms.CharField(max_length=20, widget=forms.TextInput(attrs={'class': 'grumblr-input-text',
-                                                             'placeholder': 'Username'}))
-    password = forms.CharField(max_length=30, label='Password',
-                                widget=forms.PasswordInput(attrs={'class': 'grumblr-input-password',
-                                                                  'placeholder': 'Password'}))
-
-    def clean(self):
-        cleaned_data = super(LoginForm, self).clean()
-
-        # check if log in user really exists
-        username = cleaned_data.get('username')
-        if not User.objects.filter(username=username):
-            raise forms.ValidationError("User does not exist.")
-
-        # confirms the existed user log in with correct password
-        password = cleaned_data.get('password')
-        user = authenticate(username=username, password=password)
-        if user is None:
-            raise forms.ValidationError("Password is wrong.")
-
-        return cleaned_data
-
 
 BIRTH_YEAR_CHOICES = tuple(x for x in range(2017, 1917, -1))
 

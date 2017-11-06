@@ -19,7 +19,7 @@ def ws_connect(message):
     try:
         path = message['path'].strip('/').split('/')
         prefix = path[0]
-        username = path[1]
+        userid = path[1]
         game_no = path[-1]
         if prefix != 'bet':
             log.debug('invalid ws path=%s', message['path'])
@@ -39,12 +39,15 @@ def ws_connect(message):
     message.channel_session['bet'] = game.game_no
     # add the user info to channel
     try:
-       user = User.objects.get(username=username)
+       user = User.objects.get(id=userid)
     except User.DoesNotExist:
-        log.debug('no username=%s', username)
-        return
-
-    data = {"photo_src": str(user.userinfo.profile_photo_src), "username": user.username}
+        log.debug('no userid=%s', userid)
+    
+    data = {"photo_src": str(user.userinfo.profile_photo_src),
+            "username": user.username,
+            "userid": user.id,
+            "message_type": "game-update",
+            "event": "player-add"}
     Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(data)})
 
     if game.players.count() == game.player_num:
@@ -53,6 +56,7 @@ def ws_connect(message):
         new_game_round.save()
         new_game_dict = {}
         new_game_dict['message_type'] = "round-update"
+        new_game_dict['event'] = "new-game"
         new_game_dict['round_id'] = new_game_round.id
 
         dealer_string = str(new_game_round.dealer_cards)

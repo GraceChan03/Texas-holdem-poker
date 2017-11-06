@@ -27,7 +27,7 @@
                                 <img src="{% url 'get_profile_image' login_user.id %}" alt="Scott Stevens"
                                      class="img-responsive img-circle"/>
                                 <span class="login-link">{{ login_user.username }}</span><br/>
-                                <input type="hidden" value="{{ login_user.username }}" id="username">
+                                <input type="hidden" value="{{ login_user.id }}" id="current-player">
                             </div>
                             <div class="col-xs-12 col-sm-3"><br><br>
                                 <h5 class="login-title">You bet $CMD<span>10</span></h5>
@@ -74,21 +74,21 @@
                             <ul class="list-group" id="contact-list">
                                 {% if players %}
                                     {% for player in players %}
-                                        <li class="list-group-item">
-                                            <div class="col-xs-12 col-sm-3">
-                                                <img src="{% url 'get_profile_image' player.id %}"
-                                                     alt="Scott Stevens"
-                                                     class="img-responsive img-circle"/><span
-                                                    class="login-link">{{ player.username }}</span><br/>
-                                            </div>
-                                            <div class="col-xs-12 col-sm-9">
-                                                {% if start %}
-                                                    <span>Current Fund:</span><br/><br/>
-                                                    <span>Current Move:</span><br/>
-                                                {% endif %}
-                                            </div>
-                                            <div class="clearfix"></div>
-                                        </li>
+                                            <li class="list-group-item">
+                                                <div class="col-xs-12 col-sm-3">
+                                                    <img src="{% url 'get_profile_image' player.id %}"
+                                                         alt="Scott Stevens"
+                                                         class="img-responsive img-circle"/><span
+                                                        class="login-link">{{ player.username }}</span><br/>
+                                                </div>
+                                                <div class="col-xs-12 col-sm-9">
+                                                    {% if start %}
+                                                        <span>Current Fund:</span><br/><br/>
+                                                        <span>Current Move:</span><br/>
+                                                    {% endif %}
+                                                </div>
+                                                <div class="clearfix"></div>
+                                            </li>
                                     {% endfor %}
                                 {% endif %}
                             </ul>
