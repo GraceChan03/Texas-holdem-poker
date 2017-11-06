@@ -190,7 +190,7 @@ def ws_receive(message):
                 # -----------Send a new ws for [SHOW-Result-CARD] ---------
                 end_round_message = {}
                 end_round_message['message_type'] = "round-update"
-                end_round_message['event'] = "show-result"
+                end_round_message['event'] = "game-over"
                 winner = game_round.get_winner()
                 end_round_message['winner'] = winner
 
