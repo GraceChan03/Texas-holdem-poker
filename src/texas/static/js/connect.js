@@ -152,23 +152,34 @@ Texas = {
 
         },
 
-        setBetVisible: function () {
+        setBetVisible: function (data) {
             $('#btn_check').css('visibility', 'visible');
             $('#btn_fold').css('visibility', 'visible');
-            // $('#btn_bet').css('visibility', 'visible');
-            // $('#chips').css('visibility', 'visible');
+            $('#btn_bet').css('visibility', 'visible');
+            var slider = $('#myRange');
+            slider.attr({
+                min: data.min_bet,
+                max: data.max_bet,
+                value: data.min_bet
+            });
+            var output = $('#demo');
+            output.text(slider.val());
+            slider.on('input', function () {
+                output.text($(this).val())
+            });
+            $('#chips').css('visibility', 'visible');
         },
 
         setBetInVisible: function () {
             $('#btn_check').css('visibility', 'hidden');
             $('#btn_fold').css('visibility', 'hidden');
-            // $('#btn_bet').css('visibility', 'hidden');
-            // $('#chips').css('visibility', 'hidden');
+            $('#btn_bet').css('visibility', 'hidden');
+            $('#chips').css('visibility', 'hidden');
         },
 
-        enableBetMode: function () {
+        enableBetMode: function (data) {
             Texas.Player.betMode = true;
-            Texas.Player.setBetVisible();
+            Texas.Player.setBetVisible(data);
         },
 
         disableBetMode: function () {
@@ -291,7 +302,7 @@ Texas = {
         $('#btn_bet').click(function () {
             Texas.socket.send(JSON.stringify({
                 'message_type': 'bet',
-                'bet': $('#chips option:selected').text(),
+                'bet': $('#myRange').val(),
                 'round_id': Texas.GameRound.roundId
             }));
             Texas.Player.disableBetMode();

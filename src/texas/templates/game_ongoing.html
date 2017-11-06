@@ -13,9 +13,9 @@
                     <div class="login-title-div pull-left">
                         <h5 class="login-title"><span id="page_title">Welcome to room {{ game_no }}</span></h5>
                     </div>
-{#                    <div class="login-title-div pull-right">#}
-{#                        <a class="btn btn-success" href="#">Combination Menu</a>#}
-{#                    </div>#}
+                    {#                    <div class="login-title-div pull-right">#}
+                    {#                        <a class="btn btn-success" href="#">Combination Menu</a>#}
+                    {#                    </div>#}
                     <div class="pool-container">
                         {#  when putting many div the format will go wrong... you guys do ur own work and I will think about how to fix it #}
                         <table>
@@ -62,14 +62,10 @@
                         </div>
                         <div class="row">
                             <div class="col-xs-12 col-sm-3 selector-bet" id="chips">
-                                <select name='options' class="form-control width_select habitaciones">
-                                    <option value='1'>5</option>
-                                    <option value='2'>10</option>
-                                    <option value='3'>20</option>
-                                    <option value='4'>40</option>
-                                    <option value='5'>80</option>
-                                    <option value='6'>100</option>
-                                </select>
+                                <div id="slidecontainer">
+                                    <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+                                    <p>$<span id="demo"></span></p>
+                                </div>
                             </div>
                             <div class="col-xs-12 col-sm-3 btn-bet" id="btn_bet">
                                 <a class="btn btn-success">Bet</a>
@@ -95,19 +91,19 @@
                             <ul class="list-group" id="contact-list">
                                 {% if players %}
                                     {% for player in players %}
-                                            <li class="list-group-item">
-                                                <div class="col-xs-12 col-sm-3">
-                                                    <img src="{% url 'get_profile_image' player.id %}"
-                                                         alt="Scott Stevens"
-                                                         class="img-responsive img-circle"/><span
-                                                        class="login-link">{{ player.username }}</span><br/>
-                                                </div>
-                                                <div class="col-xs-12 col-sm-9">
-                                                    <span id="txt_fund_{{ player.id }}" class="txt-fund"></span><br/><br/>
-                                                    <span id="txt_turn_{{ player.id }}" class="txt-turn"></span><br/>
-                                                </div>
-                                                <div class="clearfix"></div>
-                                            </li>
+                                        <li class="list-group-item">
+                                            <div class="col-xs-12 col-sm-3">
+                                                <img src="{% url 'get_profile_image' player.id %}"
+                                                     alt="Scott Stevens"
+                                                     class="img-responsive img-circle"/><span
+                                                    class="login-link">{{ player.username }}</span><br/>
+                                            </div>
+                                            <div class="col-xs-12 col-sm-9">
+                                                <span id="txt_fund_{{ player.id }}" class="txt-fund"></span><br/><br/>
+                                                <span id="txt_turn_{{ player.id }}" class="txt-turn"></span><br/>
+                                            </div>
+                                            <div class="clearfix"></div>
+                                        </li>
                                     {% endfor %}
                                 {% endif %}
                             </ul>
