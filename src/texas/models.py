@@ -81,6 +81,9 @@ class GameRound(models.Model):
     # Current Approach
     current_approach = models.IntegerField(default=3)
 
+    # Minimum bet
+    min_bet = models.IntegerField(default=1)
+
     def get_winner(self):
 
         board = eval(self.dealer_cards)

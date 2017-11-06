@@ -107,7 +107,7 @@ def ws_connect(message):
         player_action_dict['round_id'] = new_game_round.id
         player_action_dict['player'] = player
         player_action_dict['action'] = "bet"
-        player_action_dict['min_bet'] = 1
+        player_action_dict['min_bet'] = new_game_round.min_bet
         player_action_dict['max_bet'] = player['money']
 
         # Tell everyone it's whose turn
@@ -161,6 +161,7 @@ def ws_receive(message):
         bet = data['bet']
         round_id = data['round_id']
         game_round = GameRound.objects.get(id=round_id)
+        min_bet = game_round.min_bet
         # Fold
         if bet == -1:
             game_round.set_player_inactive(userid)
@@ -177,7 +178,7 @@ def ws_receive(message):
 
         # Judge if this is the end of the round:
         player_order = eval(game_round.player_order)
-        curt_index = player_order.index(userid)
+        curt_index = player_order.index(int(userid))
         next_index = curt_index + 1
         if next_index == game.player_num:
             next_index = 0
@@ -218,7 +219,7 @@ def ws_receive(message):
                     return
                 player['username'] = next_user.username
                 player_funds_dict = json.loads(game_round.player_fund_dict)
-                player_money = player_funds_dict[next_user_id]
+                player_money = player_funds_dict[str(next_user_id)]
                 player['money'] = player_money
 
                 player_action_dict = {}
@@ -248,7 +249,7 @@ def ws_receive(message):
                 return
             player['username'] = next_user.username
             player_funds_dict = json.loads(game_round.player_fund_dict)
-            player_money = player_funds_dict[next_user_id]
+            player_money = player_funds_dict[str(next_user_id)]
             player['money'] = player_money
 
             player_action_dict = {}
