@@ -92,7 +92,7 @@ class GameRound(models.Model):
 
     def get_winner(self):
 
-        board = eval(self.dealer_cards)
+        board = list(eval(self.dealer_cards))
         # create an evaluator
         evaluator = deuces.Evaluator()
 

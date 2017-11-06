@@ -203,6 +203,7 @@ def ws_receive(message):
             else:
                 #   end of current approach, add dealer card
                 game_round.increment_current_approach_by_1()
+                game_round.save()
                 # -----------Send a new ws for [ADD-DEALER-CARD] ---------
                 add_dealer_card_message = {}
                 add_dealer_card_message['message_type'] = "round-update"
