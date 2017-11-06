@@ -165,6 +165,23 @@ def ws_receive(message):
         # Fold
         if bet == -1:
             game_round.set_player_inactive(userid)
+            game_round.save()
+            # check if one active users
+            active_user = game_round.only_active_user()
+            if active_user:
+                # set winner
+                # -----------Send a new ws for [SHOW-Result-CARD] ---------
+                end_round_message = {}
+                end_round_message['message_type'] = "round-update"
+                end_round_message['event'] = "game-over"
+                winner_id = active_user
+                winner = User.objects.get(id=winner_id).username
+                end_round_message['winner'] = winner
+
+                # Tell client to add a card
+                Group('bet-' + game_no, channel_layer=message.channel_layer).send(
+                    {"text": json.dumps(end_round_message)})
+
         # Check
         elif bet == 0:
         # don't need to change pot, min_bet
