@@ -5,6 +5,7 @@ Texas = {
     GameRound: {
         roundId: null,
         dealerCards: null,
+        dealerCardTurn: null,
 
         setCard: function (card, $card) {
             width = 75;
@@ -82,10 +83,21 @@ Texas = {
             }
         },
 
+        turnoverCard: function () {
+            var turn = Texas.GameRound.dealerCardTurn;
+            $card = $('#dealer_card' + turn);
+            Texas.GameRound.setCard(Texas.dealerCards[i], $card);
+            Texas.GameRound.dealerCardTurn += 1;
+        },
+
         setPlayerFunds: function (player_funds) {
-            for (player in player_funds) {
+            var funds = JSON.parse(player_funds);
+            for (player in funds) {
                 $('#txt_fund_' + player).css('visibility', 'visible')
-                    .text("Current Fund: " + player_funds[player]);
+                    .text("Current Fund: " + funds[player]);
+                if (player.toString() === $('#current-player-id').val()) {
+                    $('#my_fund').css('visibility', 'visible').text("My chips: " + funds[player]);
+                }
             }
         },
 
@@ -101,6 +113,7 @@ Texas = {
 
             var dealer_cards = data.dealer_cards.split(",");
             Texas.GameRound.dealerCards = dealer_cards;
+            Texas.GameRound.dealerCardTurn = 3;
             // show three dealer cards
             Texas.GameRound.show3Cards(dealer_cards);
         },
@@ -115,6 +128,10 @@ Texas = {
                 case 'player-action':
                     Texas.Player.onPlayerAction(data);
                     break;
+                case 'add-dealer-card':
+                    Texas.GameRound.turnoverCard();
+                    break;
+
             }
         }
     },
@@ -122,7 +139,7 @@ Texas = {
     Player: {
         betMode: false,
 
-        resetTimers: function() {
+        resetTimers: function () {
 
         },
 
@@ -155,10 +172,10 @@ Texas = {
 
             if (isCurrentPlayer) {
                 Texas.Player.enableBetMode(data);
-                var id = $('#current-player-id').val();
-                var username = $('#current-player-username').val();
-                $('#txt_turn_' + id).text(username + "'s turn").css('visibility', 'visible');
             }
+            var id = data.player.userid;
+            var username = data.player.username;
+            $('#txt_turn_' + id).text(username + "'s turn").css('visibility', 'visible');
             // set timers
         }
 
@@ -195,12 +212,12 @@ Texas = {
                         ele.append(div1);
                         var div2 = $('<div class="col-xs-12 col-sm-9"></div>');
                         div2.append($("<span></span>").attr({
-                            id: "txt_fund_" + current_player_id,
+                            id: "txt_fund_" + data.userid,
                             class: "txt-fund"
                         }));
                         div2.append($("<br><br>"));
                         div2.append($("<span></span>").attr({
-                            id: "txt_turn_" + current_player_id,
+                            id: "txt_turn_" + data.userid,
                             class: "txt-turn"
                         }));
                         div2.append($("<br>"));
@@ -238,7 +255,8 @@ Texas = {
         $('#btn_check').click(function () {
             Texas.socket.send(JSON.stringify({
                 'message_type': 'bet',
-                'bet': 0
+                'bet': 0,
+                'round_id': Texas.GameRound.roundId
             }));
             Texas.Player.disableBetMode();
         });
@@ -246,7 +264,8 @@ Texas = {
         $('#btn_fold').click(function () {
             Texas.socket.send(JSON.stringify({
                 'message_type': 'bet',
-                'bet': -1
+                'bet': -1,
+                'round_id': Texas.GameRound.roundId
             }));
             Texas.Player.disableBetMode();
         });
@@ -254,7 +273,8 @@ Texas = {
         $('#btn_bet').click(function () {
             Texas.socket.send(JSON.stringify({
                 'message_type': 'bet',
-                'bet': $('#chips option:selected').text()
+                'bet': $('#chips option:selected').text(),
+                'round_id': Texas.GameRound.roundId
             }));
             Texas.Player.disableBetMode();
         })
