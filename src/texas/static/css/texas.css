@@ -36,6 +36,35 @@
     margin-top: -20px;
 }
 
+/*****************************************************
+  Game
+
+ *****************************************************/
+
+.selector-bet {
+    visibility: hidden;
+}
+
+.btn-bet {
+    visibility: hidden;
+}
+
+.btn-check {
+    visibility: hidden;
+}
+
+.btn-fold {
+    visibility: hidden;
+}
+
+.txt-fund {
+    visibility: hidden;
+}
+
+.txt-turn {
+    visibility: hidden;
+}
+
 .grumblr-input-text {
     background-color: #f0f0f0;
     border: 0px;
@@ -91,24 +120,27 @@
     top: 130px;
     background-color: #fff;
     border-radius: 8px;
-    position: relative;
     text-align: center;
     width: 350px;
     margin: auto;
-    min-height: 800px;
+    height: 820px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
     padding: 20px 10px;
 }
+
+.game-body {
+    margin-bottom: 200px;
+}
+
 .game-container {
     position: relative;
     top: 130px;
     background-color: #fff;
     border-radius: 8px;
-    position: relative;
     text-align: center;
     width: 750px;
     margin: auto;
-    min-height: 800px;
+    min-height: 820px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
     padding: 20px 10px;
 }
@@ -129,11 +161,10 @@
     top: 130px;
     background-color: #fff;
     border-radius: 8px;
-    position: relative;
     text-align: center;
     width: 700px;
     margin: auto;
-    height: 220px;
+    min-height: 220px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
     padding: 20px 10px;
 }
