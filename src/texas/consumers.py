@@ -36,6 +36,7 @@ def ws_connect(message):
     message.reply_channel.send({"accept": True})
     Group('bet-' + game_no, channel_layer=message.channel_layer).add(message.reply_channel)
     message.channel_session['bet'] = game.game_no
+    message.channel_session['userid'] = userid
     # add the user info to channel
     try:
        user = User.objects.get(id=userid)
@@ -57,7 +58,8 @@ def ws_connect(message):
         new_game_dict['message_type'] = "round-update"
         new_game_dict['event'] = "new-game"
         new_game_dict['round_id'] = new_game_round.id
-        new_game_dict['player_order'] = new_game_round.player_order
+        player_order = new_game_round.player_order
+        new_game_dict['player_order'] = player_order
 
         dealer_string = str(new_game_round.dealer_cards)
         dealer_pretty_string = ''
@@ -77,25 +79,57 @@ def ws_connect(message):
         # Send cards to everyone
         Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(new_game_dict)})
 
+        # Game update
+        next_user_id = eval(player_order)[0]
+        player = {}
+        player['userid'] = next_user_id
+        try:
+            user = User.objects.get(id=next_user_id)
+        except User.DoesNotExist:
+            log.debug('player does not exist. player id=%s', next_user_id)
+            return
+        player['username'] = user.username
+        player['money'] = game.entry_funds
+
+        player_action_dict = {}
+        player_action_dict['message_type'] = "round-update"
+        player_action_dict['event'] = "player-action"
+        player_action_dict['round_id'] = new_game_round.id
+        player_action_dict['player'] = player
+        player_action_dict['action'] = "bet"
+        player_action_dict['min_bet'] = 0.0
+        player_action_dict['max_bet'] = player['money']
+
         # Tell everyone it's whose turn
-        # Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(new_game_dict)})
+        Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(player_action_dict)})
+
 
 @channel_session
 def ws_receive(message):
     # Look up the room from the channel session, bailing if it doesn't exist
     try:
-        game_no = message.channel_session['room_id']
+        game_no = message.channel_session['bet']
+        player_id = message.channel_session['user_id']
         game = Game.objects.get(game_no=game_no)
     except KeyError:
         log.debug('no game room number in channel_session')
         return
     except Game.DoesNotExist:
-        log.debug('received game room number, but room does not exist. room number=%s', game_no)
+        log.debug('received game room number, but room does not exist. game number=%s', game_no)
         return
 
-
+    try:
+        user_id = message.channel_session['user_id']
+        user = User.objects.get(id=user_id)
+    except KeyError:
+        log.debug('no player id in channel_session')
+        return
+    except Game.DoesNotExist:
+        log.debug('received player id, but player does not exist. player id=%s', user_id)
+        return
     # Parse out a message from the content text, bailing if it doesn't
     # conform to the expected message format.
+
     try:
         data = json.loads(message['text'])   #!!! change to specific html label
     except ValueError:
