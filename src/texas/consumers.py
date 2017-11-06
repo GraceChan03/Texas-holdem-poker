@@ -187,10 +187,12 @@ def ws_receive(message):
             if game_round.current_approach == 5:
 
                 #   end of current approach, add dealer card
-                # -----------Send a new ws for [ADD-DEALER-CARD] ---------
+                # -----------Send a new ws for [SHOW-Result-CARD] ---------
                 end_round_message = {}
                 end_round_message['message-type'] = "round-update"
                 end_round_message['event'] = "show-result"
+                winner = game_round.get_winner()
+                end_round_message['winner'] = winner
 
                 # Tell client to add a card
                 Group('bet-' + game_no, channel_layer=message.channel_layer).send(

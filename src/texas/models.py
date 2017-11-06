@@ -100,7 +100,7 @@ class GameRound(models.Model):
         player_active_dict = json.loads(self.player_active_dict)
 
         best_rank = 7463
-        winners = []
+        winner = 0
         for player in player_cards_dict:
             if player_active_dict[player]:
                 hand = player_cards_dict[player]
@@ -108,14 +108,11 @@ class GameRound(models.Model):
             rank = evaluator.evaluate(board, hand)
 
             # detect winner
-            if rank == best_rank:
-                winners.append(player)
-                best_rank = rank
-            elif rank < best_rank:
-                winners = [player]
+            if rank < best_rank:
+                winner = player
                 best_rank = rank
 
-        return winners
+        return winner
 
     def set_player_entry_funds_dict(self):
         dict = {}
