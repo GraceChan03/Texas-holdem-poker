@@ -207,6 +207,17 @@ class GameRound(models.Model):
         self.player_cards = json.dumps(player_hands_dict)
 
 
+# Recording a player's manipulations during a game round
+class GameRoundPlayerMan(models.Model):
+    round = models.ForeignKey(GameRound)
+    player = models.ForeignKey(User)
+    hand = models.CharField(max_length=200, validators=[validate_comma_separated_integer_list])
+    is_active = models.BooleanField()
+    fund = models.IntegerField()
+    bet = models.IntegerField()
+    time = models.DateTimeField(auto_now_add=True)
+
+
 # Store the users' bets in a game
 class PlayerHistory(models.Model):
     time = models.DateTimeField(auto_now_add=True)
