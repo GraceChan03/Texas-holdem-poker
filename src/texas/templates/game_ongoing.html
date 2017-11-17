@@ -71,6 +71,10 @@
                             <div class="col-xs-12 col-sm-3 btn-bet" id="btn_bet">
                                 <a class="btn btn-success">Bet</a>
                             </div>
+                            <div class="col-xs-12 col-sm-3 btn-allin" id="btn_allin">
+                                <a class="btn btn-success">All in</a>
+                                <input type="hidden" id="hidden_allin">
+                            </div>
                             <div class="col-xs-12 col-sm-3 btn-check" id="btn_check">
                                 <a class="btn btn-info">Check</a>
                             </div>
@@ -84,7 +88,7 @@
             <div class="col-md-2 col-md-offset-4">
                 <div class="player-container">
                     <div class="login-title-div">
-                        <h5 class="login-title" id="pot">Players</h5>
+                        <h5 class="login-title">Players</h5>
                     </div>
                     {#I think its better to sort people by its turn every round. And maybe change its name color to indicate big blind or small blind#}
                     <div class="login-outer">
@@ -119,4 +123,4 @@
 {% endblock %}
 <script type="text/javascript" src='{% static "jquery-3.2.1.min.js" %}'></script>
 <script type="text/javascript" src='{% static "reconnecting-websocket.min.js" %}'></script>
-<script type="text/javascript" src='{% static "connect.js" %}'></script>
+<script type="text/javascript" src='{% static "application.js" %}'></script>
