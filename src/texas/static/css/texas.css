@@ -701,7 +701,11 @@ footer p {
 
 body, html {
     height: 100%;
-    background-image: linear-gradient(#F3FAFA, rgb(252, 250, 242));
+    /*background-image: linear-gradient(#F3FAFA, rgb(252, 250, 242));*/
+    background-image: url("../media/default/Savin-NY-Website-Background-Web-1.jpg");
+    background-position: right;
+    background-repeat: no-repeat;
+    background-size:100%;
 }
 .nav li {
     display: inline-block;
