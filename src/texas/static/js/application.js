@@ -153,21 +153,29 @@ Texas = {
         },
 
         setBetVisible: function (data) {
-            $('#btn_check').css('visibility', 'visible');
-            $('#btn_fold').css('visibility', 'visible');
-            $('#btn_bet').css('visibility', 'visible');
-            var slider = $('#myRange');
-            slider.attr({
-                min: data.min_bet,
-                max: data.max_bet,
-                value: data.min_bet
-            });
-            var output = $('#demo');
-            output.text(slider.val());
-            slider.on('input', function () {
-                output.text($(this).val())
-            });
-            $('#chips').css('visibility', 'visible');
+            var min = data.min_bet; // the minimum fund that a player should pay to bet
+            var max = data.max_bet; // the maximum fund that a player is able to bet
+            // all in
+            if (min >= max) {
+                $('#btn_fold').css('visibility', 'visible');
+                $('#btn_allin').css('display', 'inline');
+            } else {
+                $('#btn_check').css('visibility', 'visible');
+                $('#btn_fold').css('visibility', 'visible');
+                $('#btn_bet').css('visibility', 'visible');
+                var slider = $('#myRange');
+                slider.attr({
+                    min: data.min_bet,
+                    max: data.max_bet,
+                    value: data.min_bet
+                });
+                var output = $('#demo');
+                output.text(slider.val());
+                slider.on('input', function () {
+                    output.text($(this).val())
+                });
+                $('#chips').css('visibility', 'visible');
+            }
         },
 
         setBetInVisible: function () {
@@ -200,8 +208,12 @@ Texas = {
             if (isCurrentPlayer) {
                 Texas.Player.enableBetMode(data);
             }
+            // renew the pot
+            $('#pot').text("Pot: " + data.pot);
+            // disable last turn
             Texas.Player.disableLastTurn();
-            Texas.Player.currPlayer = data.player.userid
+            // enable this turn
+            Texas.Player.currPlayer = data.player.userid;
             var id = data.player.userid;
             var username = data.player.username;
             $('#txt_turn_' + id).text(username + "'s turn").css('visibility', 'visible');
@@ -215,6 +227,12 @@ Texas = {
 
         initGame: function (data) {
             Texas.Game.gameNo = data.game_no;
+            // initialize the room
+            $('#players').empty();
+            // set seats == player_num (decides by creator)
+            for (i in data.player_num) {
+
+            }
         },
 
         onGameUpdate: function (data) {
@@ -307,6 +325,15 @@ Texas = {
             }));
             Texas.Player.disableBetMode();
         })
+
+        $('#btn_allin').click(function () {
+            Texas.socket.send(JSON.stringify({
+                'message_type': 'bet',
+                'bet': $('#myRange').val(),
+                'round_id': Texas.GameRound.roundId
+            }));
+            Texas.Player.disableBetMode();
+        });
     }
 }
 

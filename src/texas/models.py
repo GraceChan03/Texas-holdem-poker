@@ -78,11 +78,33 @@ class GameRound(models.Model):
     # player fund
     player_fund_dict = models.CharField(max_length=200, default='')
 
+    # player prev bet
+    player_bet_dict = models.CharField(max_length=200, default='')
+
     # Current Approach
     current_approach = models.IntegerField(default=3)
 
     # Minimum bet
     min_bet = models.IntegerField(default=1)
+
+    # Pot
+    pot = models.IntegerField(default=0)
+
+    def get_player_prev_bet(self, player_id):
+        dict = json.loads(self.player_bet_dict)
+        return dict[player_id]
+
+    def set_player_prev_bet(self, player_id, curt_bet):
+        dict = json.loads(self.player_bet_dict)
+        self.pot = self.pot + int(curt_bet) - int(dict[player_id])
+        dict[player_id] = curt_bet
+        self.player_bet_dict = json.dumps(dict)
+
+    def set_player_prev_bet_dict(self):
+        dict = {}
+        for player in self.game.players.all():
+            dict[player.id] = 0
+        self.player_bet_dict = json.dumps(dict)
 
     def set_min_bet(self, min_bet):
         self.min_bet = min_bet
@@ -168,6 +190,7 @@ class GameRound(models.Model):
                 prev = 0
         self.set_player_order(prev)
         self.set_player_active_dict()
+        self.set_player_prev_bet_dict()
         new_deck = deuces.Deck()
         board = new_deck.draw(5)
         board_str = ''
@@ -182,6 +205,17 @@ class GameRound(models.Model):
         for player in self.game.players.all():
             player_hands_dict[player.id] = new_deck.draw(2)
         self.player_cards = json.dumps(player_hands_dict)
+
+
+# Recording a player's manipulations during a game round
+class GameRoundPlayerMan(models.Model):
+    round = models.ForeignKey(GameRound)
+    player = models.ForeignKey(User)
+    hand = models.CharField(max_length=200, validators=[validate_comma_separated_integer_list])
+    is_active = models.BooleanField()
+    fund = models.IntegerField()
+    bet = models.IntegerField()
+    time = models.DateTimeField(auto_now_add=True)
 
 
 # Store the users' bets in a game

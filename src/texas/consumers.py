@@ -109,6 +109,7 @@ def ws_connect(message):
         player_action_dict['action'] = "bet"
         player_action_dict['min_bet'] = new_game_round.min_bet
         player_action_dict['max_bet'] = player['money']
+        player_action_dict['pot'] = new_game_round.pot
 
         # Tell everyone it's whose turn
         Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(player_action_dict)})
@@ -186,13 +187,15 @@ def ws_receive(message):
         # Check
         elif bet == 0:
             # don't need to change pot, min_bet
-            pass
+            min_bet = int(game_round.get_player_prev_bet(userid))
         # bet sth
         else:
             # change min_bet
             # TODO
             min_bet = bet
             # change pot
+            game_round.set_player_prev_bet(userid, bet)
+            game_round.save()
 
         # Judge if this is the end of the round:
         player_order = eval(game_round.player_order)
@@ -201,7 +204,7 @@ def ws_receive(message):
         if next_index == game.player_num:
             next_index = 0
             # This is the end of a round
-            #     show result TODO
+            #     show result
             if game_round.current_approach == 5:
 
                 #   end of current approach, add dealer card
@@ -253,6 +256,7 @@ def ws_receive(message):
                 player_action_dict['action'] = "bet"
                 player_action_dict['min_bet'] = min_bet
                 player_action_dict['max_bet'] = player['money']
+                player_action_dict['pot'] = game_round.pot
 
                 # Tell everyone it's whose turn
                 Group('bet-' + game_no, channel_layer=message.channel_layer).send(
@@ -283,6 +287,7 @@ def ws_receive(message):
             player_action_dict['action'] = "bet"
             player_action_dict['min_bet'] = min_bet
             player_action_dict['max_bet'] = player['money']
+            player_action_dict['pot'] = game_round.pot
 
             # Tell everyone it's whose turn
             Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(player_action_dict)})
