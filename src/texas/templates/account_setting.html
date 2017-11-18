@@ -60,7 +60,7 @@
                                 {{ field }}
                             </fieldset>
                             {% endfor %}
-                            <button type="submit" class="btn-red btn-post">
+                            <button type="submit" class="btn-red btn-post pull-right">
                                 Save
                             </button>
                             <p class="error-msg">
@@ -87,35 +87,35 @@
                                         {{ field }}
                                     {% endfor %}
                                     <br>
-                                    <button type="submit" class="btn-red btn-post profile-upload-btn">Save</button>
+                                    <button type="submit" class="btn-red btn-post profile-upload-btn  pull-right">Save</button>
                                     {% csrf_token %}
                                 </form>
                             </div>
                         </div>
                     </li>
-                    <li class="list-group-item">
-                        <span class="profile-edit-title">Profile background</span>
-                        <hr>
-                        <div class="row profile-edit-imagediv">
-                            <div class="profile-photo-xl">
-                                <!--{{login_user.userinfo.profile_photo_src}}-->
-                                <!--static/grumblr/sources/qie.jpg-->
-                                <img src="{{login_user.userinfo.card_background_src}}" class="img-thumbnail"
-                                     alt="Background Photo">
-
-                            </div>
-                            <div class="profile-upload-photo">
-                                <form action="/upload_bgimg" method="post" enctype="multipart/form-data">
-                                    {% for field in upload_bg_form.visible_fields %}
-                                        {{ field }}
-                                    {% endfor %}
-                                    <br>
-                                    <button type="submit" class="btn-red btn-post profile-upload-btn">Save</button>
-                                    {% csrf_token %}
-                                </form>
-                            </div>
-                        </div>
-                    </li>
+{#                    <li class="list-group-item">#}
+{#                        <span class="profile-edit-title">Profile background</span>#}
+{#                        <hr>#}
+{#                        <div class="row profile-edit-imagediv">#}
+{#                            <div class="profile-photo-xl">#}
+{#                                <!--{{login_user.userinfo.profile_photo_src}}-->#}
+{#                                <!--static/grumblr/sources/qie.jpg-->#}
+{#                                <img src="{{login_user.userinfo.card_background_src}}" class="img-thumbnail"#}
+{#                                     alt="Background Photo">#}
+{##}
+{#                            </div>#}
+{#                            <div class="profile-upload-photo">#}
+{#                                <form action="/upload_bgimg" method="post" enctype="multipart/form-data">#}
+{#                                    {% for field in upload_bg_form.visible_fields %}#}
+{#                                        {{ field }}#}
+{#                                    {% endfor %}#}
+{#                                    <br>#}
+{#                                    <button type="submit" class="btn-red btn-post profile-upload-btn">Save</button>#}
+{#                                    {% csrf_token %}#}
+{#                                </form>#}
+{#                            </div>#}
+{#                        </div>#}
+{#                    </li>#}
                 </ul>
             </div>
 
