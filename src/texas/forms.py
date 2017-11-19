@@ -99,7 +99,7 @@ class EditProfileForm(forms.ModelForm):
         widgets = {
             'profile_photo_src': forms.FileInput(),
             'dob': forms.SelectDateWidget(
-                attrs={'years':BIRTH_YEAR_CHOICES}
+                years=BIRTH_YEAR_CHOICES
             )
             # attrs={),
         }
@@ -144,6 +144,20 @@ class ChangePasswordForm(forms.Form):
         # if password == password1:
         #     raise forms.ValidationError("new password should be different")
         return cleaned_data
+
+class EmailPassword(forms.Form):
+    email = forms.EmailField(max_length=50, label='Email Address',
+                             widget=forms.TextInput(
+                                 attrs={'type': 'email', 'class': 'form-control', 'placeholder': 'Email Address',
+                                        'required': 'true'}))
+
+    def clean(self):
+        cleaned_data = super(EmailPassword, self).clean()
+        email = cleaned_data.get('email')
+        if not User.objects.filter(email__exact=email):
+            raise forms.ValidationError("invalid email.")
+        return cleaned_data
+
 
 class JoinRoomForm(forms.Form):
     room_number = forms.CharField(max_length=50, label='The room number',

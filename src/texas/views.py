@@ -88,59 +88,54 @@ def change_password(request):
     return redirect(reverse(''))
 
 
-def forget_password(request):
-    context = {}
+def password_reset(request, key):
     if request.user.is_authenticated():
-        user = request.user
-        if request.method == 'GET':
-            context['email'] = User.objects.get(username=user.username).email
-            return render(request, 'confirm_reset_password.html', context)
-    else:
-        if request.method == 'GET':
-            context['email_form'] = EmailForm()
-            return render(request, 'begin_password_reset.html', context)
-        form = EmailForm(request.POST)
-        context['email_form'] = form
-        if not form.is_valid():
-            return render(request, 'begin_password_reset.html', context)
-        email = form.cleaned_data['email']
-        if not User.objects.filter(email=email):
-            context['email_error'] = "The email address does not exist."
-            return render(request, 'begin_password_reset.html', context)
-        user = User.objects.get(email=email)
-    send_email(request, user, user.email, "reset_password")
-    context['email'] = user.email
-    return render(request, 'reset_email_sent.html', context)
-
-
-def reset_password(request, user_name, token):
-    if User.objects.filter(username=user_name):
-        user = User.objects.get(username=user_name)
-        if default_token_generator.check_token(user, token):
-            context = {}
-            context['reset_form'] = ResetPasswordForm()
-            context['username'] = user_name
-            return render(request, 'reset_email.html', context)
-    return HttpResponseRedirect('/')
-
-
-def reset_password_submit(request, user_name):
-    # if the request is from bad guys, what will happen?
+        return redirect(reverse(""))
+    userinfo = get_object_or_404(UserInfo, activation_key=key)
+    user = userinfo.user
     context = {}
-    if request.method == 'POST':
-        form = ResetPasswordForm(request.POST)
-        context['reset_form'] = form
-        if not form.is_valid():
-            return render(request, 'reset_email.html', context)
-        # reset password
-        if User.objects.filter(username=user_name):
-            user = User.objects.get(username=user_name)
-            new_password = form.cleaned_data['password1']
-            user.set_password(new_password)
-            user.save()
-            if request.user.is_authenticated():
-                auth.logout(request)
-    return HttpResponseRedirect('/')
+    context['key'] = key
+    context['username'] = user.username
+    if request.method == 'GET':
+        context['form'] = ChangePasswordForm()
+        return render(request, 'change_password.html', context)
+    form = ChangePasswordForm(request.POST)
+    context['form'] = form
+    if not form.is_valid():
+        # messages.error(request, 'Confirmed password does not match!')
+        return redirect(reverse(""))
+    newpassword = User.objects.get(username=user.username)
+    newpassword.set_password(form.cleaned_data['newpassword1'])
+    newpassword.save()
+    # messages.error(request, 'You sucessfully change your password!')
+    return redirect(reverse(""))
+
+
+def forget_password(request):
+    if request.user.is_authenticated():
+        return redirect(reverse(""))
+    context = {}
+    if request.method == 'GET':
+        context['form'] = EmailPassword()
+        return render(request, 'resetemail.html', context)
+    form = EmailPassword(request.POST)
+    context['form'] = form
+    if not form.is_valid():
+        return render(request, "resetemail.html", context)
+    user = User.objects.get(email=form.cleaned_data['email'])
+    key = UserInfo.objects.get(user=user).activation_key
+    # send email for reset
+    email_body = """
+        Welcome to Grumblr. Please click the link below to reset your password:
+
+        http://%s%s
+        """ % (request.get_host(), reverse("password_reset", args=(key,)))
+    send_mail(subject="Change your password",
+              message=email_body,
+              from_email="grumblr <no-replay>@grumblr.com",
+              recipient_list=[form.cleaned_data['email']])
+    # messages.error(request, 'A reset link was sent to your email')
+    return redirect(reverse(''))
 
 @login_required(login_url='login')
 def add_friend(request, user_name):
