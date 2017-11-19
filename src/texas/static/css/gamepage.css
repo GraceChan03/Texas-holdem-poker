@@ -2,7 +2,7 @@
     position: relative;
     top: 100px;
     background-color: rgb(55, 60, 56);
-    border-radius: 15px;
+    border-radius: 20px;
     text-align: center;
     width: 1250px;
     margin: auto;
@@ -56,12 +56,58 @@
     background-color: rgb(28, 28, 28);
     border-radius: 20px;
     text-align: center;
-    width: 480px;
+    width: 180px;
     margin: auto;
-    height: 215px;
+    height: 80px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
-    padding: 10px 10px;
-    size: 10px;
+    padding: 5px 0px 0px 5px;
+    font-size: 10px;
     color: navajowhite;
     font-family: Helvetica;
+}
+.img-player {
+    width: 35px;
+    height:35px;
+}
+
+#player-1 {
+    position: absolute;
+    top: 57%;
+    left: 4%;
+}
+
+#player-2 {
+    position: absolute;
+    top: 37%;
+    left: 4%;
+}
+
+#player-3 {
+    position: absolute;
+    top: 20%;
+    left: 21%;
+}
+
+#player-4 {
+    position: absolute;
+    top: 20%;
+    left: 44%;
+}
+
+#player-5 {
+    position: absolute;
+    top: 20%;
+    left: 67%;
+}
+
+#player-6 {
+    position: absolute;
+    top: 37%;
+    left: 82%;
+}
+
+#player-7 {
+    position: absolute;
+    top: 57%;
+    left: 82%;
 }
