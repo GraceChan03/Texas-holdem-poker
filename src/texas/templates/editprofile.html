@@ -1,0 +1,53 @@
+{% extends "base_nav.html" %}
+{% load staticfiles %}
+{% block title %}Account Settings{% endblock %}
+{% block content %}
+    <div class="container">
+        <!--profile block-->
+        <div class="login-container">
+
+            <div class="login-title-div">
+                <img src="{% url 'get_profile_image' user.id %}" alt="" class="img-circle img-profile"/>
+                <h3 class="login-title">{{ user.username }}</h3>
+            </div>
+
+            <div class="login-outer">
+                <div class="login-inner">
+                    <form enctype="multipart/form-data" class="form-signin" action="{% url 'edit_profile' %}"
+                          method="post">
+                        {% for field in userform.visible_fields %}
+                            <tr>
+                                <td>{{ field }}</td>
+                                <br>
+                            </tr>
+                        {% endfor %}
+                        <p>Date of Birth</p>
+                        {% for field in form.visible_fields %}
+                            <tr>
+                                <td>{{ field }}</td>
+
+                            </tr><br>
+                        {% endfor %}
+                        <p>Upload a new profile picture</p>
+                        <input type="submit" class="btn-red" id="confirm"
+                               value="Confirm Change"><br>
+                        {% for error in form.non_field_errors %}
+                            <a>{{ error }}</a>
+                        {% endfor %}
+                        {% for field in userform.visible_fields %}
+                            <a>{{ field.errors }}</a>
+                        {% endfor %}
+                        {% for error in form.non_field_errors %}
+                            <a>{{ error }}</a>
+                        {% endfor %}
+                        {% for field in userform.visible_fields %}
+                            <a>{{ field.errors }}</a>
+                        {% endfor %}
+                        {% csrf_token %}
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+{% endblock %}

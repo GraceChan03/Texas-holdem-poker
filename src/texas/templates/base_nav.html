@@ -44,7 +44,8 @@
                             <li role="separator" class="divider"></li>
                             <li class="dropdown-header">My profile</li>
                             <li><a href="/edit_profile">Account Settings</a></li>
-                            <li><a href="/profile">Profile</a></li>
+                            <li><a href="/change_password">Change Password</a></li>
+                            <li><a href="{% url 'profile' user.username %}">Profile</a></li>
                             <li><a href="/logout">Logout</a></li>
                         </ul>
                     </li>

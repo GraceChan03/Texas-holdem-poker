@@ -1,196 +1,25 @@
-{% extends "base_function.html" %}
+{% extends "base_nav.html" %}
+{% load staticfiles %}
+{% block title %}{{ profile_user.username }}'s profile{% endblock %}
+{% block content %}
+    <div class="container">
+        <!--profile block-->
+        <div class="login-container">
 
-{% block title %}{{user.username}}'s Grumblr{% endblock %}
-{% load static %}
-{% block middle_area %}
-<div class="container">
-
-    <div class="row justify-content-md-center home-middlearea">
-        <div class="card col-11 profile-card">
-            <div class="profile-card-bg">
-                <img class="card-img-top" src="/{{userinfo.card_background_src}}" alt="Background">
+            <div class="login-title-div">
+                <img src="{% url 'get_profile_image' profile_user.id %}" alt="" class="img-circle img-profile"/>
+                <h3 class="login-title">{{ profile_user.username }}</h3>
             </div>
-            <div class="card-body profile-card-body">
-                <div class="row justify-content-md-center profile-card-div">
-                    <div class="profile-card-info">
-                        <a href="/profile/{{user.username}}">
-                            <img src="/{{userinfo.profile_photo_src}}" class="img-thumbnail rounded-circle"
-                                 alt="Profile Photo">
-                        </a>
-                    </div>
 
-                </div>
-                <p class="profile-login-username">{{user.username}}</p>
-                {% if user.id != login_user.id %}
-                <div class="row justify-content-md-center profile-btn">
-                    {% if follow %}
-                    <a href="/unfollow/{{user.username}}">
-                        <button type="button" class="btn btn-secondary btn-profile">
-                            Unfollow
-                        </button>
-                    </a>
-                    {% else %}
-                    <a href="/follow/{{user.username}}">
-                        <button type="button" class="btn btn-secondary btn-profile">
-                            Follow
-                        </button>
-                    </a>
-                    {% endif %}
-                    <button type="button" class="btn btn-secondary btn-profile">Message</button>
-                </div>
-                {% endif %}
-            </div>
-            <!--<div class="card-footer" style="height:50px">
-                <div class="row">
-                    <div class="col">
-                        <a href="/profile/{{user.username}}" class="profile-card-button">Homepage</a>
-                    </div>
-                    <div class="col">
-                        <a href="#" class="profile-card-button">Album</a>
-                    </div>
-                </div>
-            </div>-->
-        </div>
-        <div class="row justify-content-md-center">
-            <div class="col-4 profile-pinfo">
-                <div class="card profile-pinfo-card">
-                    <div class="row profile-pinfo-row">
-
-                        <div class="col">
-                            <p class="profile-tag">Posts</p>
-                            <p class="profile-tag-number">{{post_count}}</p>
-                        </div>
-                        <div class="col">
-                            <p class="profile-tag">Following</p>
-                            <p class="profile-tag-number">{{following}}</p>
-                        </div>
-                        <div class="col">
-                            <p class="profile-tag">Followers</p>
-                            <p class="profile-tag-number">{{followers}}</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="card profile-info-div">
-                    <form>
-                        <!-- profile information -->
-                        <ul class="list-group list-group-flush">
-                            <li class="list-group-item">
-                                <img src="{% static 'grumblr/sources/open-iconic-master/svg/person.svg' %}" class="icon"
-                                     alt="username">
-                                <span class="icon-text">{{user.first_name}} {{user.last_name}}</span>
-                            </li>
-                            {% if age %}
-                            <li class="list-group-item">
-                                <img src="{% static 'grumblr/sources/open-iconic-master/svg/heart.svg' %}" class="icon"
-                                     alt="dob">
-                                <span class="icon-text">{{age}}</span>
-                            </li>
-                            {% endif %}
-                            {% if userinfo.dob %}
-                            <li class="list-group-item">
-                                <img src="{% static 'grumblr/sources/open-iconic-master/svg/pencil.svg' %}" class="icon"
-                                     alt="sign">
-                                <span class="icon-text">{{userinfo.sign}}</span>
-                            </li>
-                            {% endif %}
-                            <!--<li class="list-group-item">-->
-                            <!--<img src="images/open-iconic-master/svg/tag.svg" class="icon" alt="tags">-->
-                            <!--<span class="icon-text">Grace Chan</span>-->
-                            <!--</li>-->
-                        </ul>
-                    </form>
+            <div class="login-outer">
+                <div class="login-inner">
+                    <h5>First Name: {{ profile_user.first_name }}</h5><br>
+                    <h5>Last Name: {{ profile_user.last_name }}</h5><br>
+                    <h5>Date of Birth: {{ profile.dob }}</h5><br>
+                    <h5>Balance: {{ profile.balance }}</h5><br>
                 </div>
             </div>
-            <div class="col-7">
-                {% if posts %}
-                {% for post in posts %}
-                <div class="card post-card">
-                    <div class="row post-card-row">
-                        <div class="col-auto mr-auto post-div">
-                            <a href="/profile/{{user.username}}">
-                                <img src="/{{userinfo.profile_photo_src}}"
-                                     class="img-thumbnail rounded-circle post-pp profile-photo-m" alt="Profile Photo">
-                            </a>
-                        </div>
-                        <div class="col post">
-                            <div>
-                                <a href="/profile/{{user.username}}">
-                                    <p class="post-username">{{user.username}}</p>
-                                </a>
-                                <p class="post-time">{{post.date}}</p>
-                                <p class="post-content">{{post.contents}}</p>
-                                <!--<img class="post-picture" src="images/greatwall.jpg"  alt="Picture">-->
-                            </div>
-                        </div>
-                    </div>
-                    <div class="comments">
-                    <!--upload comment-->
-                    <form>
-                        <div class="row">
-                            <div class="col-auto mr-auto">
-                                <a href="/profile/{{login_user.username}}">
-                                    <img src="/{{login_user.userinfo.profile_photo_src}}"
-                                         class="img-thumbnail profile-photo-xs"
-                                         alt="Profile Photo">
-                                </a>
-                            </div>
-                            <div class="col post comment-input">
-                                <input type="text" name="comment" id="comment_field_{{post.id}}" class="comment-input"
-                                       required>
-                                <!--<input type="hidden" value="{{post.id}}" id="post_id">-->
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-auto mr-auto">
-                            </div>
-                            <div class="col-auto">
-                                <button type="button" class="btn-red btn-reply" id="reply_btn_{{post.id}}"
-                                        onclick="addComment({{post.id}})">Reply
-                                </button>
-                            </div>
-                        </div>
-                    </form>
-                    <!--show all comments-->
-                    <div id="comments_{{post.id}}">
-                        {% if post.comment.all %}
-                        <hr>
-                        {% for cmmt in post.comment.all %}
-                        <div class="row">
-                            <div class="col-auto mr-auto">
-                                <a href="/profile/{{cmmt.user.username}}">
-                                    <img src="/{{cmmt.user.userinfo.profile_photo_src}}"
-                                         class="img-thumbnail profile-photo-xs"
-                                         alt="Profile Photo">
-                                </a>
-                            </div>
-                            <div class="col post">
-                                <div>
-                                    <a href="/profile/{{cmmt.user.username}}">
-                                        <span class="comment-username" name="userid">{{cmmt.user.username}}</span>
-                                    </a>
-                                    <span class="comment-content">: {{cmmt.content}}</span>
-                                    <p class="post-time">{{cmmt.date}}</p>
-                                </div>
-                            </div>
-                        </div>
-                        {% endfor %}
-                        {% endif %}
-                    </div>
-                </div>
-                </div>
 
-                {% endfor %}
-                {% else %}
-                <div class="card post-card">
-                    <p class="no-post-warn">No posts are available.</p>
-                </div>
-                {% endif %}
-            </div>
         </div>
     </div>
-
-</div>
 {% endblock %}
-{% load static %}
-<script src="{% static 'js/jquery-3.2.1.min.js' %}" type="text/javascript"></script>
-<script src="{% static 'js/application.js' %}" type="text/javascript"></script>

@@ -75,54 +75,89 @@ class ResetPasswordForm(forms.Form):
 
 BIRTH_YEAR_CHOICES = tuple(x for x in range(2017, 1917, -1))
 
-class EditProfileForm(forms.Form):
-    username = forms.CharField(max_length=20, label='Username')
-    dob = forms.DateField(label='DOB',
-                          widget=forms.SelectDateWidget(years=BIRTH_YEAR_CHOICES))
-    bio = forms.CharField(max_length=420, label='Bio', widget=forms.Textarea(attrs={'rows': '3'}))
+# class EditProfileForm(forms.Form):
+#     username = forms.CharField(max_length=20, label='Username')
+#     dob = forms.DateField(label='DOB',
+#                           widget=forms.SelectDateWidget(years=BIRTH_YEAR_CHOICES))
+#     bio = forms.CharField(max_length=420, label='Bio', widget=forms.Textarea(attrs={'rows': '3'}))
+#
+#     def __init__(self, *args, **kwargs):
+#         self.user = kwargs.pop('user', None)
+#         super(EditProfileForm, self).__init__(*args, **kwargs)
+#
+#     def clean_username(self):
+#         username = self.cleaned_data.get('username')
+#         if self.user and self.user.username != username and User.objects.filter(username__exact=username):
+#             raise forms.ValidationError("Username is already taken.")
+#
+#         return username
 
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
-        super(EditProfileForm, self).__init__(*args, **kwargs)
+class EditProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserInfo
+        fields = (  'dob', 'profile_photo_src')
+        widgets = {
+            'profile_photo_src': forms.FileInput(),
+            'dob': forms.SelectDateWidget(
+                years=BIRTH_YEAR_CHOICES
+            )
+            # attrs={),
+        }
 
-    def clean_username(self):
-        username = self.cleaned_data.get('username')
-        if self.user and self.user.username != username and User.objects.filter(username__exact=username):
-            raise forms.ValidationError("Username is already taken.")
 
-        return username
+class EditUser(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email')
+        widgets = {
+            'first_name': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'firstname', 'required': 'true'}),
+            'last_name': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'lastname', 'required': 'true'}),
+            'email': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Email Address', 'required': 'true'}),
+        }
 
 class ChangePasswordForm(forms.Form):
-    old_password = forms.CharField(max_length=30, label='Current password', widget=forms.PasswordInput())
-    new_password1 = forms.CharField(max_length=30, label='New password', widget=forms.PasswordInput())
-    new_password2 = forms.CharField(max_length=30, label='Verify password', widget=forms.PasswordInput())
+    newpassword1 = forms.CharField(max_length=200,
+                                   label='NewPassword',
+                                   widget=forms.TextInput(
+                                       attrs={'type': 'password', 'class': 'form-control',
+                                              'placeholder': 'New Password',
+                                              'required': 'true'}))
+    newpassword2 = forms.CharField(max_length=200,
+                                   label='NewPassword',
+                                   widget=forms.TextInput(
+                                       attrs={'type': 'password', 'class': 'form-control',
+                                              'placeholder': 'Confirm New Password',
+                                              'required': 'true'}))
 
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
-        super(ChangePasswordForm, self).__init__(*args, **kwargs)
-
-    def clean_password(self):
+    def clean(self):
         cleaned_data = super(ChangePasswordForm, self).clean()
-        # check if current password is correct
-        old_p = cleaned_data.get('old_password')
-        if self.user and not self.user.check_password(old_p):
-            raise forms.ValidationError("The current password you've entered is incorrect.")
-        # check if the twice input of new password are the same
-        p1 = cleaned_data.get('new_password1')
-        p2 = cleaned_data.get('new_password2')
-        if p1 and p2 and p1 != p2:
-            raise forms.ValidationError("Password don't match.")
+        password1 = cleaned_data.get('newpassword1')
+        password2 = cleaned_data.get('newpassword2')
+        # user = authenticate(username=username, password=password)
+        # if user is None:
+        #     raise forms.ValidationError("invalid username or password.")
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError("new passwords did not match.")
+        # if password == password1:
+        #     raise forms.ValidationError("new password should be different")
         return cleaned_data
 
-class UploadProfilePhotoForm(forms.Form):
-    image = forms.ImageField()
+class EmailPassword(forms.Form):
+    email = forms.EmailField(max_length=50, label='Email Address',
+                             widget=forms.TextInput(
+                                 attrs={'type': 'email', 'class': 'form-control', 'placeholder': 'Email Address',
+                                        'required': 'true'}))
 
+    def clean(self):
+        cleaned_data = super(EmailPassword, self).clean()
+        email = cleaned_data.get('email')
+        if not User.objects.filter(email__exact=email):
+            raise forms.ValidationError("invalid email.")
+        return cleaned_data
 
-class UploadProfileBackgroundForm(forms.Form):
-    bgimage = forms.ImageField()
-
-class EmailForm(forms.Form):
-    email = forms.EmailField(label='Email', widget=forms.EmailInput())
 
 class JoinRoomForm(forms.Form):
     room_number = forms.CharField(max_length=50, label='The room number',
