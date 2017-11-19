@@ -53,42 +53,29 @@ def profile(request, user_name):
     else:
         return HttpResponseRedirect('/')
 
-
-
-@login_required(login_url='login')
-def account_setting(request):
-    context = {}
-    # edit here
-    return render(request, 'account_setting.html', context)
-
-
-@login_required(login_url='login')
+@login_required
 def edit_profile(request):
+    # display form if this is a GET request
     context = {}
-    # check validation
-    form = EditProfileForm(request.POST, user=request.user)
-    context['edit_profile_form'] = form
+    instance = UserInfo.objects.get(user=request.user)
+    # instance2 = User.objects.get(id = request.user.id);
+    if request.method == 'GET':
+        context['form'] = EditProfileForm(instance=instance)
+        context['userform'] = EditUser(instance = request.user)
+        context['userinfo'] = instance
+        return render(request, 'editprofile.html', context)
 
+    form = EditProfileForm(request.POST, request.FILES, instance=instance)
+    userform = EditUser(request.POST, instance = request.user)
+    context['form'] = form
+    context['userform'] = userform
     if not form.is_valid():
-        return render(request, 'account_setting.html', context)
-
-    username = form.cleaned_data['username']
-    dob = form.cleaned_data['dob']
-    bio = form.cleaned_data['bio']
-    user = request.user
-    edit_user = User.objects.get(id=user.id)
-    if username and username != '':
-        edit_user.username = username
-        edit_user.save()
-    edit_userinfo = UserInfo.objects.get(user=user)
-    if dob and dob != '':
-        edit_userinfo.dob = dob
-        edit_userinfo.save()
-    if bio and bio != '':
-        edit_userinfo.sign = bio
-        edit_userinfo.save()
-    return HttpResponseRedirect('/account_setting')
-
+        return render(request, 'editprofile.html', context)
+    if not userform.is_valid():
+        return render(request, 'editprofile.html', context)
+    form.save()
+    userform.save()
+    return redirect(reverse("edit_profile"))
 
 @login_required(login_url='login')
 def change_password(request):
@@ -96,7 +83,7 @@ def change_password(request):
     form = ChangePasswordForm(request.POST, user=request.user)
     context['change_password_form'] = form
     if not form.is_valid():
-        return render(request, 'account_setting.html', context)
+        return render(request, 'editprofile.html', context)
 
     new_password = form.cleaned_data['new_password1']
     user = request.user
@@ -165,62 +152,6 @@ def reset_password_submit(request, user_name):
             if request.user.is_authenticated():
                 auth.logout(request)
     return HttpResponseRedirect('/')
-
-
-@login_required(login_url='login')
-def upload_profile_photo(request):
-    context = {}
-    if request.method == 'GET':
-        return render(request, 'account_setting.html', context)
-
-    form = UploadProfilePhotoForm(request.POST, request.FILES)
-    context['upload_photo_form'] = form
-    if not form.is_valid():
-        return render(request, 'account_setting.html', context)
-
-    # handle_uploaded_file(request.FILES['image'])
-    userinfo = UserInfo.objects.get(user=request.user)
-    userinfo.profile_photo_src = request.FILES['image']
-    userinfo.save()
-
-    return HttpResponseRedirect('/account_setting')
-
-
-@login_required(login_url='login')
-def upload_profile_background(request):
-    context = {}
-    if request.method == 'GET':
-        return render(request, 'account_setting.html', context)
-    form = UploadProfileBackgroundForm(request.POST, request.FILES)
-    context['upload_bg_form'] = form
-    if not form.is_valid():
-        return render(request, 'account_setting.html', context)
-    userinfo = UserInfo.objects.get(user=request.user)
-    userinfo.card_background_src = request.FILES['bgimage']
-    userinfo.save()
-    return HttpResponseRedirect('/account_setting')
-
-
-@login_required(login_url='login')
-def change_email(request):
-    context = {}
-    if request.method == 'GET':
-        return render(request, 'account_setting.html', context)
-    form = EmailForm(request.POST)
-    context['email_form'] = form
-    if not form.is_valid():
-        return render(request, 'account_setting.html', context)
-    new_email = form.cleaned_data['email']
-    user = request.user
-    edit_user = User.objects.get(id=user.id)
-    if new_email and new_email != '':
-        edit_user.email = new_email
-        edit_user.save()
-    send_email(request, request.user, new_email)
-    auth.logout(request)
-    context['email'] = new_email
-    return render(request, 'activate_notice.html', context)
-
 
 @login_required(login_url='login')
 def add_friend(request, user_name):

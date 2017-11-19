@@ -29,7 +29,6 @@ class UserInfo(models.Model):
                                             upload_to='static/media/upload/', null=True, blank=True)
     dob = models.DateField(null=True)
     sign = models.CharField(max_length=100, null=True)
-
     balance = models.IntegerField(default=0, null=True)
     friends = models.ManyToManyField(User, related_name='friends')
 

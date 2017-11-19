@@ -75,22 +75,48 @@ class ResetPasswordForm(forms.Form):
 
 BIRTH_YEAR_CHOICES = tuple(x for x in range(2017, 1917, -1))
 
-class EditProfileForm(forms.Form):
-    username = forms.CharField(max_length=20, label='Username')
-    dob = forms.DateField(label='DOB',
-                          widget=forms.SelectDateWidget(years=BIRTH_YEAR_CHOICES))
-    bio = forms.CharField(max_length=420, label='Bio', widget=forms.Textarea(attrs={'rows': '3'}))
+# class EditProfileForm(forms.Form):
+#     username = forms.CharField(max_length=20, label='Username')
+#     dob = forms.DateField(label='DOB',
+#                           widget=forms.SelectDateWidget(years=BIRTH_YEAR_CHOICES))
+#     bio = forms.CharField(max_length=420, label='Bio', widget=forms.Textarea(attrs={'rows': '3'}))
+#
+#     def __init__(self, *args, **kwargs):
+#         self.user = kwargs.pop('user', None)
+#         super(EditProfileForm, self).__init__(*args, **kwargs)
+#
+#     def clean_username(self):
+#         username = self.cleaned_data.get('username')
+#         if self.user and self.user.username != username and User.objects.filter(username__exact=username):
+#             raise forms.ValidationError("Username is already taken.")
+#
+#         return username
 
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
-        super(EditProfileForm, self).__init__(*args, **kwargs)
+class EditProfileForm(forms.ModelForm):
+    class Meta:
+        model = UserInfo
+        fields = (  'dob', 'profile_photo_src')
+        widgets = {
+            'profile_photo_src': forms.FileInput(),
+            'dob': forms.SelectDateWidget(
+                attrs={'years':BIRTH_YEAR_CHOICES}
+            )
+            # attrs={),
+        }
 
-    def clean_username(self):
-        username = self.cleaned_data.get('username')
-        if self.user and self.user.username != username and User.objects.filter(username__exact=username):
-            raise forms.ValidationError("Username is already taken.")
 
-        return username
+class EditUser(forms.ModelForm):
+    class Meta:
+        model = User
+        fields = ('first_name', 'last_name', 'email')
+        widgets = {
+            'first_name': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'firstname', 'required': 'true'}),
+            'last_name': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'lastname', 'required': 'true'}),
+            'email': forms.TextInput(
+                attrs={'class': 'form-control', 'placeholder': 'Email Address', 'required': 'true'}),
+        }
 
 class ChangePasswordForm(forms.Form):
     old_password = forms.CharField(max_length=30, label='Current password', widget=forms.PasswordInput())

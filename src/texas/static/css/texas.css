@@ -717,3 +717,8 @@ body, html {
 .nav li {
     display: inline-block;
 }
+
+.img-profile {
+    width: 100px;
+    height: 100px;
+}

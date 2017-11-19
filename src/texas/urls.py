@@ -14,13 +14,8 @@ urlpatterns = [
 
     url(r'^profile/(?P<user_name>.+)$', views.profile, name='profile'),
 
-    url(r'^change_email$', views.change_email, name='change_email'),
-
-    url(r'^account_setting$', views.account_setting),
     url(r'^edit_profile$', views.edit_profile, name='edit_profile'),
     url(r'^change_password$', views.change_password, name='edit_profile'),
-    url(r'^upload_profileimg$', views.upload_profile_photo, name='upload_profileimg'),
-    url(r'^upload_bgimg$', views.upload_profile_background, name='upload_profilebg'),
     url(r'^forget_password$', views.forget_password, name='forget_password'),
     url(r'^reset_password/(?P<user_name>.+)/(?P<token>.+)$', views.reset_password, name='reset_password'),
     url(r'^reset_password_submit/(?P<user_name>.+)$', views.reset_password_submit, name='reset_password_submit'),
