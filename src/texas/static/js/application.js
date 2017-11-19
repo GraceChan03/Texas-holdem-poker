@@ -83,11 +83,21 @@ Texas = {
             }
         },
 
-        turnoverCard: function () {
-            var turn = Texas.GameRound.dealerCardTurn;
-            $card = $('#dealer_card' + turn);
-            Texas.GameRound.setCard(Texas.GameRound.dealerCards[i], $card);
-            Texas.GameRound.dealerCardTurn += 1;
+        turnoverCard: function (data) {
+            var dealer_cards = data.dealer_cards.split(",");
+            if (dealer_cards.length === 3) {
+                Texas.GameRound.dealerCardTurn = 3;
+                Texas.GameRound.show3Cards(dealer_cards);
+            } else {
+                var turn = Texas.GameRound.dealerCardTurn;
+                $card = $('#dealer_card' + turn);
+                Texas.GameRound.setCard(dealer_cards[0], $card);
+                Texas.GameRound.dealerCardTurn += 1;
+            }
+            // var turn = Texas.GameRound.dealerCardTurn;
+            // $card = $('#dealer_card' + turn);
+            // Texas.GameRound.setCard(Texas.GameRound.dealerCards[i], $card);
+            // Texas.GameRound.dealerCardTurn += 1;
         },
 
         setPlayerFunds: function (player_funds) {
@@ -103,6 +113,8 @@ Texas = {
 
         gameOver: function (data) {
             Texas.Player.disableLastTurn();
+            Texas.Player.disableBetMode();
+            $('#pot').text("Pot: " + 0);
             $('#page_title').text(data.winner + " wins! Congratulations!");
         },
 
@@ -110,17 +122,18 @@ Texas = {
             Texas.GameRound.roundId = data.round_id;
 
             // get cards info
-            var current_player = $("#current-player-id").val();
-            var my_player_cards = data.player_cards[current_player];
+            // var current_player = $("#current-player-id").val();
+            // var my_player_cards = data.player_cards[current_player];
+            var my_player_cards = data.player.player_cards;
             // set cards
             Texas.GameRound.setPlayerCards(my_player_cards);
-            Texas.GameRound.setPlayerFunds(data.player_funds);
+            Texas.GameRound.setPlayerFunds(data.player.player_funds);
 
-            var dealer_cards = data.dealer_cards.split(",");
-            Texas.GameRound.dealerCards = dealer_cards;
-            Texas.GameRound.dealerCardTurn = 3;
-            // show three dealer cards
-            Texas.GameRound.show3Cards(dealer_cards);
+            // var dealer_cards = data.dealer_cards.split(",");
+            // Texas.GameRound.dealerCards = dealer_cards;
+            // Texas.GameRound.dealerCardTurn = 3;
+            // // show three dealer cards
+            // Texas.GameRound.show3Cards(dealer_cards);
         },
 
         onRoundUpdate: function (data) {
@@ -134,7 +147,7 @@ Texas = {
                     Texas.Player.onPlayerAction(data);
                     break;
                 case 'add-dealer-card':
-                    Texas.GameRound.turnoverCard();
+                    Texas.GameRound.turnoverCard(data);
                     break;
                 case 'game-over':
                     Texas.GameRound.gameOver(data);
@@ -182,6 +195,7 @@ Texas = {
             $('#btn_check').css('visibility', 'hidden');
             $('#btn_fold').css('visibility', 'hidden');
             $('#btn_bet').css('visibility', 'hidden');
+            $('#btn_allin').css('visibility', 'hidden');
             $('#chips').css('visibility', 'hidden');
         },
 
@@ -202,7 +216,7 @@ Texas = {
         },
 
         onPlayerAction: function (data) {
-            isCurrentPlayer = data.player.userid.toString() === $('#current-player-id').val();
+            isCurrentPlayer = data.player.id.toString() === $('#current-player-id').val();
 
 
             if (isCurrentPlayer) {
@@ -213,9 +227,9 @@ Texas = {
             // disable last turn
             Texas.Player.disableLastTurn();
             // enable this turn
-            Texas.Player.currPlayer = data.player.userid;
-            var id = data.player.userid;
-            var username = data.player.username;
+            Texas.Player.currPlayer = data.player.id;
+            var id = data.player.id;
+            var username = data.player.name;
             $('#txt_turn_' + id).text(username + "'s turn").css('visibility', 'visible');
             // set timers
         }
@@ -224,14 +238,81 @@ Texas = {
 
     Game: {
         gameNo: null,
+        availableSeat: 0,
+        players: [],
+
+        appendPlayerInfo: function ($seat, player) {
+            var div2 = $('<div class="col-xs-12 col-sm-9 pull-right"><br></div>');
+            div2.append($("<span></span>").attr({
+                id: "txt_fund_" + player.id,
+                class: "txt-fund"
+            }));
+            div2.append($("<br><br>"));
+            div2.append($("<span></span>").attr({
+                id: "txt_turn_" + player.id,
+                class: "txt-turn"
+            }));
+            $seat.append(div2);
+        },
+
+        createPlayer: function ($seat, player) {
+            var div1 = $('<div class="col-xs-12 col-sm-3 pull-left"><br></div>');
+            if (player === undefined) {
+                div1.append($("<img>").attr({
+                    src: "/static/media/default/Cogn_mode.png",
+                    alt: "",
+                    class: "img-circle img-player"
+                }));
+                div1.appendChild($("<br>"));
+                div1.append($("<span></span>"));
+                $seat.append(div1);
+            } else {
+                div1.append($("<img>").attr({
+                    src: "/" + player.photo_src,
+                    alt: "",
+                    class: "img-circle img-player"
+                }));
+                div1.appendChild($("<br>"));
+                div1.append($("<span></span>").text(player.name));
+                $seat.append(div1);
+                Texas.Game.appendPlayerInfo($seat, player);
+            }
+        },
+
+        addPlayer: function ($seat, player) {
+            var div1 = $("div");
+            $seat.find(div1).find($("img")).attr({
+                src: "/" + player.photo_src
+            });
+            $seat.find(div1).find($("span")).text(player.name);
+            Texas.Game.appendPlayerInfo($seat, player);
+        },
 
         initGame: function (data) {
             Texas.Game.gameNo = data.game_no;
             // initialize the room
             $('#players').empty();
             // set seats == player_num (decides by creator)
-            for (i in data.player_num) {
-
+            // var player_num = data.player_num;
+            var players = data.players;
+            var current_player_id = $('#current-player-id').val();
+            for (p in players) {
+                player = players[p];
+                if (player.id.toString() !== current_player_id) {
+                    $seat = $('#player-' + p);
+                    Texas.Game.createPlayer($seat, player);
+                    $seat.attr('seated-player-id', p);
+                    Texas.Game.availableSeat += 1;
+                    Texas.Game.players.push(player.id);
+                    $('#players').append($seat);
+                }
+            }
+            var seats = 7;
+            for (s = Texas.Game.availableSeat; s < seats; s++) {
+                $seat = $('#player-' + s);
+                Texas.Game.createPlayer($seat);
+                $seat.attr('seated-player-id', null);
+                $('#players').append($seat);
             }
         },
 
@@ -243,35 +324,19 @@ Texas = {
             var current_player_id = $("#current-player-id").val();
             switch (data.event) {
                 case 'player-add':
-                    var list = $("#contact-list");
-                    if (current_player_id !== data.userid.toString()) {
-                        var ele = $('<li class="list-group-item"></li>');
-                        var div1 = $('<div class="col-xs-12 col-sm-3"></div>');
-                        div1.append($("<img>").attr({
-                            src: "/" + data.photo_src,
-                            alt: "Scott Stevens",
-                            class: "img-responsive img-circle"
-                        }));
-                        div1.append($("<span></span>").attr({
-                            class: "login-link"
-                        }).text(data.username));
-                        div1.append($("<br>"));
-                        ele.append(div1);
-                        var div2 = $('<div class="col-xs-12 col-sm-9"></div>');
-                        div2.append($("<span></span>").attr({
-                            id: "txt_fund_" + data.userid,
-                            class: "txt-fund"
-                        }));
-                        div2.append($("<br><br>"));
-                        div2.append($("<span></span>").attr({
-                            id: "txt_turn_" + data.userid,
-                            class: "txt-turn"
-                        }));
-                        div2.append($("<br>"));
-                        ele.append(div2);
-                        var div3 = $('<div class="clearfix"></div>');
-                        ele.append(div3);
-                        list.append(ele);
+                    playerId = data.player_id;
+                    if (playerId.toString() !== current_player_id
+                        && $.inArray(playerId, Texas.Game.players) === -1) {
+                        for (p in data.players) {
+                            if (data.players[p].id === playerId) {
+                                player = data.players[p];
+                            }
+                        }
+                        $seat = $seat = $('#player-' + Texas.Game.availableSeat);
+                        Texas.Game.addPlayer($seat, player);
+                        $seat.attr('seated-player-id', Texas.Game.availableSeat);
+                        Texas.Game.availableSeat += 1;
+                        Texas.Game.players.push(player.id);
                     }
                     break;
 
@@ -324,7 +389,7 @@ Texas = {
                 'round_id': Texas.GameRound.roundId
             }));
             Texas.Player.disableBetMode();
-        })
+        });
 
         $('#btn_allin').click(function () {
             Texas.socket.send(JSON.stringify({
@@ -335,9 +400,9 @@ Texas = {
             Texas.Player.disableBetMode();
         });
     }
-}
+};
 
 
 $(document).ready(function () {
     Texas.init();
-})
+});
