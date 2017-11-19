@@ -119,36 +119,31 @@ class EditUser(forms.ModelForm):
         }
 
 class ChangePasswordForm(forms.Form):
-    old_password = forms.CharField(max_length=30, label='Current password', widget=forms.PasswordInput())
-    new_password1 = forms.CharField(max_length=30, label='New password', widget=forms.PasswordInput())
-    new_password2 = forms.CharField(max_length=30, label='Verify password', widget=forms.PasswordInput())
+    newpassword1 = forms.CharField(max_length=200,
+                                   label='NewPassword',
+                                   widget=forms.TextInput(
+                                       attrs={'type': 'password', 'class': 'form-control',
+                                              'placeholder': 'New Password',
+                                              'required': 'true'}))
+    newpassword2 = forms.CharField(max_length=200,
+                                   label='NewPassword',
+                                   widget=forms.TextInput(
+                                       attrs={'type': 'password', 'class': 'form-control',
+                                              'placeholder': 'Confirm New Password',
+                                              'required': 'true'}))
 
-    def __init__(self, *args, **kwargs):
-        self.user = kwargs.pop('user', None)
-        super(ChangePasswordForm, self).__init__(*args, **kwargs)
-
-    def clean_password(self):
+    def clean(self):
         cleaned_data = super(ChangePasswordForm, self).clean()
-        # check if current password is correct
-        old_p = cleaned_data.get('old_password')
-        if self.user and not self.user.check_password(old_p):
-            raise forms.ValidationError("The current password you've entered is incorrect.")
-        # check if the twice input of new password are the same
-        p1 = cleaned_data.get('new_password1')
-        p2 = cleaned_data.get('new_password2')
-        if p1 and p2 and p1 != p2:
-            raise forms.ValidationError("Password don't match.")
+        password1 = cleaned_data.get('newpassword1')
+        password2 = cleaned_data.get('newpassword2')
+        # user = authenticate(username=username, password=password)
+        # if user is None:
+        #     raise forms.ValidationError("invalid username or password.")
+        if password1 and password2 and password1 != password2:
+            raise forms.ValidationError("new passwords did not match.")
+        # if password == password1:
+        #     raise forms.ValidationError("new password should be different")
         return cleaned_data
-
-class UploadProfilePhotoForm(forms.Form):
-    image = forms.ImageField()
-
-
-class UploadProfileBackgroundForm(forms.Form):
-    bgimage = forms.ImageField()
-
-class EmailForm(forms.Form):
-    email = forms.EmailField(label='Email', widget=forms.EmailInput())
 
 class JoinRoomForm(forms.Form):
     room_number = forms.CharField(max_length=50, label='The room number',

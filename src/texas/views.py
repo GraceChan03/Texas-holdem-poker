@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
-
+from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.tokens import default_token_generator
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail, BadHeaderError
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
@@ -28,30 +29,19 @@ def get_profile_image(request, id):
     image = user.userinfo.profile_photo_src
     return HttpResponse(image, guess_type(image.name))
 
-@login_required(login_url='login')
+@login_required
 def profile(request, user_name):
-    context = {}
-    # user = get_object_or_404(User, username=user_name)
-    if User.objects.filter(username=user_name):
+    try:
+        context={}
         user = User.objects.get(username=user_name)
-        context['user'] = user
         userinfo = UserInfo.objects.get(user=user)
-        context['userinfo'] = userinfo
-        if userinfo.dob:
-            today = date.today()
-            born = userinfo.dob
-            context['age'] = today.year - born.year - ((today.month, today.day) < (born.month, born.day))
-        context['friends'] = userinfo.friends.count()
-        # keep information about the user logged in
-        login_user = User.objects.get(username=request.user)
-        context['login_user'] = login_user
-        # If the user profile page is not for logged in user,
-        # check if the logged in user is following the current user
-        if user.id != login_user.id and userinfo.friends.filter(username=request.user):
-            context['follow'] = True
-        return render(request, 'profile.html', context)
-    else:
-        return HttpResponseRedirect('/')
+        context['profile_user'] = user
+        context['profile'] = userinfo
+    except ObjectDoesNotExist:
+        # when there is not such id for retrieve
+        # messages.error(request, 'The user id does not exist!')
+        return redirect(reverse(""))
+    return render(request, 'profile.html', context)
 
 @login_required
 def edit_profile(request):
@@ -79,24 +69,23 @@ def edit_profile(request):
 
 @login_required(login_url='login')
 def change_password(request):
+    # display form if this is a GET request
     context = {}
-    form = ChangePasswordForm(request.POST, user=request.user)
-    context['change_password_form'] = form
+    if request.method == 'GET':
+        context['form'] = ChangePasswordForm()
+        return render(request, 'change_password.html', context)
+
+    form = ChangePasswordForm(request.POST)
+    context['form'] = form
     if not form.is_valid():
-        return render(request, 'editprofile.html', context)
-
-    new_password = form.cleaned_data['new_password1']
-    user = request.user
-    username = user.username
-    edit_user = User.objects.get(id=user.id)
-    edit_user.set_password(new_password)
-    edit_user.save()
-
-    # log in the user
-    edited_user = auth.authenticate(username=username,
-                                    password=new_password)
-    auth.login(request, edited_user)
-    return HttpResponseRedirect('/account_setting')
+        return render(request, "change_password.html", context)
+    newpassword = User.objects.get(username=request.user.username)
+    newpassword.set_password(form.cleaned_data['newpassword1'])
+    newpassword.save()
+    user = authenticate(username=request.user.username, password=form.cleaned_data['newpassword1'])
+    login(request, user)
+    # messages.error(request, 'You sucessfully change your password!')
+    return redirect(reverse(''))
 
 
 def forget_password(request):
