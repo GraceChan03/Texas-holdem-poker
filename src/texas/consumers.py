@@ -5,6 +5,7 @@ from channels.sessions import channel_session
 from texas.models import *
 from django.contrib.auth.models import User
 from django.core import serializers
+from channels.asgi import get_channel_layer
 import deuces
 
 log = logging.getLogger(__name__)
@@ -35,6 +36,9 @@ def ws_connect(message):
     # Need to be explicit about the channel layer so that testability works
     message.reply_channel.send({"accept": True})
     Group('bet-' + game_no, channel_layer=message.channel_layer).add(message.reply_channel)
+    # members = get_channel_layer().group_channels('bet-' + game_no)
+    # print members
+
     message.channel_session['bet'] = game.game_no
     message.channel_session['userid'] = userid
     # add the user info to channel
@@ -43,14 +47,29 @@ def ws_connect(message):
     except User.DoesNotExist:
         log.debug('no userid=%s', userid)
     
-    data = {"photo_src": str(user.userinfo.profile_photo_src),
-            "username": user.username,
-            "userid": user.id,
-            "message_type": "game-update",
-            "event": "player-add"}
+    data = {}
+
+    data["message_type"]="game-update"
+    data["event"]="player-add"
+    data["game_no"]= game_no
+    data["player_num"]= game.player_num
+    data["player_id"]= user.id
+    players = []
+    for p in Game.objects.get(game_no=game_no).players.all():
+        info = {}
+        info["id"] = p.id
+        info["name"] = p.username
+        info["photo_src"] = str(p.userinfo.profile_photo_src)
+        info["money"] = game.entry_funds
+        players.append(info)
+
+    data["players"] = players
+
     Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(data)})
 
     # when the players' number match the set player num
+    # TODO
+    # Send cards to each player
     if game.players.count() == game.player_num:
         new_game_round = GameRound(game=game)
         # Start a new round
@@ -297,6 +316,23 @@ def ws_receive(message):
 def ws_disconnect(message):
     try:
         game_no = message.channel_session['bet']
+        userid = message.channel_session['userid']
         Group('bet-' + game_no, channel_layer=message.channel_layer).discard(message.reply_channel)
+
     except (KeyError, Game.DoesNotExist):
-        pass
+        log.debug('ws room does not exist label=%s', game_no)
+        return
+
+    members = get_channel_layer().group_channels('bet-' + game_no)
+    print members
+
+    #     TODO
+    # ----------- Send a new ws for [PLAYER-ACTION] ----------
+    print "Disconnect", game_no, userid
+
+    player_remove_dict = {}
+    player_remove_dict["message_type"] = "game-update"
+    player_remove_dict["event"] = "player-remove"
+    player_remove_dict["player_id"] = userid
+    Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(player_remove_dict)})
+
