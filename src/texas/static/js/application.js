@@ -6,6 +6,8 @@ Texas = {
         roundId: null,
         dealerCards: null,
         dealerCardTurn: null,
+        smallBlindBetFund: 1,
+        bigBlindBetFund: 2,
 
         setCard: function (card, $card) {
             width = 75;
@@ -85,14 +87,14 @@ Texas = {
         },
 
         turnoverCard: function (data) {
-            var dealer_cards = data.dealer_cards.split(",");
+            var dealer_cards = data.dealer_cards;
             if (dealer_cards.length === 3) {
                 Texas.GameRound.dealerCardTurn = 3;
                 Texas.GameRound.show3Cards(dealer_cards);
             } else {
                 var turn = Texas.GameRound.dealerCardTurn;
                 $card = $('#dealer_card' + turn);
-                Texas.GameRound.setCard(dealer_cards[0], $card);
+                Texas.GameRound.setCard(dealer_cards, $card);
                 $card.css('visibility', 'visible');
                 Texas.GameRound.dealerCardTurn += 1;
             }
@@ -122,23 +124,67 @@ Texas = {
             $('#page_title').text(data.winner + " wins! Congratulations!");
         },
 
+        smallBlindBet: function (data) {
+            var dealer = data.dealer_id;
+            var currentPlayer = $('#current-player-id').val();
+            var seats = Texas.Game.seats;
+            var isSmallBlind = false;
+            if (seats === 1 && dealer.toString() !== currentPlayer) {
+                isSmallBlind = true;
+            } else if (dealer.toString() !== currentPlayer) {
+                var final = seats - 1;
+                if ($('#player-' + final).attr('seated-player-id') == dealer) {
+                    isSmallBlind = true;
+                }
+            }
+            if (isSmallBlind) {
+                var bet = Texas.GameRound.smallBlindBetFund;
+                var origin = parseInt($('#my_fund').val());
+                $('#my_fund').text(origin - bet);
+                Texas.socket.send(JSON.stringify({
+                    'message_type': 'bet',
+                    'bet': bet,
+                    'round_id': Texas.GameRound.roundId
+                }));
+            }
+        },
+
+        bigBlindBet: function (data) {
+            var dealer = data.dealer_id;
+            var currentPlayer = $('#current-player-id').val();
+            var seats = Texas.Game.seats;
+            var isBigBlind = false;
+            if (seats === 1 && dealer.toString() === currentPlayer) {
+                isBigBlind = true;
+            } else if (dealer.toString() !== currentPlayer) {
+                var final = seats - 2;
+                if ($('#player-' + final).attr('seated-player-id') == dealer) {
+                    isBigBlind = true;
+                }
+            }
+            if (isBigBlind) {
+                var bet = Texas.GameRound.bigBlindBetFund;
+                var origin = parseInt($('#my_fund').val());
+                $('#my_fund').text(origin - bet);
+                Texas.socket.send(JSON.stringify({
+                    'message_type': 'bet',
+                    'bet': bet,
+                    'round_id': Texas.GameRound.roundId
+                }));
+            }
+        },
+
         newRound: function (data) {
             Texas.GameRound.roundId = data.round_id;
 
             // get cards info
-            // var current_player = $("#current-player-id").val();
-            // var my_player_cards = data.player_cards[current_player];
             var my_player_cards = data.player_cards;
             // set cards
             Texas.GameRound.setPlayerCards(my_player_cards);
+            // set funds
             Texas.GameRound.setPlayerFunds(data.player_funds);
             $('#pot').css('visibility', 'visible');
 
-            // var dealer_cards = data.dealer_cards.split(",");
-            // Texas.GameRound.dealerCards = dealer_cards;
-            // Texas.GameRound.dealerCardTurn = 3;
-            // // show three dealer cards
-            // Texas.GameRound.show3Cards(dealer_cards);
         },
 
         onRoundUpdate: function (data) {
@@ -147,6 +193,12 @@ Texas = {
             switch (data.event) {
                 case 'new-game':
                     Texas.GameRound.newRound(data);
+                    break;
+                case 'small-blind-bet':
+                    Texas.GameRound.smallBlindBet(data);
+                    break;
+                case 'big-blind-bet':
+                    Texas.GameRound.bigBlindBet(data);
                     break;
                 case 'player-action':
                     Texas.Player.onPlayerAction(data);
