@@ -55,6 +55,8 @@ class Game(models.Model):
     entry_funds = models.IntegerField()
     players = models.ManyToManyField(User,related_name="players")
     is_active = models.BooleanField(default=True)
+    # sit order
+    player_order = models.CharField(max_length=200, default='')
 
 
 class GameRound(models.Model):
@@ -170,10 +172,10 @@ class GameRound(models.Model):
         self.player_active_dict = json.dumps(dict)
 
     def set_player_order(self, prev=0, **kwarg):
-        ord = []
+        ord = self.game.player_order.split(",")
         order_str = ''
-        for player in self.game.players.all():
-            ord.append(player.id)
+        # for player in self.game.players.all():
+        #     ord.append(player.id)
         for i in xrange(prev, len(ord)):
             order_str += (',' + str(ord[i]))
         if prev > 0:

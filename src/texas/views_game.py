@@ -29,7 +29,8 @@ def new_game(request):
         no_players = request.POST['no_players']
         haikunator = Haikunator()
         game_no = haikunator.haikunate()
-        new_game = Game(creator=request.user, player_num=no_players, entry_funds=entry_funds, game_no=game_no)
+        new_game = Game(creator=request.user, player_num=no_players, entry_funds=entry_funds, game_no=game_no, player_order=request.user.id
+        )
         new_game.save()
         new_game.players.add(request.user)
         # new socket here?
@@ -48,6 +49,9 @@ def game_join(request):
         return render(request, 'game_join.html', context)
     game_no = form.cleaned_data['room_number']
     game = Game.objects.get(game_no=game_no)
+    game.player_order = game.player_order + ',' + str(request.user.id)
+    game.save()
+
     if not game.players.filter(username=request.user.username):
         game.players.add(request.user)
     return redirect("/game_ongoing/" + game_no)

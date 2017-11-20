@@ -108,7 +108,9 @@ def ws_connect(message):
 
         for i in xrange(game.player_num):
             ch = members[i]
+            print ch
             user = player_order_list[i]
+            print user
             player_cards = player_dict[user]
             new_game_dict['player_cards'] = player_cards
 
@@ -230,7 +232,9 @@ def ws_receive(message):
 
         # Judge if this is the end of the round:
         player_order = eval(game_round.player_order)
+        print player_order
         curt_index = player_order.index(int(userid))
+        print curt_index
         next_index = curt_index + 1
         if next_index == game.player_num:
             next_index = 0
@@ -261,7 +265,7 @@ def ws_receive(message):
                 add_dealer_card_message['message_type'] = "round-update"
                 add_dealer_card_message['event'] = "add-dealer-card"
 
-                # # Deal cards
+                # Deal cards
                 dealer_string = str(game_round.dealer_cards)
                 cards = []
                 for card in dealer_string.split(','):
