@@ -185,6 +185,8 @@ Texas = {
                 } else {
                     $('#txt_op_' + prev_player.id).text(prev_player.op);
                 }
+            } else {
+                $('#my_fund').text(prev_player.fund);
             }
         },
 
@@ -476,9 +478,9 @@ Texas = {
         });
 
         $('#btn_bet').click(function () {
-            var origin = parseInt($('#my_fund').text());
+            // var origin = parseInt($('#my_fund').text());
             var bet = parseInt($('#myRange').val());
-            $('#my_fund').text(origin - bet);
+            // $('#my_fund').text(origin - bet);
             Texas.socket.send(JSON.stringify({
                 'message_type': 'bet',
                 'bet': bet,
@@ -488,9 +490,9 @@ Texas = {
         });
 
         $('#btn_allin').click(function () {
-            var origin = parseInt($('#my_fund').text());
-            var bet = parseInt($('#myRange').val());
-            $('#my_fund').text(origin - bet);
+            // var origin = parseInt($('#my_fund').text());
+            // var bet = parseInt($('#myRange').val());
+            // $('#my_fund').text(origin - bet);
             Texas.socket.send(JSON.stringify({
                 'message_type': 'bet',
                 'bet': $('#myRange').val(),
