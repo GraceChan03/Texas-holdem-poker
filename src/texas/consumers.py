@@ -69,7 +69,6 @@ def ws_connect(message):
     Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(data)})
 
     # when the players' number match the set player num
-    # TODO
     # Send cards to each player separately
     if game.players.count() == game.player_num:
         new_game_round = GameRound(game=game)
@@ -262,6 +261,19 @@ def ws_receive(message):
                 add_dealer_card_message['message_type'] = "round-update"
                 add_dealer_card_message['event'] = "add-dealer-card"
 
+                # # Deal cards
+                dealer_string = str(game_round.dealer_cards)
+                cards = []
+                for card in dealer_string.split(','):
+                    cards.append(deuces.Card.int_to_str(int(card)))
+
+                if game_round.current_approach == 3:
+                    add_dealer_card_message['dealer_cards'] = cards[:3]
+                elif game_round.current_approach == 4:
+                    add_dealer_card_message['dealer_cards'] = cards[3]
+                elif game_round.current_approach == 5:
+                    add_dealer_card_message['dealer_cards'] = cards[4]
+
                 # Tell client to add a card
                 Group('bet-' + game_no, channel_layer=message.channel_layer).send(
                     {"text": json.dumps(add_dealer_card_message)})
@@ -337,11 +349,10 @@ def ws_disconnect(message):
         return
 
     members = get_channel_layer().group_channels('bet-' + game_no)
-    print members
+    # print members
 
-    #     TODO
     # ----------- Send a new ws for [PLAYER-ACTION] ----------
-    print "Disconnect", game_no, userid
+    # print "Disconnect", game_no, userid
 
     player_remove_dict = {}
     player_remove_dict["message_type"] = "game-update"

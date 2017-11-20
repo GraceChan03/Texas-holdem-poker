@@ -81,7 +81,7 @@ class GameRound(models.Model):
     player_bet_dict = models.CharField(max_length=200, default='')
 
     # Current Approach
-    current_approach = models.IntegerField(default=3)
+    current_approach = models.IntegerField(default=2)
 
     # Minimum bet
     min_bet = models.IntegerField(default=1)
