@@ -139,7 +139,7 @@ Texas = {
             }
             if (isSmallBlind) {
                 var bet = Texas.GameRound.smallBlindBetFund;
-                var origin = parseInt($('#my_fund').val());
+                var origin = parseInt($('#my_fund').text());
                 $('#my_fund').text(origin - bet);
                 Texas.socket.send(JSON.stringify({
                     'message_type': 'bet',
@@ -164,7 +164,7 @@ Texas = {
             }
             if (isBigBlind) {
                 var bet = Texas.GameRound.bigBlindBetFund;
-                var origin = parseInt($('#my_fund').val());
+                var origin = parseInt($('#my_fund').text());
                 $('#my_fund').text(origin - bet);
                 Texas.socket.send(JSON.stringify({
                     'message_type': 'bet',
@@ -395,7 +395,7 @@ Texas = {
                     if (playerId.toString() !== current_player_id
                         && $.inArray(playerId, Texas.Game.players) === -1) {
                         for (p in data.players) {
-                            if (data.players[p].id === playerId) {
+                            if (data.players[p].id === playerId.toString()) {
                                 player = data.players[p];
                             }
                         }
@@ -469,7 +469,7 @@ Texas = {
         });
 
         $('#btn_bet').click(function () {
-            var origin = parseInt($('#my_fund').val());
+            var origin = parseInt($('#my_fund').text());
             var bet = parseInt($('#myRange').val());
             $('#my_fund').text(origin - bet);
             Texas.socket.send(JSON.stringify({
@@ -481,7 +481,7 @@ Texas = {
         });
 
         $('#btn_allin').click(function () {
-            var origin = parseInt($('#my_fund').val());
+            var origin = parseInt($('#my_fund').text());
             var bet = parseInt($('#myRange').val());
             $('#my_fund').text(origin - bet);
             Texas.socket.send(JSON.stringify({
