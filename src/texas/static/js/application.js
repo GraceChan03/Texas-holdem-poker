@@ -255,7 +255,8 @@ Texas = {
     Game: {
         gameNo: null,
         players: [],
-        seats: 7,
+        seats: 0,
+        availableSeat: 0,
 
         createPlayer: function ($seat, player) {
             var div1 = $('<div class="col-xs-12 col-sm-3 pull-left"><br></div>');
@@ -264,7 +265,7 @@ Texas = {
                 alt: "",
                 class: "img-circle img-player"
             }));
-            div1.appendChild($("<br>"));
+            div1.append($("<br>"));
             div1.append($("<span></span>").text(player.name));
             $seat.append(div1);
             var div2 = $('<div class="col-xs-12 col-sm-9 pull-right"><br></div>');
@@ -291,23 +292,42 @@ Texas = {
             // initialize the room
             // set seats == player_num (decides by creator)
             // var player_num = data.player_num;
+            var player_num = data.player_num;
+            Texas.Game.seats = player_num - 1;
             var players = data.players;
             var current_player_id = $('#current-player-id').val();
+            var order = 1;
+            for (p in players) {
+                player = players[p];
+                if (player.id.toString() === current_player_id) {
+                    order = parseInt(p) + 1;
+                }
+            }
+            if (order !== 1) {
+                Texas.Game.availableSeat = player_num - order;
+            } else {
+                Texas.Game.availableSeat = 0;
+            }
             for (p in players) {
                 player = players[p];
                 if (player.id.toString() !== current_player_id) {
-                    $seat = $('#player-' + p);
+                    $seat = $('#player-' + Texas.Game.availableSeat);
                     Texas.Game.createPlayer($seat, player);
                     $seat.attr('seated-player-id', player.id);
                     Texas.Game.players.push(player.id);
+                    if (Texas.Game.availableSeat === (Texas.Game.seats - 1)) {
+                        Texas.Game.availableSeat = 0;
+                    } else {
+                        Texas.Game.availableSeat += 1;
+                    }
                 }
             }
             var seats = Texas.Game.seats;
-            for (s = Texas.Game.availableSeat; s < seats; s++) {
+            for (s = 0; s < seats; s++) {
                 $seat = $('#player-' + s);
-            //     Texas.Game.createPlayer($seat);
-                $seat.attr('seated-player-id', null);
-            //     $('#players').append($seat);
+                if ($seat.attr('seated-player-id') == undefined) {
+                    $seat.attr('seated-player-id', null);
+                }
             }
         },
 
@@ -327,15 +347,21 @@ Texas = {
                                 player = data.players[p];
                             }
                         }
-                        for (i = 0; i < Texas.Game.seats; i++) {
-                            $seat = $('#player-' + i);
-                            if ($seat.attr('seated-player-id') == null) {
-                                break;
-                            }
-                        }
+                        // for (i = 0; i < Texas.Game.seats; i++) {
+                        //     $seat = $('#player-' + i);
+                        //     if ($seat.attr('seated-player-id') == null) {
+                        //         break;
+                        //     }
+                        // }
+                        $seat = $('#player-' + Texas.Game.availableSeat);
                         Texas.Game.createPlayer($seat, player);
                         $seat.attr('seated-player-id', playerId);
                         Texas.Game.players.push(player.id);
+                        if (Texas.Game.availableSeat === (Texas.Game.seats - 1)) {
+                            Texas.Game.availableSeat = 0;
+                        } else {
+                            Texas.Game.availableSeat += 1;
+                        }
                     }
                     break;
 
