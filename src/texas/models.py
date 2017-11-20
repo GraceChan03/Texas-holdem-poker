@@ -98,6 +98,7 @@ class GameRound(models.Model):
     def set_player_prev_bet(self, player_id, curt_bet):
         dict = json.loads(self.player_bet_dict)
         self.pot = self.pot + int(curt_bet) - int(dict[player_id])
+        self.less_player_fund(player_id, curt_bet - dict[player_id])
         dict[player_id] = curt_bet
         self.player_bet_dict = json.dumps(dict)
 
@@ -158,6 +159,16 @@ class GameRound(models.Model):
     def set_player_fund(self, player_id, fund):
         dict = json.loads(self.player_fund_dict)
         dict[player_id] = fund
+        self.player_fund_dict = json.dumps(dict)
+
+    def less_player_fund(self, player_id, lessfund):
+        dict = json.loads(self.player_fund_dict)
+        dict[player_id] = dict[player_id] - lessfund
+        self.player_fund_dict = json.dumps(dict)
+
+    def add_player_fund(self, player_id, addfund):
+        dict = json.loads(self.player_fund_dict)
+        dict[player_id] = dict[player_id] + addfund
         self.player_fund_dict = json.dumps(dict)
 
     def set_player_inactive(self, player_id):

@@ -43,7 +43,7 @@ def ws_connect(message):
     message.channel_session['userid'] = userid
     # add the user info to channel
     try:
-       user = User.objects.get(id=userid)
+        user = User.objects.get(id=userid)
     except User.DoesNotExist:
         log.debug('no userid=%s', userid)
 
@@ -56,9 +56,11 @@ def ws_connect(message):
     data["player_num"] = game.player_num
     data["player_id"] = user.id
     players = []
-    for p in Game.objects.get(game_no=game_no).players.all():
+    player_order_list = game.player_order.split(",")
+    for pid in player_order_list:
+        p = User.objects.get(id=pid)
         info = {}
-        info["id"] = p.id
+        info["id"] = pid
         info["name"] = p.username
         info["photo_src"] = str(p.userinfo.profile_photo_src)
         info["money"] = game.entry_funds
@@ -85,10 +87,11 @@ def ws_connect(message):
         new_game_dict['event'] = "new-game"
         new_game_dict['round_id'] = new_game_round.id
         player_order = new_game_round.player_order
-        player_order_list = player_order.split(",")
-        new_game_dict['dealer_id'] = player_order_list[-1]
+        dealer = player_order_list[-1]
+        new_game_dict['dealer_id'] = dealer
         new_game_dict['player_order'] = player_order
         new_game_dict['player_funds'] = new_game_round.player_fund_dict
+        print new_game_dict
 
         # # Deal cards
         # dealer_string = str(new_game_round.dealer_cards)
@@ -110,6 +113,7 @@ def ws_connect(message):
             ch = members[i]
             print ch
             user = player_order_list[i]
+            print player_order_list
             print user
             player_cards = player_dict[user]
             new_game_dict['player_cards'] = player_cards
@@ -120,8 +124,31 @@ def ws_connect(message):
         # Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(new_game_dict)})
         # message.channel_session['round_id'] = new_game_round.id
 
+        # ------------Send small blind and big blind -------------
+        new_game_round.set_player_prev_bet(userid, 1)
+        small_blind_dict = {"message_type": "round-update",
+                            "event": "small-blind-bet",
+                            "round_id": new_game_round.id,
+                            "pot": new_game_round.pot,
+                            "dealer_id": dealer}
+        new_game_round.save()
+        Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(small_blind_dict)})
+
+        new_game_round.set_player_prev_bet(userid, 2)
+        big_blind_dict = {"message_type": "round-update",
+                            "event": "big-blind-bet",
+                            "round_id": new_game_round.id,
+                            "pot": new_game_round.pot,
+                            "dealer_id": dealer}
+        new_game_round.save()
+        Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(big_blind_dict)})
+
+
         # ----------- Send a new ws for [PLAYER-ACTION] ----------
-        next_user_id = eval(player_order)[0]
+        if len(player_order_list) >= 3:
+            next_user_id = player_order_list[2]
+        else:
+            next_user_id = player_order_list[0]
         player = {}
         player['userid'] = next_user_id
         try:
@@ -174,12 +201,12 @@ def ws_receive(message):
     # Parse out a message from the content text, bailing if it doesn't
     # conform to the expected message format.
     try:
-        data = json.loads(message['text'])   #!!! change to specific html label
+        data = json.loads(message['text'])  # !!! change to specific html label
     except ValueError:
         log.debug("ws message isn't json text=%s", message['text'])
         return
 
-    if set(data.keys()) != set(('message_type', 'bet', 'round_id')):    #!!! change to specific html label
+    if set(data.keys()) != set(('message_type', 'bet', 'round_id')):  # !!! change to specific html label
         log.debug("ws message unexpected format data=%s", data)
         return
 
@@ -363,4 +390,3 @@ def ws_disconnect(message):
     player_remove_dict["event"] = "player-remove"
     player_remove_dict["player_id"] = userid
     Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(player_remove_dict)})
-
