@@ -222,7 +222,7 @@ Texas = {
 
         onPlayerAction: function (data) {
             currentPlayerId = $('#current-player-id').val();
-            isCurrentPlayer = data.player.id.toString() === currentPlayerId;
+            isCurrentPlayer = data.player.userid.toString() === currentPlayerId;
 
 
             if (isCurrentPlayer) {
@@ -233,19 +233,19 @@ Texas = {
             // disable last turn
             Texas.Player.disableLastTurn();
             // show previous bet's result
-            var prev_player = data.prev_player;
-            if (prev_player.id.toString() !== currentPlayerId) {
-                $('#txt_fund_' + prev_player.id).text("Stake: " + prev_player.fund);
-                if (prev_player.op === 'bets') {
-                    $('#txt_op_' + prev_player.id).text(prev_player.op + " " + prev_player.bet);
-                } else {
-                    $('#txt_op_' + prev_player.id).text(prev_player.op);
-                }
-            }
+            // var prev_player = data.prev_player;
+            // if (prev_player.id.toString() !== currentPlayerId) {
+            //     $('#txt_fund_' + prev_player.id).text("Stake: " + prev_player.fund);
+            //     if (prev_player.op === 'bets') {
+            //         $('#txt_op_' + prev_player.id).text(prev_player.op + " " + prev_player.bet);
+            //     } else {
+            //         $('#txt_op_' + prev_player.id).text(prev_player.op);
+            //     }
+            // }
             // enable this turn
-            Texas.Player.currPlayer = data.player.id;
-            var id = data.player.id;
-            var username = data.player.name;
+            Texas.Player.currPlayer = data.player.userid;
+            var id = data.player.userid;
+            var username = data.player.username;
             $('#txt_turn_' + id).text(username + "'s turn").css('visibility', 'visible');
             // set timers
         }
