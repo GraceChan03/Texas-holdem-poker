@@ -142,5 +142,7 @@
     {#        </div>#}
     {#    </div>#}
 {% endblock %}
-
-<script src={% static 'js/application.js' %}></script>
+{% block js %}
+    {% load static %}
+    <script src={% static 'js/application.js' %}></script>
+{% endblock %}
