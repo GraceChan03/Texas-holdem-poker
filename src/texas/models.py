@@ -97,6 +97,7 @@ class GameRound(models.Model):
 
     def set_player_prev_bet(self, player_id, curt_bet):
         dict = json.loads(self.player_bet_dict)
+        player_id = str(player_id)
         self.pot = self.pot + int(curt_bet) - int(dict[player_id])
         self.less_player_fund(player_id, curt_bet - dict[player_id])
         dict[player_id] = curt_bet

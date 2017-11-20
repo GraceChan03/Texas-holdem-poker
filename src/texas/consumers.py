@@ -37,7 +37,6 @@ def ws_connect(message):
     message.reply_channel.send({"accept": True})
     Group('bet-' + game_no, channel_layer=message.channel_layer).add(message.reply_channel)
     members = get_channel_layer().group_channels('bet-' + game_no)
-    print members
 
     message.channel_session['bet'] = game.game_no
     message.channel_session['userid'] = userid
@@ -78,6 +77,13 @@ def ws_connect(message):
         new_game_round.start()
         # Do this if this is the first round
         new_game_round.set_player_entry_funds_dict()
+
+        # ------------Send small blind and big blind -------------
+        player_order = new_game_round.player_order
+        player_order_list_round = eval(player_order)
+        new_game_round.set_player_prev_bet(player_order_list_round[0], 1)
+        new_game_round.set_player_prev_bet(player_order_list_round[1], 2)
+
         new_game_round.save()
 
         # -------- Send a new ws for [NEW-GAME] ---------
@@ -86,20 +92,10 @@ def ws_connect(message):
         new_game_dict['message_type'] = "round-update"
         new_game_dict['event'] = "new-game"
         new_game_dict['round_id'] = new_game_round.id
-        player_order = new_game_round.player_order
-        dealer = player_order_list[-1]
+        dealer = player_order_list_round[-1]
         new_game_dict['dealer_id'] = dealer
         new_game_dict['player_order'] = player_order
         new_game_dict['player_funds'] = new_game_round.player_fund_dict
-        print new_game_dict
-
-        # # Deal cards
-        # dealer_string = str(new_game_round.dealer_cards)
-        # dealer_pretty_string = ''
-        # for card in dealer_string.split(','):
-        #     dealer_pretty_string += deuces.Card.int_to_str(int(card)) + ','
-        #
-        # new_game_dict['dealer_cards'] = dealer_pretty_string[:-1]
 
         # --------new/send cards separately--------
         player_dict = json.loads(new_game_round.player_cards)
@@ -111,44 +107,17 @@ def ws_connect(message):
 
         for i in xrange(game.player_num):
             ch = members[i]
-            print ch
-            user = player_order_list[i]
-            print player_order_list
-            print user
+            user = str(player_order_list_round[i])
             player_cards = player_dict[user]
             new_game_dict['player_cards'] = player_cards
 
             Channel(ch).send({"text": json.dumps(new_game_dict)})
 
-        # Send cards to everyone
-        # Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(new_game_dict)})
-        # message.channel_session['round_id'] = new_game_round.id
-
-        # ------------Send small blind and big blind -------------
-        new_game_round.set_player_prev_bet(userid, 1)
-        small_blind_dict = {"message_type": "round-update",
-                            "event": "small-blind-bet",
-                            "round_id": new_game_round.id,
-                            "pot": new_game_round.pot,
-                            "dealer_id": dealer}
-        new_game_round.save()
-        Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(small_blind_dict)})
-
-        new_game_round.set_player_prev_bet(userid, 2)
-        big_blind_dict = {"message_type": "round-update",
-                            "event": "big-blind-bet",
-                            "round_id": new_game_round.id,
-                            "pot": new_game_round.pot,
-                            "dealer_id": dealer}
-        new_game_round.save()
-        Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(big_blind_dict)})
-
-
         # ----------- Send a new ws for [PLAYER-ACTION] ----------
-        if len(player_order_list) >= 3:
-            next_user_id = player_order_list[2]
+        if len(player_order_list_round) >= 3:
+            next_user_id = player_order_list_round[2]
         else:
-            next_user_id = player_order_list[0]
+            next_user_id = player_order_list_round[0]
         player = {}
         player['userid'] = next_user_id
         try:
@@ -160,6 +129,8 @@ def ws_connect(message):
         player_funds_dict = json.loads(new_game_round.player_fund_dict)
         player_money = player_funds_dict[str(next_user_id)]
         player['money'] = player_money
+        prev_bet_dict = json.loads(new_game_round.player_bet_dict)
+        prev_bet = prev_bet_dict[str(next_user_id)]
 
         player_action_dict = {}
         player_action_dict['message_type'] = "round-update"
@@ -168,7 +139,7 @@ def ws_connect(message):
         player_action_dict['player'] = player
         player_action_dict['action'] = "bet"
         player_action_dict['min_bet'] = new_game_round.min_bet
-        player_action_dict['max_bet'] = player['money']
+        player_action_dict['max_bet'] = player['money'] + prev_bet
         player_action_dict['pot'] = new_game_round.pot
 
         # Tell everyone it's whose turn
@@ -223,8 +194,10 @@ def ws_receive(message):
         round_id = data['round_id']
         game_round = GameRound.objects.get(id=round_id)
         min_bet = game_round.min_bet
+        op = ""
         # Fold
         if bet == -1:
+            op = "folds"
             game_round.set_player_inactive(userid)
             game_round.save()
             # check if one active users
@@ -246,10 +219,12 @@ def ws_receive(message):
 
         # Check
         elif bet == 0:
+            op = "checks"
             # don't need to change pot, min_bet
             min_bet = int(game_round.get_player_prev_bet(userid))
         # bet sth
         else:
+            op = "bets"
             # change min_bet
             # TODO
             min_bet = bet
@@ -257,11 +232,28 @@ def ws_receive(message):
             game_round.set_player_prev_bet(userid, bet)
             game_round.save()
 
+        # ---------------get fund-------------
+        funds = json.loads(game_round.player_fund_dict)
+
+        # ----------------Update the previous user's fund
+        prev_player_update_dict = {
+            "message_type": "round-update",
+            "event": "fund-update",
+            "round_id": round_id,
+            "prev_player":
+                {
+                    "userid": userid,
+                    "fund": funds[str(userid)],
+                    "op": op,
+                    "bet": bet
+                }
+        }
+        Group('bet-' + game_no, channel_layer=message.channel_layer).send(
+            {"text": json.dumps(prev_player_update_dict)})
+
         # Judge if this is the end of the round:
         player_order = eval(game_round.player_order)
-        print player_order
         curt_index = player_order.index(int(userid))
-        print curt_index
         next_index = curt_index + 1
         if next_index == game.player_num:
             next_index = 0
@@ -322,6 +314,8 @@ def ws_receive(message):
                 player_funds_dict = json.loads(game_round.player_fund_dict)
                 player_money = player_funds_dict[str(next_user_id)]
                 player['money'] = player_money
+                prev_bet_dict = json.loads(game_round.player_bet_dict)
+                prev_bet = prev_bet_dict[str(next_user_id)]
 
                 player_action_dict = {}
                 player_action_dict['message_type'] = "round-update"
@@ -330,7 +324,7 @@ def ws_receive(message):
                 player_action_dict['player'] = player
                 player_action_dict['action'] = "bet"
                 player_action_dict['min_bet'] = min_bet
-                player_action_dict['max_bet'] = player['money']
+                player_action_dict['max_bet'] = player['money'] + prev_bet
                 player_action_dict['pot'] = game_round.pot
 
                 # Tell everyone it's whose turn
@@ -353,6 +347,8 @@ def ws_receive(message):
             player_funds_dict = json.loads(game_round.player_fund_dict)
             player_money = player_funds_dict[str(next_user_id)]
             player['money'] = player_money
+            prev_bet_dict = json.loads(game_round.player_bet_dict)
+            prev_bet = prev_bet_dict[str(next_user_id)]
 
             player_action_dict = {}
             player_action_dict['message_type'] = "round-update"
@@ -361,7 +357,7 @@ def ws_receive(message):
             player_action_dict['player'] = player
             player_action_dict['action'] = "bet"
             player_action_dict['min_bet'] = min_bet
-            player_action_dict['max_bet'] = player['money']
+            player_action_dict['max_bet'] = player['money'] + prev_bet
             player_action_dict['pot'] = game_round.pot
 
             # Tell everyone it's whose turn
