@@ -80,6 +80,7 @@ Texas = {
             for (i = 0; i < 3; i++) {
                 $card = $('#dealer_card' + i);
                 Texas.GameRound.setCard(dealer_cards[i], $card);
+                $card.css('visibility', 'visible');
             }
         },
 
@@ -92,6 +93,7 @@ Texas = {
                 var turn = Texas.GameRound.dealerCardTurn;
                 $card = $('#dealer_card' + turn);
                 Texas.GameRound.setCard(dealer_cards[0], $card);
+                $card.css('visibility', 'visible');
                 Texas.GameRound.dealerCardTurn += 1;
             }
             // var turn = Texas.GameRound.dealerCardTurn;
@@ -103,10 +105,12 @@ Texas = {
         setPlayerFunds: function (player_funds) {
             var funds = JSON.parse(player_funds);
             for (player in funds) {
-                $('#txt_fund_' + player).css('visibility', 'visible')
-                    .text("Current Fund: " + funds[player]);
                 if (player.toString() === $('#current-player-id').val()) {
-                    $('#my_fund').css('visibility', 'visible').text("My chips: " + funds[player]);
+                    $('#txt_myfund').css('visibility', 'visible');
+                    $('#my_fund').text(funds[player]);
+                } else {
+                    $('#txt_fund_' + player).css('visibility', 'visible')
+                        .text("Stake: " + funds[player]);
                 }
             }
         },
@@ -124,10 +128,11 @@ Texas = {
             // get cards info
             // var current_player = $("#current-player-id").val();
             // var my_player_cards = data.player_cards[current_player];
-            var my_player_cards = data.player.player_cards;
+            var my_player_cards = data.player_cards;
             // set cards
             Texas.GameRound.setPlayerCards(my_player_cards);
-            Texas.GameRound.setPlayerFunds(data.player.player_funds);
+            Texas.GameRound.setPlayerFunds(data.player_funds);
+            $('#pot').css('visibility', 'visible');
 
             // var dealer_cards = data.dealer_cards.split(",");
             // Texas.GameRound.dealerCards = dealer_cards;
@@ -216,7 +221,8 @@ Texas = {
         },
 
         onPlayerAction: function (data) {
-            isCurrentPlayer = data.player.id.toString() === $('#current-player-id').val();
+            currentPlayerId = $('#current-player-id').val();
+            isCurrentPlayer = data.player.id.toString() === currentPlayerId;
 
 
             if (isCurrentPlayer) {
@@ -226,6 +232,16 @@ Texas = {
             $('#pot').text("Pot: " + data.pot);
             // disable last turn
             Texas.Player.disableLastTurn();
+            // show previous bet's result
+            var prev_player = data.prev_player;
+            if (prev_player.id.toString() !== currentPlayerId) {
+                $('#txt_fund_' + prev_player.id).text("Stake: " + prev_player.fund);
+                if (prev_player.op === 'bets') {
+                    $('#txt_op_' + prev_player.id).text(prev_player.op + " " + prev_player.bet);
+                } else {
+                    $('#txt_op_' + prev_player.id).text(prev_player.op);
+                }
+            }
             // enable this turn
             Texas.Player.currPlayer = data.player.id;
             var id = data.player.id;
@@ -238,10 +254,19 @@ Texas = {
 
     Game: {
         gameNo: null,
-        availableSeat: 0,
         players: [],
+        seats: 7,
 
-        appendPlayerInfo: function ($seat, player) {
+        createPlayer: function ($seat, player) {
+            var div1 = $('<div class="col-xs-12 col-sm-3 pull-left"><br></div>');
+            div1.append($("<img>").attr({
+                src: "/" + player.photo_src,
+                alt: "",
+                class: "img-circle img-player"
+            }));
+            div1.appendChild($("<br>"));
+            div1.append($("<span></span>").text(player.name));
+            $seat.append(div1);
             var div2 = $('<div class="col-xs-12 col-sm-9 pull-right"><br></div>');
             div2.append($("<span></span>").attr({
                 id: "txt_fund_" + player.id,
@@ -252,46 +277,18 @@ Texas = {
                 id: "txt_turn_" + player.id,
                 class: "txt-turn"
             }));
+            div2.append($("<br><br>"));
+            div2.append($("<span></span>").attr({
+                id: "txt_op_" + player.id,
+                class: "txt-turn"
+            }));
             $seat.append(div2);
-        },
 
-        createPlayer: function ($seat, player) {
-            var div1 = $('<div class="col-xs-12 col-sm-3 pull-left"><br></div>');
-            if (player === undefined) {
-                div1.append($("<img>").attr({
-                    src: "/static/media/default/Cogn_mode.png",
-                    alt: "",
-                    class: "img-circle img-player"
-                }));
-                div1.appendChild($("<br>"));
-                div1.append($("<span></span>"));
-                $seat.append(div1);
-            } else {
-                div1.append($("<img>").attr({
-                    src: "/" + player.photo_src,
-                    alt: "",
-                    class: "img-circle img-player"
-                }));
-                div1.appendChild($("<br>"));
-                div1.append($("<span></span>").text(player.name));
-                $seat.append(div1);
-                Texas.Game.appendPlayerInfo($seat, player);
-            }
-        },
-
-        addPlayer: function ($seat, player) {
-            var div1 = $("div");
-            $seat.find(div1).find($("img")).attr({
-                src: "/" + player.photo_src
-            });
-            $seat.find(div1).find($("span")).text(player.name);
-            Texas.Game.appendPlayerInfo($seat, player);
         },
 
         initGame: function (data) {
             Texas.Game.gameNo = data.game_no;
             // initialize the room
-            $('#players').empty();
             // set seats == player_num (decides by creator)
             // var player_num = data.player_num;
             var players = data.players;
@@ -301,18 +298,16 @@ Texas = {
                 if (player.id.toString() !== current_player_id) {
                     $seat = $('#player-' + p);
                     Texas.Game.createPlayer($seat, player);
-                    $seat.attr('seated-player-id', p);
-                    Texas.Game.availableSeat += 1;
+                    $seat.attr('seated-player-id', player.id);
                     Texas.Game.players.push(player.id);
-                    $('#players').append($seat);
                 }
             }
-            var seats = 7;
+            var seats = Texas.Game.seats;
             for (s = Texas.Game.availableSeat; s < seats; s++) {
                 $seat = $('#player-' + s);
-                Texas.Game.createPlayer($seat);
+            //     Texas.Game.createPlayer($seat);
                 $seat.attr('seated-player-id', null);
-                $('#players').append($seat);
+            //     $('#players').append($seat);
             }
         },
 
@@ -332,15 +327,28 @@ Texas = {
                                 player = data.players[p];
                             }
                         }
-                        $seat = $seat = $('#player-' + Texas.Game.availableSeat);
-                        Texas.Game.addPlayer($seat, player);
-                        $seat.attr('seated-player-id', Texas.Game.availableSeat);
-                        Texas.Game.availableSeat += 1;
+                        for (i = 0; i < Texas.Game.seats; i++) {
+                            $seat = $('#player-' + i);
+                            if ($seat.attr('seated-player-id') == null) {
+                                break;
+                            }
+                        }
+                        Texas.Game.createPlayer($seat, player);
+                        $seat.attr('seated-player-id', playerId);
                         Texas.Game.players.push(player.id);
                     }
                     break;
 
                 case 'player-remove':
+                    playerId = data.player_id;
+                    for (i = 0; i < Texas.Game.seats; i++) {
+                        $seat = $('#player-' + i);
+                        var id = $seat.attr('seated-player-id');
+                        if (id == playerId) {
+                            $seat.empty();
+                            $seat.attr('seated-player-id', null);
+                        }
+                    }
                     break;
             }
         }
@@ -383,6 +391,21 @@ Texas = {
         });
 
         $('#btn_bet').click(function () {
+            var origin = parseInt($('#my_fund').val());
+            var bet = parseInt($('#myRange').val());
+            $('#my_fund').text(origin - bet);
+            Texas.socket.send(JSON.stringify({
+                'message_type': 'bet',
+                'bet': bet,
+                'round_id': Texas.GameRound.roundId
+            }));
+            Texas.Player.disableBetMode();
+        });
+
+        $('#btn_allin').click(function () {
+            var origin = parseInt($('#my_fund').val());
+            var bet = parseInt($('#myRange').val());
+            $('#my_fund').text(origin - bet);
             Texas.socket.send(JSON.stringify({
                 'message_type': 'bet',
                 'bet': $('#myRange').val(),
@@ -391,13 +414,10 @@ Texas = {
             Texas.Player.disableBetMode();
         });
 
-        $('#btn_allin').click(function () {
+        $('#exit').click(function () {
             Texas.socket.send(JSON.stringify({
-                'message_type': 'bet',
-                'bet': $('#myRange').val(),
-                'round_id': Texas.GameRound.roundId
+                'message_type': 'exit'
             }));
-            Texas.Player.disableBetMode();
         });
     }
 };

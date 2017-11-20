@@ -30,6 +30,7 @@
     font-size: 18px;
     font-weight: bold;
     font-family: Helvetica;
+    visibility: hidden;
 }
 
 .pool-cards {

@@ -17,7 +17,7 @@
                 <div class="login-title-div pull-right">
                     <a class="btn btn-success" target="_blank"
                        href="https://www.espacejeux.com/en/poker/combinations">Combination Menu</a>
-                    <a class="btn btn-danger" href="{% url 'new_game' %}">Exit</a>
+                    <a class="btn btn-danger" href="{% url 'homepage' %}" id="exit">Exit</a>
                 </div>
                 <table class="pool-cards">
                     <tr>
@@ -38,8 +38,8 @@
                         </td>
                     </tr>
                 </table>
-                <div class="total-pool">
-                    <span>Pool: 100</span>
+                <div class="total-pool" id="pot">
+                    <span>Pot: 0</span>
                 </div>
                 <div class="user-container">
                     <div class="row">
@@ -60,7 +60,7 @@
                         </div>
                         <div class="col-xs-12 col-sm-3"><br><br>
                             <img class="img-circle img-user" alt="" src="{% static 'media/default/chip.png' %}">
-                            <h5 class="txt-fund" id="my_fund">You bet $CMD<span>10</span></h5>
+                            <h5 class="txt-fund" id="txt_myfund">Stack: <span id="my_fund"></span></h5>
                         </div>
                     </div>
                     <br>
@@ -142,3 +142,5 @@
     {#        </div>#}
     {#    </div>#}
 {% endblock %}
+
+<script src={% static 'js/application.js' %}></script>

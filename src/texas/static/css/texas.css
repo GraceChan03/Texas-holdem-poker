@@ -226,6 +226,7 @@
     padding: 10px 5px;
     float: right;
     border-radius:8px;
+    visibility: hidden;
 }
 
 .login-title {
