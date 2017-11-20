@@ -174,6 +174,20 @@ Texas = {
             }
         },
 
+        updatePlayer: function (data) {
+            // show previous bet's result
+            var currentPlayerId = $('#current-player-id').val();
+            var prev_player = data.prev_player;
+            if (prev_player.userid.toString() !== currentPlayerId) {
+                $('#txt_fund_' + prev_player.userid).text("Stake: " + prev_player.fund);
+                if (prev_player.op === 'bets') {
+                    $('#txt_op_' + prev_player.id).text(prev_player.op + " " + prev_player.bet);
+                } else {
+                    $('#txt_op_' + prev_player.id).text(prev_player.op);
+                }
+            }
+        },
+
         newRound: function (data) {
             Texas.GameRound.roundId = data.round_id;
 
@@ -202,6 +216,9 @@ Texas = {
                     break;
                 case 'player-action':
                     Texas.Player.onPlayerAction(data);
+                    break;
+                case 'fund-update':
+                    Texas.GameRound.updatePlayer(data);
                     break;
                 case 'add-dealer-card':
                     Texas.GameRound.turnoverCard(data);
@@ -284,16 +301,6 @@ Texas = {
             $('#pot').text("Pot: " + data.pot);
             // disable last turn
             Texas.Player.disableLastTurn();
-            // show previous bet's result
-            // var prev_player = data.prev_player;
-            // if (prev_player.id.toString() !== currentPlayerId) {
-            //     $('#txt_fund_' + prev_player.id).text("Stake: " + prev_player.fund);
-            //     if (prev_player.op === 'bets') {
-            //         $('#txt_op_' + prev_player.id).text(prev_player.op + " " + prev_player.bet);
-            //     } else {
-            //         $('#txt_op_' + prev_player.id).text(prev_player.op);
-            //     }
-            // }
             // enable this turn
             Texas.Player.currPlayer = data.player.userid;
             var id = data.player.userid;
