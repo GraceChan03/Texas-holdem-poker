@@ -402,7 +402,7 @@ Texas = {
                 case 'player-add':
                     playerId = data.player_id;
                     if (playerId.toString() !== current_player_id
-                        && $.inArray(playerId, Texas.Game.players) === -1) {
+                        && $.inArray(playerId.toString(), Texas.Game.players) === -1) {
                         for (p in data.players) {
                             if (data.players[p].id === playerId.toString()) {
                                 player = data.players[p];
