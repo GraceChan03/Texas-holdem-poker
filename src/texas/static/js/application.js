@@ -86,6 +86,12 @@ Texas = {
             }
         },
 
+        setOperationInvisible: function () {
+            for (i in Texas.Game.players) {
+                $('#txt_op_' + i).css('visibility', 'hidden');
+            }
+        },
+
         turnoverCard: function (data) {
             var dealer_cards = data.dealer_cards;
             if (dealer_cards.length === 3) {
@@ -98,10 +104,8 @@ Texas = {
                 $card.css('visibility', 'visible');
                 Texas.GameRound.dealerCardTurn += 1;
             }
-            // var turn = Texas.GameRound.dealerCardTurn;
-            // $card = $('#dealer_card' + turn);
-            // Texas.GameRound.setCard(Texas.GameRound.dealerCards[i], $card);
-            // Texas.GameRound.dealerCardTurn += 1;
+            // new circle
+            Texas.GameRound.setOperationInvisible();
         },
 
         setPlayerFunds: function (player_funds) {
@@ -120,6 +124,7 @@ Texas = {
         gameOver: function (data) {
             Texas.Player.disableLastTurn();
             Texas.Player.disableBetMode();
+            Texas.GameRound.setOperationInvisible();
             $('#pot').text("Pot: " + 0);
             $('#page_title').text(data.winner + " wins! Congratulations!");
         },
@@ -179,11 +184,12 @@ Texas = {
             var currentPlayerId = $('#current-player-id').val();
             var prev_player = data.prev_player;
             if (prev_player.userid.toString() !== currentPlayerId) {
-                $('#txt_fund_' + prev_player.userid).text("Stake: " + prev_player.fund);
+                var userid = prev_player.userid;
+                $('#txt_fund_' + userid).text("Stake: " + prev_player.fund);
                 if (prev_player.op === 'bets') {
-                    $('#txt_op_' + prev_player.id).text(prev_player.op + " " + prev_player.bet);
+                    $('#txt_op_' + userid).text(prev_player.op + " " + prev_player.bet).css('visibility', 'visible');
                 } else {
-                    $('#txt_op_' + prev_player.id).text(prev_player.op);
+                    $('#txt_op_' + userid).text(prev_player.op).css('visibility', 'visible');
                 }
             } else {
                 $('#my_fund').text(prev_player.fund);
@@ -334,14 +340,14 @@ Texas = {
                 id: "txt_fund_" + player.id,
                 class: "txt-fund"
             }));
-            div2.append($("<br><br>"));
-            div2.append($("<span></span>").attr({
-                id: "txt_turn_" + player.id,
-                class: "txt-turn"
-            }));
-            div2.append($("<br><br>"));
+            div2.append($("<br>"));
             div2.append($("<span></span>").attr({
                 id: "txt_op_" + player.id,
+                class: "txt-turn"
+            }));
+            div2.append($("<br>"));
+            div2.append($("<span></span>").attr({
+                id: "txt_turn_" + player.id,
                 class: "txt-turn"
             }));
             $seat.append(div2);
