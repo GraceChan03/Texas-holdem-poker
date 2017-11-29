@@ -64,10 +64,12 @@
 
 .txt-fund {
     visibility: hidden;
+    font-size: 14px;
 }
 
 .txt-turn {
     visibility: hidden;
+    font-size: 14px;
 }
 
 /*****************************************************

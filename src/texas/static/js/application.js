@@ -293,6 +293,13 @@ Texas = {
 
         disableLastTurn: function () {
             if (Texas.Player.currPlayer !== null) {
+                var seats = Texas.Game.seats;
+                for (s = 0; s < seats; s++) {
+                    $seat = $('#player-' + s);
+                    if ($seat.attr('seated-player-id') == Texas.Player.currPlayer) {
+                        $seat.css('border-style', 'hidden');
+                    }
+                }
                 $('#txt_turn_' + Texas.Player.currPlayer).css('visibility', 'hidden');
             }
         },
@@ -310,10 +317,18 @@ Texas = {
             // disable last turn
             Texas.Player.disableLastTurn();
             // enable this turn
-            Texas.Player.currPlayer = data.player.userid;
-            var id = data.player.userid;
-            var username = data.player.username;
-            $('#txt_turn_' + id).text(username + "'s turn").css('visibility', 'visible');
+            var currplayer = data.player.userid;
+            Texas.Player.currPlayer = currplayer;
+            // var id = data.player.userid;
+            // var username = data.player.username;
+            // $('#txt_turn_' + id).text(username + "'s turn").css('visibility', 'visible');
+            var seats = Texas.Game.seats;
+            for (s = 0; s < seats; s++) {
+                $seat = $('#player-' + s);
+                if ($seat.attr('seated-player-id') == currplayer) {
+                    $seat.css('border-style', 'solid').css('border-color', '#7FFF00');
+                }
+            }
             // set timers
         }
 
@@ -340,14 +355,9 @@ Texas = {
                 id: "txt_fund_" + player.id,
                 class: "txt-fund"
             }));
-            div2.append($("<br>"));
+            div2.append($("<br><br>"));
             div2.append($("<span></span>").attr({
                 id: "txt_op_" + player.id,
-                class: "txt-turn"
-            }));
-            div2.append($("<br>"));
-            div2.append($("<span></span>").attr({
-                id: "txt_turn_" + player.id,
                 class: "txt-turn"
             }));
             $seat.append(div2);
