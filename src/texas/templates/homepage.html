@@ -1,68 +1,54 @@
 {% extends "base_nav.html" %}
 {% load staticfiles %}
 {% block title %}My CMU-Texas{% endblock %}
-{% block nav-home %}<li class="active"><a href="/">Home</a></li>{% endblock %}
-{% block content %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'css/homepage.css' %}" type="text/css">
 
+{% endblock %}
+{% block nav-home %}
+    <li class="active"><a href="/">Home</a></li>{% endblock %}
+{% block content %}
     <div class="row">
-        <div class="col-md-8 col-lg-offset-2">
-            <div class="carousel slide" id="carousel-797508">
-                <ol class="carousel-indicators">
-                    <li data-slide-to="0" data-target="#carousel-797508">
-                    </li>
-                    <li data-slide-to="1" data-target="#carousel-797508">
-                    </li>
-                    <li data-slide-to="2" data-target="#carousel-797508" class="active">
-                    </li>
-                </ol>
-                <div class="carousel-inner">
-                    <div class="item">
-                        <img alt="new game" src="{% static 'media/default/1.jpg' %}">
-                        <div class="carousel-caption">
-                            <h4>
-                                <a href="/new_game" class="btn btn-success">
-                                    Open a room
-                                </a>
-                            </h4>
-                            <p>
-                                You can tell the room number to join the game!
-                            </p>
-                        </div>
-                    </div>
-                    <div class="item">
-                        <img alt="join game" src="{% static 'media/default/2.jpg' %}">
-                        <div class="carousel-caption">
-                            <h4>
-                                <a href="/game_join" class="btn btn-success">
-                                    Join a room
-                                </a>
-                            </h4>
-                            <p>
-                                Already have a room number? Join the room for playing!
-                            </p>
-                        </div>
-                    </div>
-                    <div class="item active">
-                        <img alt="scoreboard" src="{% static 'media/default/3.jpg' %}">
-                        <div class="carousel-caption">
-{#                            <h4>#}
-{#                                <a href="/scoreboard" class="btn btn-success">#}
-{#                                    Scoreboard#}
-{#                                </a>#}
-{#                            </h4>#}
-{#                            <p>#}
-{#                                Click to see the global scoreboard!#}
-{#                            </p>#}
-                        </div>
-                    </div>
-                </div>
-                <a class="left carousel-control" href="#carousel-797508" data-slide="prev"><span
-                        class="glyphicon glyphicon-chevron-left"></span></a> <a class="right carousel-control"
-                                                                                href="#carousel-797508"
-                                                                                data-slide="next"><span
-                    class="glyphicon glyphicon-chevron-right"></span></a>
+        <div class="container">
+            <div class="row">
+                <svg viewBox="0 0 960 300" xmlns:xlink="http://www.w3.org/1999/xlink"
+                     xmlns="http://www.w3.org/2000/svg">
+                    <symbol id="s-text">
+                        <text text-anchor="middle" x="50%" y="80%">CMU Texas</text>
+                    </symbol>
+                    <g class="g-ants">
+                        <use xlink:href="#s-text" class="text-copy"></use>
+                        <use xlink:href="#s-text" class="text-copy"></use>
+                        <use xlink:href="#s-text" class="text-copy"></use>
+                        <use xlink:href="#s-text" class="text-copy"></use>
+                        <use xlink:href="#s-text" class="text-copy"></use>
+                    </g>
+                </svg>
             </div>
         </div>
+    </div>
+    <div class="homepage-container">
+    <br><br>
+        <ul>
+            <li>
+                <a href="/new_game" class="btn  btn-lg btn-success">
+                    Open a room
+                </a>
+                <br><br><span class="hometext">Click to start a new game</span><br><br>
+            </li>
+            <li>
+                <a href="/game_join" class="btn  btn-lg btn-danger">
+                    Join a room
+                </a>
+                <br><br><span class="hometext">Click to join an opened game</span><br><br>
+            </li>
+            <li>
+                <a href="/scoreboard" class="btn  btn-lg btn-info">
+                    Scoreboard
+                </a>
+                <br><br><span class="hometext">Click to see the score board</span><br><br>
+            </li>
+        </ul>
     </div>
 
 {% endblock %}
