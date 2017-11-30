@@ -51,29 +51,6 @@ def ws_connect(message):
 
     # -----------------Send a ws for adding a new player---------------
     consumer_game_update.player_add(game, user, message.channel_layer)
-    # data = {}
-    #
-    # data["message_type"] = "game-update"
-    # data["event"] = "player-add"
-    # data["game_no"] = game_no
-    # data["player_num"] = game.player_num
-    # data["player_id"] = user.id
-    # players = []
-    # # Send all the users together to the client
-    # player_order_list = game.player_order.split(",")
-    # for pid in player_order_list:
-    #     p = User.objects.get(id=pid)
-    #     info = {}
-    #     info["id"] = pid
-    #     info["name"] = p.username
-    #     info["photo_src"] = str(p.userinfo.profile_photo_src)
-    #     info["money"] = game.entry_funds
-    #     players.append(info)
-    #
-    # data["players"] = players
-    #
-    # # Add a new player to the game group
-    # Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(data)})
 
     # When the game is full, start a new game_round
     if game.is_full():
@@ -88,66 +65,22 @@ def ws_connect(message):
         # -------- Send a new ws for [NEW-GAME] ---------
         consumer_round_update.new_game(game, new_game_round)
 
+        # ----------- Send a new ws for [PLAYER-ACTION] ----------
         player_order = new_game_round.player_order
         player_order_list_round = eval(player_order)
 
-        # # Send all the cards
-        # new_game_dict = {}
-        # new_game_dict['message_type'] = "round-update"
-        # new_game_dict['event'] = "new-game"
-        # new_game_dict['round_id'] = new_game_round.id
-        # dealer = player_order_list_round[-1]
-        # new_game_dict['dealer_id'] = dealer
-        # new_game_dict['player_order'] = player_order
-        # new_game_dict['player_funds'] = new_game_round.player_fund_dict
-        #
-        # # --------new/send cards separately--------
-        # player_dict = json.loads(new_game_round.player_cards)
-        # for player in player_dict:
-        #     cards = []
-        #     for card in player_dict[player]:
-        #         cards.append(deuces.Card.int_to_str(int(card)))
-        #     player_dict[player] = cards
-        #
-        # for i in xrange(game.player_num):
-        #     ch = members[i]
-        #     user = str(player_order_list_round[i])
-        #     player_cards = player_dict[user]
-        #     new_game_dict['player_cards'] = player_cards
-        #
-        #     Channel(ch).send({"text": json.dumps(new_game_dict)})
-        #
-        # ----------- Send a new ws for [PLAYER-ACTION] ----------
         if len(player_order_list_round) >= 3:
             next_user_id = player_order_list_round[2]
         else:
             next_user_id = player_order_list_round[0]
-        player = {}
-        player['userid'] = next_user_id
+
         try:
             next_user = User.objects.get(id=next_user_id)
         except User.DoesNotExist:
             log.debug('next player does not exist. player id=%s', next_user_id)
             return
-        player['username'] = next_user.username
-        player_funds_dict = json.loads(new_game_round.player_fund_dict)
-        player_money = player_funds_dict[str(next_user_id)]
-        player['money'] = player_money
-        prev_bet_dict = json.loads(new_game_round.player_bet_dict)
-        prev_bet = prev_bet_dict[str(next_user_id)]
+        consumer_round_update.player_action(game, new_game_round, next_user, message.channel_layer)
 
-        player_action_dict = {}
-        player_action_dict['message_type'] = "round-update"
-        player_action_dict['event'] = "player-action"
-        player_action_dict['round_id'] = new_game_round.id
-        player_action_dict['player'] = player
-        player_action_dict['action'] = "bet"
-        player_action_dict['min_bet'] = new_game_round.min_bet
-        player_action_dict['max_bet'] = player['money'] + prev_bet
-        player_action_dict['pot'] = new_game_round.pot
-
-        # Tell everyone it's whose turn
-        Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(player_action_dict)})
 
 
 @channel_session
@@ -209,16 +142,11 @@ def ws_receive(message):
             if active_user:
                 # set winner
                 # -----------Send a new ws for [SHOW-Result-CARD] ---------
-                end_round_message = {}
-                end_round_message['message_type'] = "round-update"
-                end_round_message['event'] = "game-over"
                 winner_id = active_user
                 winner = User.objects.get(id=winner_id).username
-                end_round_message['winner'] = winner
 
-                # Tell client to add a card
-                Group('bet-' + game_no, channel_layer=message.channel_layer).send(
-                    {"text": json.dumps(end_round_message)})
+                consumer_round_update.game_over(game, game_round, winner, message.channel_layer)
+
                 return
 
         # Check
@@ -236,24 +164,8 @@ def ws_receive(message):
             game_round.set_player_prev_bet(userid, bet)
             game_round.save()
 
-        # ---------------get fund-------------
-        funds = json.loads(game_round.player_fund_dict)
-
         # ----------------Update the previous user's fund
-        prev_player_update_dict = {
-            "message_type": "round-update",
-            "event": "fund-update",
-            "round_id": round_id,
-            "prev_player":
-                {
-                    "userid": userid,
-                    "fund": funds[str(userid)],
-                    "op": op,
-                    "bet": bet
-                }
-        }
-        Group('bet-' + game_no, channel_layer=message.channel_layer).send(
-            {"text": json.dumps(prev_player_update_dict)})
+        consumer_round_update.fund_update(game, game_round, user, op, bet, message.channel_layer)
 
         # Judge if this is the end of the round:
         player_order = eval(game_round.player_order)
@@ -267,16 +179,9 @@ def ws_receive(message):
 
                 #   end of current approach, add dealer card
                 # -----------Send a new ws for [SHOW-Result-CARD] ---------
-                end_round_message = {}
-                end_round_message['message_type'] = "round-update"
-                end_round_message['event'] = "game-over"
                 winner_id = game_round.get_winner()
                 winner = User.objects.get(id=winner_id).username
-                end_round_message['winner'] = winner
-
-                # Tell client to add a card
-                Group('bet-' + game_no, channel_layer=message.channel_layer).send(
-                    {"text": json.dumps(end_round_message)})
+                consumer_round_update.game_over(game, game_round, winner, message.channel_layer)
                 return
 
             else:
@@ -284,88 +189,31 @@ def ws_receive(message):
                 game_round.increment_current_approach_by_1()
                 game_round.save()
                 # -----------Send a new ws for [ADD-DEALER-CARD] ---------
-                add_dealer_card_message = {}
-                add_dealer_card_message['message_type'] = "round-update"
-                add_dealer_card_message['event'] = "add-dealer-card"
-
-                # Deal cards
-                dealer_string = str(game_round.dealer_cards)
-                cards = []
-                for card in dealer_string.split(','):
-                    cards.append(deuces.Card.int_to_str(int(card)))
-
-                if game_round.current_approach == 3:
-                    add_dealer_card_message['dealer_cards'] = cards[:3]
-                elif game_round.current_approach == 4:
-                    add_dealer_card_message['dealer_cards'] = cards[3]
-                elif game_round.current_approach == 5:
-                    add_dealer_card_message['dealer_cards'] = cards[4]
-
-                # Tell client to add a card
-                Group('bet-' + game_no, channel_layer=message.channel_layer).send(
-                    {"text": json.dumps(add_dealer_card_message)})
+                consumer_round_update.add_dealer_card(game, game_round, message.channel_layer)
 
                 # ----------- Send a new ws for [PLAYER-ACTION] ----------
                 next_user_id = player_order[next_index]
-                player = {}
-                player['userid'] = next_user_id
+
                 try:
                     next_user = User.objects.get(id=next_user_id)
                 except User.DoesNotExist:
                     log.debug('next player does not exist. player id=%s', next_user_id)
                     return
-                player['username'] = next_user.username
-                player_funds_dict = json.loads(game_round.player_fund_dict)
-                player_money = player_funds_dict[str(next_user_id)]
-                player['money'] = player_money
-                prev_bet_dict = json.loads(game_round.player_bet_dict)
-                prev_bet = prev_bet_dict[str(next_user_id)]
-
-                player_action_dict = {}
-                player_action_dict['message_type'] = "round-update"
-                player_action_dict['event'] = "player-action"
-                player_action_dict['round_id'] = round_id
-                player_action_dict['player'] = player
-                player_action_dict['action'] = "bet"
-                player_action_dict['min_bet'] = min_bet
-                player_action_dict['max_bet'] = player['money'] + prev_bet
-                player_action_dict['pot'] = game_round.pot
-
-                # Tell everyone it's whose turn
-                Group('bet-' + game_no, channel_layer=message.channel_layer).send(
-                    {"text": json.dumps(player_action_dict)})
+                consumer_round_update.player_action(game, game_round, next_user, message.channel_layer)
 
         else:
             #     This is not the end
 
             # ----------- Send a new ws for [PLAYER-ACTION] ----------
             next_user_id = player_order[next_index]
-            player = {}
-            player['userid'] = next_user_id
+
             try:
                 next_user = User.objects.get(id=next_user_id)
             except User.DoesNotExist:
                 log.debug('next player does not exist. player id=%s', next_user_id)
                 return
-            player['username'] = next_user.username
-            player_funds_dict = json.loads(game_round.player_fund_dict)
-            player_money = player_funds_dict[str(next_user_id)]
-            player['money'] = player_money
-            prev_bet_dict = json.loads(game_round.player_bet_dict)
-            prev_bet = prev_bet_dict[str(next_user_id)]
 
-            player_action_dict = {}
-            player_action_dict['message_type'] = "round-update"
-            player_action_dict['event'] = "player-action"
-            player_action_dict['round_id'] = round_id
-            player_action_dict['player'] = player
-            player_action_dict['action'] = "bet"
-            player_action_dict['min_bet'] = min_bet
-            player_action_dict['max_bet'] = player['money'] + prev_bet
-            player_action_dict['pot'] = game_round.pot
-
-            # Tell everyone it's whose turn
-            Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(player_action_dict)})
+            consumer_round_update.player_action(game, game_round, next_user, message.channel_layer)
 
 
 @channel_session
@@ -381,14 +229,5 @@ def ws_disconnect(message):
 
     # Remove current user from database
 
-    # members = get_channel_layer().group_channels('bet-' + game_no)
-    # print members
-
     # ----------- Send a new ws for [PLAYER-ACTION] ----------
-    # print "Disconnect", game_no, userid
-
-    player_remove_dict = {}
-    player_remove_dict["message_type"] = "game-update"
-    player_remove_dict["event"] = "player-remove"
-    player_remove_dict["player_id"] = userid
-    Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(player_remove_dict)})
+    consumer_game_update.player_remove(game_no, userid, message.channel_layer)

@@ -36,3 +36,11 @@ def player_add(game, user, channel_layer):
 
     # Add a new player to the game group
     Group('bet-' + game.game_no, channel_layer=channel_layer).send({"text": json.dumps(data)})
+
+
+def player_remove(game_no, userid, channel_layer):
+    player_remove_dict = {}
+    player_remove_dict["message_type"] = "game-update"
+    player_remove_dict["event"] = "player-remove"
+    player_remove_dict["player_id"] = userid
+    Group('bet-' + game_no, channel_layer=channel_layer).send({"text": json.dumps(player_remove_dict)})
