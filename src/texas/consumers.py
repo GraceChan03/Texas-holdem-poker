@@ -1,24 +1,21 @@
-import json
 import logging
-from channels import Group, Channel
+
+from channels import Group
 from channels.sessions import channel_session
-from texas.models import *
-from django.contrib.auth.models import User
-from django.core import serializers
-from channels.asgi import get_channel_layer
-import deuces
 
 from texas import consumer_round_update, consumer_game_update
+from texas.models import *
 
 log = logging.getLogger(__name__)
 
 
 @channel_session
 def ws_connect(message):
-    # Extract the room from the message. This expects message.path to be of the
-    # form /bet/{label}/, and finds a Room if the message path is applicable,
-    # and if the Room exists. Otherwise, bails (meaning this is a some othersort
-    # of websocket). So, this is effectively a version of _get_object_or_404.
+    # A. Extract the room from the message.
+    # This expects message.path to be of the form /bet/{label}/,
+    # and finds a Room if the message path is applicable, and if the Room exists.
+    # Otherwise, bails (meaning this is a some othersort of websocket).
+    # So, this is effectively a version of _get_object_or_404.
     try:
         path = message['path'].strip('/').split('/')
         prefix = path[0]
@@ -38,54 +35,30 @@ def ws_connect(message):
     # Need to be explicit about the channel layer so that testability works
     message.reply_channel.send({"accept": True})
     Group('bet-' + game_no, channel_layer=message.channel_layer).add(message.reply_channel)
-    members = get_channel_layer().group_channels('bet-' + game_no)
 
+    # Serve the channel details to the channel_session
     message.channel_session['bet'] = game.game_no
     message.channel_session['userid'] = userid
 
-    # add the user info to channel
+    # add the connecting user info to channel
     try:
         user = User.objects.get(id=userid)
     except User.DoesNotExist:
         log.debug('no userid=%s', userid)
 
-    # -----------------Send a ws for adding a new player---------------
+    # Send a ws for [PLAYER-ADD]
     consumer_game_update.player_add(game, user, message.channel_layer)
 
     # When the game is full, start a new game_round
     if game.is_full():
-
-        # Set minimum bet
-        half_min = 1
-        new_game_round = GameRound(game=game, min_bet=2*half_min)
-        # Start a new round
-        new_game_round.start()
-        new_game_round.save()
-
-        # -------- Send a new ws for [NEW-GAME] ---------
-        consumer_round_update.new_game(game, new_game_round)
-
-        # ----------- Send a new ws for [PLAYER-ACTION] ----------
-        player_order = new_game_round.player_order
-        player_order_list_round = eval(player_order)
-
-        if len(player_order_list_round) >= 3:
-            next_user_id = player_order_list_round[2]
-        else:
-            next_user_id = player_order_list_round[0]
-
-        try:
-            next_user = User.objects.get(id=next_user_id)
-        except User.DoesNotExist:
-            log.debug('next player does not exist. player id=%s', next_user_id)
-            return
-        consumer_round_update.player_action(game, new_game_round, next_user, message.channel_layer)
-
+        consumer_round_update.start_new_round(game, message.channel_layer)
 
 
 @channel_session
 def ws_receive(message):
-    # Look up the room from the channel session, bailing if it doesn't exist
+    # Parse the [BET] socket
+
+    # A. Look up the room from the channel session, bailing if it doesn't exist
     try:
         game_no = message.channel_session['bet']
         game = Game.objects.get(game_no=game_no)
@@ -96,6 +69,7 @@ def ws_receive(message):
         log.debug('received game room number, but room does not exist. game number=%s', game_no)
         return
 
+    # B. Look up the user from the channel session, bailing if it doesn't exist
     try:
         userid = message.channel_session['userid']
         user = User.objects.get(id=userid)
@@ -106,7 +80,7 @@ def ws_receive(message):
         log.debug('received player id, but player does not exist. player id=%s', userid)
         return
 
-    # Parse out a message from the content text, bailing if it doesn't
+    # C. Parse out a message from the content text, bailing if it doesn't
     # conform to the expected message format.
     try:
         data = json.loads(message['text'])  # !!! change to specific html label
@@ -114,6 +88,7 @@ def ws_receive(message):
         log.debug("ws message isn't json text=%s", message['text'])
         return
 
+    # D. Check the keys conform or not
     if set(data.keys()) != set(('message_type', 'bet', 'round_id')):  # !!! change to specific html label
         log.debug("ws message unexpected format data=%s", data)
         return
@@ -122,56 +97,70 @@ def ws_receive(message):
         log.debug('bet room=%s message_type=%s bet=%s',
                   game.game_no, data['message_type'], data['bet'])
 
+        # 1. Check message type is bet or not
         message_type = data['message_type']
         if message_type != 'bet':
             log.debug("ws message_type isn't bet message_type=%s", message_type)
             return
 
+        # 2. Read data json details
         bet = data['bet']
         round_id = data['round_id']
         game_round = GameRound.objects.get(id=round_id)
+
+        # 3. Get init data
         min_bet = game_round.min_bet
         op = ""
-        # Fold
+        # 4. Different operation
+        # FOLD
         if bet == -1:
+            # a. modify db
             op = "folds"
             game_round.set_player_inactive(userid)
             game_round.save()
-            # check if one active users
+            # b. check if one active users
             active_user = game_round.only_active_user()
             if active_user:
-                # set winner
-                # -----------Send a new ws for [SHOW-Result-CARD] ---------
+                # b1. set winner
                 winner_id = active_user
                 winner = User.objects.get(id=winner_id).username
 
+                # b2. Send a new WS for [SHOW-Result-CARD]
                 consumer_round_update.game_over(game, game_round, winner, message.channel_layer)
 
                 return
-
-        # Check
+        # CHECK
         elif bet == 0:
-            op = "checks"
-            # don't need to change pot, min_bet
-            min_bet = int(game_round.get_player_prev_bet(userid))
-        # bet sth
+            # don't need to change pot, min_bet, max_player
+            # check if eligible for check?
+            user_prev_bet = int(game_round.get_player_prev_bet(userid))
+            if user_prev_bet != min_bet:
+                log.debug("user %s previous bet: %s; global_min_bet: %s; not conformed", userid, user_prev_bet, min_bet)
+                return
+            else:
+                op = "checks"
+        # BET
         else:
             op = "bets"
-            # change min_bet
-            # TODO
-            min_bet = bet
-            # change pot
+            # change pot and min_bet
             game_round.set_player_prev_bet(userid, bet)
+            # change max_player
+            if min_bet < bet:
+                min_bet = bet
+                game_round.current_max_player = userid
             game_round.save()
+            # change min_bet
 
         # ----------------Update the previous user's fund
-        consumer_round_update.fund_update(game, game_round, user, op, bet, message.channel_layer)
+        consumer_round_update.fund_update(game, game_round, user, op, min_bet, message.channel_layer)
 
         # Judge if this is the end of the round:
         player_order = eval(game_round.player_order)
         curt_index = player_order.index(int(userid))
         next_index = curt_index + 1
+        # If this is the end of the round
         if next_index == game.player_num:
+            # Check if we should go back
             next_index = 0
             # This is the end of a round
             #     show result

@@ -11,6 +11,46 @@ import deuces
 log = logging.getLogger(__name__)
 
 
+# Start a new game round
+def start_new_round(game, channel_layer):
+
+    # 1. Set minimum bet
+    half_min = 1
+    new_game_round = GameRound(game=game, min_bet=half_min)
+
+    # 2. Save a new round into db
+    new_game_round.start()
+    new_game_round.save()
+
+    # 3. Send a new ws for [NEW-GAME]
+    new_game(game, new_game_round)
+
+    # 4. Get player order
+    player_order = new_game_round.player_order
+    player_order_list_round = eval(player_order)
+
+    # 5. Check the length to see who is the next user
+    if len(player_order_list_round) >= 3:
+        next_user_id = player_order_list_round[2]
+    elif len(player_order_list_round) == 2:
+        next_user_id = player_order_list_round[0]
+    else:
+        # Stop the game
+        # Actually can pause the game and wait for the user to enter
+        log.debug('player number less than 2')
+        return
+
+    # 6. Find out next user
+    try:
+        next_user = User.objects.get(id=next_user_id)
+    except User.DoesNotExist:
+        log.debug('next player does not exist. player id=%s', next_user_id)
+        return
+
+    # 7. Send a new ws for [PLAYER-ACTION]
+    player_action(game, new_game_round, next_user, channel_layer)
+
+
 # Send cards separately to users to init the game  round
 def new_game(game, game_round):
     # Init
