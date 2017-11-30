@@ -24,7 +24,7 @@ SECRET_KEY = '#wtk+=yv*avx7mju7i*#=hh(=uqof$g8a^w=e2wa=l2il^jlk!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'channels',
+    # 'channels_panel',
+    # 'debug_toolbar'
 ]
 
 # Config the url to use if the system requires the user to log in
@@ -53,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'webapps.urls'
@@ -144,6 +147,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 STATIC_URL = '/static/'
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')
+
 # Channel settings
 CHANNEL_LAYERS = {
     "default": {
@@ -177,3 +182,9 @@ LOGGING = {
         },
     },
 }
+# DEBUG_TOOLBAR_PANELS = [
+#     'channels_panel.panel.ChannelsDebugPanel',
+# ]
+# INTERNAL_IPS=[
+#     # '127.0.0.1'
+# ]

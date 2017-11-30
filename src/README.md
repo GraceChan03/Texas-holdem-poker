@@ -56,3 +56,11 @@ pip install pypiwin32
 
 ### Reference 
 1. [Is it possible to list channels stored in a Group?](https://stackoverflow.com/questions/39442112/is-it-possible-to-list-channels-stored-in-a-group)
+
+2. [How to fix daphne](https://github.com/django/channels/issues/230)
+
+3. [How to fix supervisor](https://github.com/django/channels/issues/408)
+
+4. [How to deploy](http://channels.readthedocs.io/en/1.1.8/deploying.html)
+
+5. [How to deploy in Chinese](https://code.ziqiangxuetang.com/django/django-static-files.html)

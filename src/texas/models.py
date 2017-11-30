@@ -58,6 +58,14 @@ class Game(models.Model):
     # sit order
     player_order = models.CharField(max_length=200, default='')
 
+    # when the players' number match the set player num,
+    # the game is full
+    def is_full(self):
+        if self.players.count() == self.player_num:
+            return True
+        else:
+            return False
+
 
 class GameRound(models.Model):
     # Game Round info
@@ -86,7 +94,7 @@ class GameRound(models.Model):
     current_approach = models.IntegerField(default=2)
 
     # Minimum bet
-    min_bet = models.IntegerField(default=1)
+    min_bet = models.IntegerField(default=2)
 
     # Pot
     pot = models.IntegerField(default=0)
@@ -218,6 +226,19 @@ class GameRound(models.Model):
         for player in self.game.players.all():
             player_hands_dict[player.id] = new_deck.draw(2)
         self.player_cards = json.dumps(player_hands_dict)
+
+        # Count round
+        prev_round_cnt = GameRound.objects.filter(game=self.game).count()
+        # Set entry fund if no round in this room before
+        if prev_round_cnt == 0:
+            self.set_player_entry_funds_dict()
+
+        # ------------Send small blind and big blind -------------
+        player_order = self.player_order
+        player_order_list_round = eval(player_order)
+
+        self.set_player_prev_bet(player_order_list_round[0], self.min_bet/2)
+        self.set_player_prev_bet(player_order_list_round[1], self.min_bet)
 
 
 # Recording a player's manipulations during a game round

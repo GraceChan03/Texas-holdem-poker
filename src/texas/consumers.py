@@ -8,13 +8,52 @@ from django.core import serializers
 from channels.asgi import get_channel_layer
 import deuces
 
+from texas.consumer_protocols import *
+
 log = logging.getLogger(__name__)
+
+
+# def send_cards(game_no, game_round_id):
+#     # Init
+#     new_game_round = GameRound.objects.get(id=game_round_id)
+#     game = Game.objects.get(game_no=game_no)
+#     members = get_channel_layer().group_channels('bet-' + game_no)
+#
+#     # -------- Send a new ws for [NEW-GAME] ---------
+#     player_order = new_game_round.player_order
+#     player_order_list_round = eval(player_order)
+#
+#     # Send all the cards
+#     new_game_dict = {}
+#     new_game_dict['message_type'] = "round-update"
+#     new_game_dict['event'] = "new-game"
+#     new_game_dict['round_id'] = new_game_round.id
+#     dealer = player_order_list_round[-1]
+#     new_game_dict['dealer_id'] = dealer
+#     new_game_dict['player_order'] = player_order
+#     new_game_dict['player_funds'] = new_game_round.player_fund_dict
+#
+#     # --------new/send cards separately--------
+#     player_dict = json.loads(new_game_round.player_cards)
+#     for player in player_dict:
+#         cards = []
+#         for card in player_dict[player]:
+#             cards.append(deuces.Card.int_to_str(int(card)))
+#         player_dict[player] = cards
+#
+#     for i in xrange(game.player_num):
+#         ch = members[i]
+#         user = str(player_order_list_round[i])
+#         player_cards = player_dict[user]
+#         new_game_dict['player_cards'] = player_cards
+#
+#         Channel(ch).send({"text": json.dumps(new_game_dict)})
 
 
 @channel_session
 def ws_connect(message):
     # Extract the room from the message. This expects message.path to be of the
-    # form /chat/{label}/, and finds a Room if the message path is applicable,
+    # form /bet/{label}/, and finds a Room if the message path is applicable,
     # and if the Room exists. Otherwise, bails (meaning this is a some othersort
     # of websocket). So, this is effectively a version of _get_object_or_404.
     try:
@@ -40,6 +79,7 @@ def ws_connect(message):
 
     message.channel_session['bet'] = game.game_no
     message.channel_session['userid'] = userid
+
     # add the user info to channel
     try:
         user = User.objects.get(id=userid)
@@ -55,6 +95,7 @@ def ws_connect(message):
     data["player_num"] = game.player_num
     data["player_id"] = user.id
     players = []
+    # Send all the users together to the client
     player_order_list = game.player_order.split(",")
     for pid in player_order_list:
         p = User.objects.get(id=pid)
@@ -67,52 +108,56 @@ def ws_connect(message):
 
     data["players"] = players
 
+    # Add a new player to the game group
     Group('bet-' + game_no, channel_layer=message.channel_layer).send({"text": json.dumps(data)})
 
-    # when the players' number match the set player num
-    # Send cards to each player separately
-    if game.players.count() == game.player_num:
-        new_game_round = GameRound(game=game)
+    # When the game is full, start a new game_round
+    if game.is_full():
+
+        # Count round
+        prev_round_cnt = GameRound.objects.filter(game=game).count()
+        # Set minimum bet
+        half_min = 1
+        new_game_round = GameRound(game=game, min_bet=2*half_min)
         # Start a new round
         new_game_round.start()
-        # Do this if this is the first round
-        new_game_round.set_player_entry_funds_dict()
-
-        # ------------Send small blind and big blind -------------
-        player_order = new_game_round.player_order
-        player_order_list_round = eval(player_order)
-        new_game_round.set_player_prev_bet(player_order_list_round[0], 1)
-        new_game_round.set_player_prev_bet(player_order_list_round[1], 2)
-
+        # Set entry fund if no round in this room before
+        if prev_round_cnt == 0:
+            new_game_round.set_player_entry_funds_dict()
         new_game_round.save()
 
         # -------- Send a new ws for [NEW-GAME] ---------
-        # Send all the cards
-        new_game_dict = {}
-        new_game_dict['message_type'] = "round-update"
-        new_game_dict['event'] = "new-game"
-        new_game_dict['round_id'] = new_game_round.id
-        dealer = player_order_list_round[-1]
-        new_game_dict['dealer_id'] = dealer
-        new_game_dict['player_order'] = player_order
-        new_game_dict['player_funds'] = new_game_round.player_fund_dict
+        send_cards(game_no, new_game_round.id)
 
-        # --------new/send cards separately--------
-        player_dict = json.loads(new_game_round.player_cards)
-        for player in player_dict:
-            cards = []
-            for card in player_dict[player]:
-                cards.append(deuces.Card.int_to_str(int(card)))
-            player_dict[player] = cards
+        player_order = new_game_round.player_order
+        player_order_list_round = eval(player_order)
 
-        for i in xrange(game.player_num):
-            ch = members[i]
-            user = str(player_order_list_round[i])
-            player_cards = player_dict[user]
-            new_game_dict['player_cards'] = player_cards
-
-            Channel(ch).send({"text": json.dumps(new_game_dict)})
-
+        # # Send all the cards
+        # new_game_dict = {}
+        # new_game_dict['message_type'] = "round-update"
+        # new_game_dict['event'] = "new-game"
+        # new_game_dict['round_id'] = new_game_round.id
+        # dealer = player_order_list_round[-1]
+        # new_game_dict['dealer_id'] = dealer
+        # new_game_dict['player_order'] = player_order
+        # new_game_dict['player_funds'] = new_game_round.player_fund_dict
+        #
+        # # --------new/send cards separately--------
+        # player_dict = json.loads(new_game_round.player_cards)
+        # for player in player_dict:
+        #     cards = []
+        #     for card in player_dict[player]:
+        #         cards.append(deuces.Card.int_to_str(int(card)))
+        #     player_dict[player] = cards
+        #
+        # for i in xrange(game.player_num):
+        #     ch = members[i]
+        #     user = str(player_order_list_round[i])
+        #     player_cards = player_dict[user]
+        #     new_game_dict['player_cards'] = player_cards
+        #
+        #     Channel(ch).send({"text": json.dumps(new_game_dict)})
+        #
         # ----------- Send a new ws for [PLAYER-ACTION] ----------
         if len(player_order_list_round) >= 3:
             next_user_id = player_order_list_round[2]
@@ -375,7 +420,9 @@ def ws_disconnect(message):
         log.debug('ws room does not exist label=%s', game_no)
         return
 
-    members = get_channel_layer().group_channels('bet-' + game_no)
+    # Remove current user from database
+
+    # members = get_channel_layer().group_channels('bet-' + game_no)
     # print members
 
     # ----------- Send a new ws for [PLAYER-ACTION] ----------
