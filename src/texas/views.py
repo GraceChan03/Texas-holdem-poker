@@ -127,7 +127,7 @@ def forget_password(request):
     key = default_token_generator.make_token(user)
     # send email for reset
     email_body = """
-        Welcome to Grumblr. Please click the link below to reset your password:
+        Welcome to CMU Texas Hold'em. Please click the link below to reset your password:
 
         http://%s%s
         """ % (request.get_host(), reverse("password_reset", args=(user.username,key,)))
