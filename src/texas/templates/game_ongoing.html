@@ -3,10 +3,13 @@
 {#need to specify the room number here?#}
 {% block title %}{{ game_no }}{% endblock %}
 {% block css %}
-    <link rel="stylesheet" href="{% static 'css/gamepage.css' %}" type="text/css">{% endblock %}
+    <link rel="stylesheet" href="{% static 'css/gamepage.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/TimeCircles.css' %}" type="text/css">
+{% endblock %}
 {% block new-game %}
     <li class="dropdown active">
 {% endblock %}
+{% load static %}
 {% block content %}
     <div class="game-body container fluid ">
         <div class="row">
@@ -43,25 +46,33 @@
                 </div>
                 <div class="user-container">
                     <div class="row">
-                        <div class="col-xs-12 col-sm-3"><br><br>
-                            <img src="{% url 'get_profile_image' login_user.id %}" alt=""
-                                 class="img-circle img-user"/>
-                            <span class="login-link">{{ login_user.username }}</span><br/>
-                            <input type="hidden" value="{{ login_user.id }}" id="current-player-id">
-                            <input type="hidden" value="{{ login_user.username }}" id="current-player-username">
+                        <div class="col-xs-12 col-sm-3" style="margin: 10px;"><br>
+                            <div>
+                                <img src="{% url 'get_profile_image' login_user.id %}" alt=""
+                                     class="img-circle img-user"/><br>
+                            </div>
+                            <div class="curr-timer" data-timer="30" id="timer0"></div>
+                            <div>
+                                <span class="login-link">{{ login_user.username }}</span><br/>
+                                <span class="txt-fund" id="txt_myfund">Stack: <span id="my_fund"></span></span>
+                                <input type="hidden" value="{{ login_user.id }}" id="current-player-id">
+                                <input type="hidden" value="{{ login_user.username }}" id="current-player-username">
+                            </div>
+
+
                         </div>
-                        <div class="col-xs-12 col-sm-3">
-                            <span>Card 1:</span>
-                            <img class=" card-large" id="card0">
+                        <div id="player-cards">
+                            {#                            <div class="col-xs-12 col-sm-3">#}
+                            <img class=" card-large card0" id="card0">
+                            {#                            </div>#}
+                            {#                            <div class="col-xs-12 col-sm-3">#}
+                            <img class=" card-large card1" id="card1">
+                            {#                            </div>#}
                         </div>
-                        <div class="col-xs-12 col-sm-3">
-                            <span>Card 2:</span>
-                            <img class=" card-large" id="card1">
-                        </div>
-                        <div class="col-xs-12 col-sm-3"><br><br>
-                            <img class="img-circle img-user" alt="" src="{% static 'media/default/chip.png' %}">
-                            <h5 class="txt-fund" id="txt_myfund">Stack: <span id="my_fund"></span></h5>
-                        </div>
+                        {#                                                <div class="col-xs-12 col-sm-3"><br><br>#}
+                        {#                                                    <img class="img-circle img-user" alt="" src="{% static 'media/default/chip.png' %}">#}
+                        {#                                                    #}
+                        {#                                                </div>#}
                     </div>
                     <br>
                     <div class="row">
@@ -88,19 +99,33 @@
                 </div>
                 {#                this part should be adjustify , I wrote them as static#}
                 <div id="players">
-                    <div class="players" id="player-0">
+                    <div id="player-0">
                     </div>
-                    <div class="players" id="player-1">
+                    <div id="stack-0">
                     </div>
-                    <div class="players" id="player-2">
+                    <div id="player-1">
                     </div>
-                    <div class="players" id="player-3">
+                    <div id="stack-1">
                     </div>
-                    <div class="players" id="player-4">
+                    <div id="player-2">
                     </div>
-                    <div class="players" id="player-5">
+                    <div id="stack-2">
                     </div>
-                    <div class="players" id="player-6">
+                    <div id="player-3">
+                    </div>
+                    <div id="stack-3">
+                    </div>
+                    <div id="player-4">
+                    </div>
+                    <div id="stack-4">
+                    </div>
+                    <div id="player-5">
+                    </div>
+                    <div id="stack-5">
+                    </div>
+                    <div id="player-6">
+                    </div>
+                    <div id="stack-6">
                     </div>
                 </div>
             </div>
@@ -143,6 +168,6 @@
     {#    </div>#}
 {% endblock %}
 {% block js %}
-    {% load static %}
+    <script src={% static 'js/TimeCircles.js' %}></script>
     <script src={% static 'js/application.js' %}></script>
 {% endblock %}
