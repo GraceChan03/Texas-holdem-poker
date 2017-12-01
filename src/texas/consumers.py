@@ -216,13 +216,30 @@ def ws_disconnect(message):
     try:
         game_no = message.channel_session['bet']
         userid = message.channel_session['userid']
-        Group('bet-' + game_no, channel_layer=message.channel_layer).discard(message.reply_channel)
+        game = Game.objects.get(game_no=game_no)
+        user = User.objects.get(id=userid)
 
-    except (KeyError, Game.DoesNotExist):
+    except KeyError:
+        log.debug('Key not exist in channel')
+        return
+    except Game.DoesNotExist:
         log.debug('ws room does not exist label=%s', game_no)
         return
+    except User.DoesNotExist:
+        log.debug('user does not exist label=%s', userid)
+        return
+
+    Group('bet-' + game_no, channel_layer=message.channel_layer).discard(message.reply_channel)
 
     # Remove current user from database
+
+    # Update this person's balance
+    # ---------------get fund-------------
+    game_round = GameRound.objects.get(game=game)
+    funds = json.loads(game_round.player_fund_dict)
+    round_balance = funds[str(userid)]
+    user.userinfo.balance += round_balance
+    user.userinfo.save()
 
     # ----------- Send a new ws for [PLAYER-ACTION] ----------
     consumer_game_update.player_remove(game_no, userid, message.channel_layer)

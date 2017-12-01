@@ -178,5 +178,8 @@ class JoinRoomForm(forms.Form):
         if not game.players.filter(username=self.username) and \
                         game.player_num == game.players.count():
             raise forms.ValidationError("The room is full.")
+        player = User.objects.get(username=self.username)
+        if player.userinfo.balance < game.entry_funds:
+            raise forms.ValidationError("You don't have enough funds.")
 
         return cleaned_data
