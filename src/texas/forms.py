@@ -178,5 +178,4 @@ class JoinRoomForm(forms.Form):
 class SearchUser(forms.Form):
     keyword = forms.CharField(max_length=30,
                               widget=forms.TextInput(
-                                  attrs={'type': 'text', 'class': 'form-control', 'placeholder': 'Search user..',
-                                         'required': 'true'}))
+                                  attrs={'type': 'text', 'class': 'form-control', 'placeholder': 'Search user..'}))

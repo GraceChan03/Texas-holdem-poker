@@ -17,90 +17,33 @@
                         </div>
 
                         <ul class="list-group" id="contact-list">
-                            <li class="list-group-item">
-                                <div class="col-xs-12 col-sm-3">
-                                    <img src="http://api.randomuser.me/portraits/men/49.jpg" alt="Scott Stevens"
-                                         class="img-responsive img-circle"/>
-                                </div>
-                                <div class="col-xs-12 col-sm-9"><br>
-                                    <span class="name">Scott Stevens</span><br/><br/>
-                                    {#                                    add friend link?#}
-                                    <a href="#" class="btn btn-info">Add</a>
-                                </div>
-                                <div class="clearfix"></div>
-                            </li>
-                            <li class="list-group-item">
-                                <div class="col-xs-12 col-sm-3">
-                                    <img src="http://api.randomuser.me/portraits/men/97.jpg" alt="Seth Frazier"
-                                         class="img-responsive img-circle"/>
-                                </div>
-                                <div class="col-xs-12 col-sm-9"><br/>
-                                    <span class="name">Seth Frazier</span><br/><br/>
-                                    {#                                    add friend link?#}
-                                    <a href="#" class="btn btn-info">Add</a>
-                                </div>
-                                <div class="clearfix"></div>
-                            </li>
-                            <li class="list-group-item">
-                                <div class="col-xs-12 col-sm-3">
-                                    <img src="http://api.randomuser.me/portraits/women/90.jpg" alt="Jean Myers"
-                                         class="img-responsive img-circle"/>
-                                </div>
-                                <div class="col-xs-12 col-sm-9"><br/>
-                                    <span class="name">Jean Myers</span><br/><br/>
-                                    {#                                    add friend link?#}
-                                    <a href="#" class="btn btn-info">Add</a>
-                                </div>
-                                <div class="clearfix"></div>
-                            </li>
-                            <li class="list-group-item">
-                                <div class="col-xs-12 col-sm-3">
-                                    <img src="http://api.randomuser.me/portraits/men/24.jpg" alt="Todd Shelton"
-                                         class="img-responsive img-circle"/>
-                                </div>
-                                <div class="col-xs-12 col-sm-9"><br/>
-                                    <span class="name">Todd Shelton</span><br/><br/>
-                                    {#                                    add friend link?#}
-                                    <a href="#" class="btn btn-info">Add</a>
-                                </div>
-                                <div class="clearfix"></div>
-                            </li>
-                            <li class="list-group-item">
-                                <div class="col-xs-12 col-sm-3">
-                                    <img src="http://api.randomuser.me/portraits/women/34.jpg" alt="Rosemary Porter"
-                                         class="img-responsive img-circle"/>
-                                </div>
-                                <div class="col-xs-12 col-sm-9"><br/>
-                                    <span class="name">Rosemary Porter</span><br/><br/>
-                                    {#                                    add friend link?#}
-                                    <a href="#" class="btn btn-info">Add</a>
-                                </div>
-                                <div class="clearfix"></div>
-                            </li>
-                            <li class="list-group-item">
-                                <div class="col-xs-12 col-sm-3">
-                                    <img src="http://api.randomuser.me/portraits/women/56.jpg" alt="Debbie Schmidt"
-                                         class="img-responsive img-circle"/>
-                                </div>
-                                <div class="col-xs-12 col-sm-9"><br/>
-                                    <span class="name">Debbie Schmidt</span><br/><br/>
-                                    {#                                    add friend link?#}
-                                    <a href="#" class="btn btn-info">Add</a>
-                                </div>
-                                <div class="clearfix"></div>
-                            </li>
-                            <li class="list-group-item">
-                                <div class="col-xs-12 col-sm-3">
-                                    <img src="http://api.randomuser.me/portraits/women/76.jpg" alt="Glenda Patterson"
-                                         class="img-responsive img-circle"/>
-                                </div>
-                                <div class="col-xs-12 col-sm-9"><br/>
-                                    <span class="name">Glenda Patterson</span><br/><br/>
-                                    {#                                    add friend link?#}
-                                    <a href="#" class="btn btn-info">Add</a>
-                                </div>
-                                <div class="clearfix"></div>
-                            </li>
+                            {% if not users %}
+                                <li class="list-group-item">
+                                    <div class="col-xs-12 col-sm-3">
+                                        <img src="{% url 'get_profile_image' user.id %}" alt="{{ user.username }}"
+                                             class="img-responsive img-circle"/>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-9"><br>
+                                        <span class="name">Your username is: {{ user.username }}</span><br/><br/>
+                                        <a href="#" class="btn btn-danger">No Search Result</a>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </li>
+                            {% endif %}
+                            {% for user in users %}
+                                <li class="list-group-item">
+                                    <div class="col-xs-12 col-sm-3">
+                                        <img src="{% url 'get_profile_image' user.id %}" alt="{{ user.username }}"
+                                             class="img-responsive img-circle"/>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-9"><br>
+                                        <span class="name">{{ user.username }}</span><br/><br/>
+                                        {#                                    add friend link?#}
+                                        <a href="#" class="btn btn-info">Add</a>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </li>
+                            {% endfor %}
                         </ul>
                     </div>
                 </div>
