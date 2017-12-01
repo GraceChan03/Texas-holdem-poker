@@ -35,7 +35,8 @@ def register(request):
                                         email=form.cleaned_data['email'], \
                                         password=form.cleaned_data['password1'])
     new_user.save()
-    user_info = UserInfo.objects.create(user=new_user)
+    init_balance = 1000
+    user_info = UserInfo.objects.create(user=new_user, balance=init_balance)
     user_info.save()
 
     to_email = form.cleaned_data['email']

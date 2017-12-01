@@ -1,0 +1,11 @@
+Django==1.11.7
+psycopg2==2.7.3.2
+postgres==2.2.1
+Pillow==4.3.0
+Twisted==17.9.0
+channels==1.1.8
+haikunator==2.1.0
+deuces==0.2
+pyOpenSSL==17.3.0
+asgi_redis==1.4.3
+service_identity==17.0.0
