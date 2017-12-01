@@ -24,7 +24,7 @@ SECRET_KEY = '#wtk+=yv*avx7mju7i*#=hh(=uqof$g8a^w=e2wa=l2il^jlk!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 # Application definition
 
@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'channels',
+    # 'channels_panel',
+    # 'debug_toolbar'
 ]
 
 # Config the url to use if the system requires the user to log in
@@ -53,6 +55,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    # 'debug_toolbar.middleware.DebugToolbarMiddleware',
 ]
 
 ROOT_URLCONF = 'webapps.urls'
@@ -94,7 +97,8 @@ DATABASES = {
         # The following settings are not used with sqlite3:
         'USER': 'postgres',
         'PASSWORD': '',
-        'HOST': '54.208.15.77',    # Empty for localhost through domain sockets or           '127.0.0.1' for localhost through TCP.
+        # 'HOST': '54.208.15.77',    # Empty for localhost through domain sockets or           '127.0.0.1' for localhost through TCP.
+        'HOST': '127.0.0.1',    # Empty for localhost through domain sockets or           '127.0.0.1' for localhost through TCP.
         'PORT': '5432',             # Set to empty string for default.
     }
 }
@@ -144,12 +148,14 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 STATIC_URL = '/static/'
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'collected_static')
+
 # Channel settings
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "asgi_redis.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [os.environ.get('REDIS_URL', 'redis://54.208.15.77:6379')],
+            "hosts": [os.environ.get('REDIS_URL', 'redis://127.0.0.1:6379')],
         },
         "ROUTING": "webapps.routing.channel_routing",
     },
@@ -177,3 +183,9 @@ LOGGING = {
         },
     },
 }
+# DEBUG_TOOLBAR_PANELS = [
+#     'channels_panel.panel.ChannelsDebugPanel',
+# ]
+# INTERNAL_IPS=[
+#     # '127.0.0.1'
+# ]

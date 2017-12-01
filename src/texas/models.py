@@ -58,6 +58,14 @@ class Game(models.Model):
     # sit order
     player_order = models.CharField(max_length=200, default='')
 
+    # when the players' number match the set player num,
+    # the game is full
+    def is_full(self):
+        if self.players.count() == self.player_num:
+            return True
+        else:
+            return False
+
 
 class GameRound(models.Model):
     # Game Round info
@@ -85,6 +93,9 @@ class GameRound(models.Model):
     # Current Approach
     current_approach = models.IntegerField(default=2)
 
+    # Current Max Player
+    current_max_player = models.IntegerField(default=-1)
+
     # Minimum bet
     min_bet = models.IntegerField(default=1)
 
@@ -99,6 +110,7 @@ class GameRound(models.Model):
         dict = json.loads(self.player_bet_dict)
         player_id = str(player_id)
         self.pot = self.pot + int(curt_bet) - int(dict[player_id])
+        self.min_bet = curt_bet
         self.less_player_fund(player_id, curt_bet - dict[player_id])
         dict[player_id] = curt_bet
         self.player_bet_dict = json.dumps(dict)
@@ -108,9 +120,6 @@ class GameRound(models.Model):
         for player in self.game.players.all():
             dict[player.id] = 0
         self.player_bet_dict = json.dumps(dict)
-
-    def set_min_bet(self, min_bet):
-        self.min_bet = min_bet
 
     def increment_current_approach_by_1(self):
         self.current_approach += 1
@@ -218,6 +227,20 @@ class GameRound(models.Model):
         for player in self.game.players.all():
             player_hands_dict[player.id] = new_deck.draw(2)
         self.player_cards = json.dumps(player_hands_dict)
+
+        # Count round
+        prev_round_cnt = GameRound.objects.filter(game=self.game).count()
+        # Set entry fund if no round in this room before
+        if prev_round_cnt == 0:
+            self.set_player_entry_funds_dict()
+
+        # ------------Send small blind and big blind -------------
+        player_order = self.player_order
+        player_order_list_round = eval(player_order)
+
+        self.set_player_prev_bet(player_order_list_round[0], self.min_bet)
+        self.set_player_prev_bet(player_order_list_round[1], 2*self.min_bet)
+        self.current_max_player = player_order_list_round[1]
 
 
 # Recording a player's manipulations during a game round

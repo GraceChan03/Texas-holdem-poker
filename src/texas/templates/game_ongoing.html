@@ -19,7 +19,24 @@
                 </div>
                 <div class="login-title-div pull-right">
                     <a class="btn btn-success" target="_blank"
-                       href="https://www.espacejeux.com/en/poker/combinations">Combination Menu</a>
+                       data-toggle="modal" data-target="#myModal">Combination Menu</a>
+                    <!-- Instruction（Modal） -->
+                    <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+                         aria-hidden="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
+                                        &times;
+                                    </button>
+                                    <h4 class="modal-title" id="myModalLabel">
+                                        Combinations rankings
+                                    </h4>
+                                </div>
+                                <img src="../static/media/default/rankings.jpg">
+                            </div><!-- /.modal-content -->
+                        </div><!-- /.modal -->
+                    </div>
                     <a class="btn btn-danger" href="{% url 'homepage' %}" id="exit">Exit</a>
                 </div>
                 <table class="pool-cards">

@@ -62,7 +62,12 @@ def game_ongoing(request, game_no):
     # edit here
     context['game_no'] = game_no
     context['login_user'] = request.user
-    players = Game.objects.get(game_no=game_no).players.all()
+    # Update the user's balance for entry funds
+    game = Game.objects.get(game_no=game_no)
+    request.user.userinfo.balance -= game.entry_funds
+    request.user.userinfo.save()
+
+    players = game.players.all()
     context['players'] = players
     return render(request, 'game_ongoing.html', context)
 
