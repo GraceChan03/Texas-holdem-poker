@@ -17,7 +17,7 @@ urlpatterns = [
     url(r'^edit_profile$', views.edit_profile, name='edit_profile'),
     url(r'^change_password$', views.change_password, name='change_password'),
     url(r'^forget_password$', views.forget_password, name='forget_password'),
-    url(r'^password_reset/(?P<key>.+)$', views.password_reset, name='password_reset'),
+    url(r'^password_reset/(?P<user_name>.+)/(?P<token>.+)$', views.password_reset, name='password_reset'),
     # url(r'^reset_password/(?P<user_name>.+)/(?P<token>.+)$', views.reset_password, name='reset_password'),
     # url(r'^reset_password_submit/(?P<user_name>.+)$', views.reset_password_submit, name='reset_password_submit'),
 

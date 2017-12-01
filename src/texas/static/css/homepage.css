@@ -50,7 +50,8 @@ svg {
 
 .homepage-container {
     position: relative;
-    background-color: rgb(0, 128, 0);
+    background-color: green;
+    /*background-color: linear-gradient(darkgreen,green,darkgreen);*/
     background-image: url("../media/default/texasbackground.jpg");
     background-size: 38%;
     background-repeat: no-repeat;
