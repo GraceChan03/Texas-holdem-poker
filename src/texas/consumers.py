@@ -111,7 +111,7 @@ def ws_receive(message):
         # 3. Get init data
         min_bet = game_round.min_bet
         op = ""
-        # 4. Different operation
+        # 4. Perform different operation
         # FOLD
         if bet == -1:
             # a. modify db
@@ -142,67 +142,73 @@ def ws_receive(message):
         # BET
         else:
             op = "bets"
-            # change pot and min_bet
+            # a. change pot and min_bet
             game_round.set_player_prev_bet(userid, bet)
-            # change max_player
+            # b. change max_player
             if min_bet < bet:
+                # change min_bet
                 min_bet = bet
                 game_round.current_max_player = userid
             game_round.save()
-            # change min_bet
 
-        # ----------------Update the previous user's fund
+        # 5. Update the previous user's fund
         consumer_round_update.fund_update(game, game_round, user, op, min_bet, message.channel_layer)
 
-        # Judge if this is the end of the round:
+        # 6. Find out next approach (in the same approach, or go back to the first user?):
+        # A. Is this the last one of the player order?
+        # If yes: go to the first one
+        # If no: go the the next one
         player_order = eval(game_round.player_order)
-        curt_index = player_order.index(int(userid))
-        next_index = curt_index + 1
-        # If this is the end of the round
-        if next_index == game.player_num:
-            # Check if we should go back
+        if int(userid) == int(player_order[-1]):
             next_index = 0
-            # This is the end of a round
-            #     show result
-            if game_round.current_approach == 5:
-
-                #   end of current approach, add dealer card
-                # -----------Send a new ws for [SHOW-Result-CARD] ---------
-                winner_id = game_round.get_winner()
-                winner = User.objects.get(id=winner_id).username
-                consumer_round_update.game_over(game, game_round, winner, message.channel_layer)
-                return
-
-            else:
-                #   end of current approach, add dealer card
-                game_round.increment_current_approach_by_1()
-                game_round.save()
-                # -----------Send a new ws for [ADD-DEALER-CARD] ---------
-                consumer_round_update.add_dealer_card(game, game_round, message.channel_layer)
-
-                # ----------- Send a new ws for [PLAYER-ACTION] ----------
-                next_user_id = player_order[next_index]
-
-                try:
-                    next_user = User.objects.get(id=next_user_id)
-                except User.DoesNotExist:
-                    log.debug('next player does not exist. player id=%s', next_user_id)
-                    return
-                consumer_round_update.player_action(game, game_round, next_user, message.channel_layer)
-
         else:
-            #     This is not the end
+            next_index = player_order.index(int(userid)) + 1
+        next_user_id = player_order[next_index]
 
-            # ----------- Send a new ws for [PLAYER-ACTION] ----------
-            next_user_id = player_order[next_index]
-
+        # B. Is this the first player with max bet?
+        # B1. If no, let next player bet (ws [PLAYER-ACTION])
+        # B2. If yes, check if we should go to next approach, add-dealer-card
+        if next_user_id != game_round.current_max_player:
+            # Send a new ws for [PLAYER-ACTION]
             try:
                 next_user = User.objects.get(id=next_user_id)
             except User.DoesNotExist:
                 log.debug('next player does not exist. player id=%s', next_user_id)
                 return
-
             consumer_round_update.player_action(game, game_round, next_user, message.channel_layer)
+        else:
+            # This is the first player with max bet.
+            next_user_id = player_order[0]
+
+            # Reset the max to the first user(in case everyone checks in the following game)
+            game_round.current_max_player = next_user_id
+            game_round.save()
+
+            # Is this the final approach?
+            # If yes, show result
+            # If no, send dealer card and let the small blind bet first.
+            if game_round.current_approach == 5:
+                # Send a new ws for [SHOW-Result-CARD]
+                winner_id = game_round.get_winner()
+                winner = User.objects.get(id=winner_id).username
+                consumer_round_update.game_over(game, game_round, winner, message.channel_layer)
+                return
+            else:
+                # end of current approach, add dealer card
+                game_round.increment_current_approach_by_1()
+                game_round.save()
+                # a new ws for [ADD-DEALER-CARD]
+                consumer_round_update.add_dealer_card(game, game_round, message.channel_layer)
+
+                # Send a new ws for [PLAYER-ACTION] to small blind
+                try:
+                    next_user = User.objects.get(id=next_user_id)
+                except User.DoesNotExist:
+                    log.debug('next player does not exist. player id=%s', next_user_id)
+                    return
+                # If next one is not the max player, go to player-action
+                # Else go to next approach, add-dealer-card
+                consumer_round_update.player_action(game, game_round, next_user, message.channel_layer)
 
 
 @channel_session

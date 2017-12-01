@@ -64,3 +64,5 @@ pip install pypiwin32
 4. [How to deploy](http://channels.readthedocs.io/en/1.1.8/deploying.html)
 
 5. [How to deploy in Chinese](https://code.ziqiangxuetang.com/django/django-static-files.html)
+
+6. [Free Domain](http://www.freenom.com/zh/freeandpaiddomains.html)
