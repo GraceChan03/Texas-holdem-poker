@@ -11,9 +11,9 @@ from datetime import date
 from django.contrib import auth
 from django.urls import reverse
 
-from texas.forms import *
-from texas.models import *
-from texas.util import send_email
+from .forms import *
+from .models import *
+from .util import send_email
 from mimetypes import guess_type
 
 
