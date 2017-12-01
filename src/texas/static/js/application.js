@@ -86,6 +86,12 @@ Texas = {
             }
         },
 
+        setOperationInvisible: function () {
+            for (i in Texas.Game.players) {
+                $('#txt_op_' + i).css('visibility', 'hidden');
+            }
+        },
+
         turnoverCard: function (data) {
             var dealer_cards = data.dealer_cards;
             if (dealer_cards.length === 3) {
@@ -98,10 +104,8 @@ Texas = {
                 $card.css('visibility', 'visible');
                 Texas.GameRound.dealerCardTurn += 1;
             }
-            // var turn = Texas.GameRound.dealerCardTurn;
-            // $card = $('#dealer_card' + turn);
-            // Texas.GameRound.setCard(Texas.GameRound.dealerCards[i], $card);
-            // Texas.GameRound.dealerCardTurn += 1;
+            // new circle
+            Texas.GameRound.setOperationInvisible();
         },
 
         setPlayerFunds: function (player_funds) {
@@ -120,6 +124,7 @@ Texas = {
         gameOver: function (data) {
             Texas.Player.disableLastTurn();
             Texas.Player.disableBetMode();
+            Texas.GameRound.setOperationInvisible();
             $('#pot').text("Pot: " + 0);
             $('#page_title').text(data.winner + " wins! Congratulations!");
         },
@@ -179,11 +184,12 @@ Texas = {
             var currentPlayerId = $('#current-player-id').val();
             var prev_player = data.prev_player;
             if (prev_player.userid.toString() !== currentPlayerId) {
-                $('#txt_fund_' + prev_player.userid).text("Stake: " + prev_player.fund);
+                var userid = prev_player.userid;
+                $('#txt_fund_' + userid).text("Stake: " + prev_player.fund);
                 if (prev_player.op === 'bets') {
-                    $('#txt_op_' + prev_player.id).text(prev_player.op + " " + prev_player.bet);
+                    $('#txt_op_' + userid).text(prev_player.op + " " + prev_player.bet).css('visibility', 'visible');
                 } else {
-                    $('#txt_op_' + prev_player.id).text(prev_player.op);
+                    $('#txt_op_' + userid).text(prev_player.op).css('visibility', 'visible');
                 }
             } else {
                 $('#my_fund').text(prev_player.fund);
@@ -287,6 +293,13 @@ Texas = {
 
         disableLastTurn: function () {
             if (Texas.Player.currPlayer !== null) {
+                var seats = Texas.Game.seats;
+                for (s = 0; s < seats; s++) {
+                    $seat = $('#player-' + s);
+                    if ($seat.attr('seated-player-id') == Texas.Player.currPlayer) {
+                        $seat.css('border-style', 'hidden');
+                    }
+                }
                 $('#txt_turn_' + Texas.Player.currPlayer).css('visibility', 'hidden');
             }
         },
@@ -304,10 +317,18 @@ Texas = {
             // disable last turn
             Texas.Player.disableLastTurn();
             // enable this turn
-            Texas.Player.currPlayer = data.player.userid;
-            var id = data.player.userid;
-            var username = data.player.username;
-            $('#txt_turn_' + id).text(username + "'s turn").css('visibility', 'visible');
+            var currplayer = data.player.userid;
+            Texas.Player.currPlayer = currplayer;
+            // var id = data.player.userid;
+            // var username = data.player.username;
+            // $('#txt_turn_' + id).text(username + "'s turn").css('visibility', 'visible');
+            var seats = Texas.Game.seats;
+            for (s = 0; s < seats; s++) {
+                $seat = $('#player-' + s);
+                if ($seat.attr('seated-player-id') == currplayer) {
+                    $seat.css('border-style', 'solid').css('border-color', '#7FFF00');
+                }
+            }
             // set timers
         }
 
@@ -333,11 +354,6 @@ Texas = {
             div2.append($("<span></span>").attr({
                 id: "txt_fund_" + player.id,
                 class: "txt-fund"
-            }));
-            div2.append($("<br><br>"));
-            div2.append($("<span></span>").attr({
-                id: "txt_turn_" + player.id,
-                class: "txt-turn"
             }));
             div2.append($("<br><br>"));
             div2.append($("<span></span>").attr({
@@ -402,7 +418,7 @@ Texas = {
                 case 'player-add':
                     playerId = data.player_id;
                     if (playerId.toString() !== current_player_id
-                        && $.inArray(playerId, Texas.Game.players) === -1) {
+                        && $.inArray(playerId.toString(), Texas.Game.players) === -1) {
                         for (p in data.players) {
                             if (data.players[p].id === playerId.toString()) {
                                 player = data.players[p];

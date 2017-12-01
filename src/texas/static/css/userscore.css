@@ -1,11 +1,13 @@
 .points_table thead {
 	width: 100%;
+	z-index:9999;
 }
 
 .points_table tbody {
 	height: 562px;
 	overflow-y: auto;
 	width: 100%;
+	z-index:9999;
 }
 
 .points_table thead tr{
