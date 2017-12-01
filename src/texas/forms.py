@@ -4,6 +4,7 @@ from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from texas.models import *
 
+
 class RegistrationForm(forms.Form):
     username = forms.CharField(max_length=20, label='Username',
                                widget=forms.TextInput(attrs={'class': 'grumblr-input-text',
@@ -53,11 +54,13 @@ class RegistrationForm(forms.Form):
         # dictionary
         return username
 
+
 class ResetPasswordForm(forms.Form):
     password1 = forms.CharField(max_length=30, label='Type your new password',
                                 widget=forms.PasswordInput())
     password2 = forms.CharField(max_length=30, label='Type your new password one more time',
                                 widget=forms.PasswordInput())
+
     def clean_password(self):
         # Calls our parent (forms.Form) .clean function, gets a dictionary
         # of cleaned data as a result
@@ -79,9 +82,9 @@ BIRTH_YEAR_CHOICES = tuple(x for x in range(2017, 1917, -1))
 class EditProfileForm(forms.ModelForm):
     class Meta:
         model = UserInfo
-        fields = (  'dob', 'profile_photo_src')
+        fields = ('dob', 'profile_photo_src')
         widgets = {
-            'profile_photo_src': forms.FileInput(attrs={'class':'form-control'}),
+            'profile_photo_src': forms.FileInput(attrs={'class': 'form-control'}),
             'dob': forms.SelectDateWidget(
                 years=BIRTH_YEAR_CHOICES,
                 attrs={'class': 'form-control'}
@@ -102,6 +105,7 @@ class EditUser(forms.ModelForm):
             'email': forms.TextInput(
                 attrs={'class': 'form-control', 'placeholder': 'Email Address', 'required': 'true'}),
         }
+
 
 class ChangePasswordForm(forms.Form):
     newpassword1 = forms.CharField(max_length=200,
@@ -130,6 +134,7 @@ class ChangePasswordForm(forms.Form):
         #     raise forms.ValidationError("new password should be different")
         return cleaned_data
 
+
 class EmailPassword(forms.Form):
     email = forms.EmailField(max_length=50, label='Email Address',
                              widget=forms.TextInput(
@@ -146,8 +151,8 @@ class EmailPassword(forms.Form):
 
 class JoinRoomForm(forms.Form):
     room_number = forms.CharField(max_length=50, label='The room number',
-                               widget=forms.TextInput(attrs={'class': 'grumblr-input-text',
-                                                             'placeholder': 'RoomNumber'}))
+                                  widget=forms.TextInput(attrs={'class': 'grumblr-input-text',
+                                                                'placeholder': 'RoomNumber'}))
 
     def __init__(self, *args, **kwargs):
         self.username = kwargs.pop('username', None)
@@ -168,3 +173,10 @@ class JoinRoomForm(forms.Form):
             raise forms.ValidationError("You don't have enough funds.")
 
         return cleaned_data
+
+
+class SearchUser(forms.Form):
+    keyword = forms.CharField(max_length=30,
+                              widget=forms.TextInput(
+                                  attrs={'type': 'text', 'class': 'form-control', 'placeholder': 'Search user..',
+                                         'required': 'true'}))

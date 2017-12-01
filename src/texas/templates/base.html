@@ -7,6 +7,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="Grumblr for web application">
     <meta name="author" content="Zhenyu Li">
+    <META HTTP-EQUIV="Cache-Control" CONTENT="no-cache">
     <link rel="icon" href="/static/media/default/favicon.png">
     <title>{% block title %}Welcome to CMU-Texas{% endblock %}</title>
     {% load static %}
@@ -17,17 +18,18 @@
 </head>
 {% block body %}
     <body>
-    <div class="container-fluid">
+    {#    <div class="container-fluid">#}
     {% block navbar %}
     {% endblock %}
-    {% block content %}
-    {% endblock %}
-
+    <div class="background-cover">
+        {% block content %}
+        {% endblock %}
+    </div>
 
     <footer>
         <p>© 2017 Team318, All rights reserved</p>
     </footer>
-    </div>
+    {#    </div>#}
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
     <script src={% static 'js/bootstrap.min.js' %}></script>
     <script src={% static 'js/ie10-viewport-bug-workaround.js' %}></script>

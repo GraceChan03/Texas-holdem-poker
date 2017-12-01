@@ -701,7 +701,7 @@ div.vertical-tab button.active {
 
 /* Footer */
 footer {
-    background-color: #787878;
+    background-color: rgba(79,79,72,0.3);
     position: fixed;
     bottom: 0;
     left: 0;
@@ -724,7 +724,7 @@ body, html {
     background-repeat: no-repeat;
     background-size:100%;
     background-attachment:scroll;
-    z-index: 1;
+    z-index: -1;
 }
 .nav li {
     display: inline-block;
@@ -743,4 +743,9 @@ body, html {
   	position: fixed;
   	top: 0px;
   	z-index:1;
+}
+
+.background-cover {
+    background: rgba(67, 67, 67,0.5);
+    z-index: 0;
 }
