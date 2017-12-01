@@ -75,31 +75,16 @@ class ResetPasswordForm(forms.Form):
 
 BIRTH_YEAR_CHOICES = tuple(x for x in range(2017, 1917, -1))
 
-# class EditProfileForm(forms.Form):
-#     username = forms.CharField(max_length=20, label='Username')
-#     dob = forms.DateField(label='DOB',
-#                           widget=forms.SelectDateWidget(years=BIRTH_YEAR_CHOICES))
-#     bio = forms.CharField(max_length=420, label='Bio', widget=forms.Textarea(attrs={'rows': '3'}))
-#
-#     def __init__(self, *args, **kwargs):
-#         self.user = kwargs.pop('user', None)
-#         super(EditProfileForm, self).__init__(*args, **kwargs)
-#
-#     def clean_username(self):
-#         username = self.cleaned_data.get('username')
-#         if self.user and self.user.username != username and User.objects.filter(username__exact=username):
-#             raise forms.ValidationError("Username is already taken.")
-#
-#         return username
 
 class EditProfileForm(forms.ModelForm):
     class Meta:
         model = UserInfo
         fields = (  'dob', 'profile_photo_src')
         widgets = {
-            'profile_photo_src': forms.FileInput(),
+            'profile_photo_src': forms.FileInput(attrs={'class':'form-control'}),
             'dob': forms.SelectDateWidget(
-                years=BIRTH_YEAR_CHOICES
+                years=BIRTH_YEAR_CHOICES,
+                attrs={'class': 'form-control'}
             )
             # attrs={),
         }

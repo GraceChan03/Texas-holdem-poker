@@ -12,7 +12,7 @@
     background-image: url("../media/default/field.png");
     background-position: center;
     background-repeat: no-repeat;
-    z-index:9999;
+    z-index:999;
 }
 
 .total-pool{
@@ -32,7 +32,7 @@
     font-weight: bold;
     font-family: Helvetica;
     visibility: hidden;
-    z-index:9999;
+    z-index:999;
 }
 
 .pool-cards {
@@ -66,7 +66,7 @@
     size: 10px;
     color: navajowhite;
     font-family: Helvetica;
-    z-index:9999;
+    z-index:999;
 }
 
 .img-user {
@@ -133,4 +133,10 @@
     position: absolute;
     top: 57%;
     left: 82%;
+}
+
+.music-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
 }

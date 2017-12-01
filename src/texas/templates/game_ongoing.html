@@ -13,8 +13,13 @@
             <div class="new-game-container">
                 <div class="login-title-div pull-left">
                     <h5 class="game-title"><span id="page_title">Welcome to room {{ game_no }}</span></h5>
+
                 </div>
                 <div class="login-title-div pull-right">
+                    <audio id = "background" src = "../static/media/music/background.mp3" autoplay loop>
+                    </audio>
+                    <img class = "music-btn" src="../static/media/default/play.jpg" onclick="background.play()">
+                    <img class = "music-btn" src="../static/media/default/stop.jpg" onclick="background.pause()">
                     <a class="btn btn-success" target="_blank"
                        data-toggle="modal" data-target="#myModal">Combination Menu</a>
                     <!-- Instruction（Modal） -->

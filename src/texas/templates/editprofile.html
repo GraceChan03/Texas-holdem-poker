@@ -21,14 +21,12 @@
                                 <br>
                             </tr>
                         {% endfor %}
-                        <p>Date of Birth</p>
                         {% for field in form.visible_fields %}
                             <tr>
                                 <td>{{ field }}</td>
 
                             </tr><br>
                         {% endfor %}
-                        <p>Upload a new profile picture</p>
                         <input type="submit" class="btn-red" id="confirm"
                                value="Confirm Change"><br>
                         {% for error in form.non_field_errors %}

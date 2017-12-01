@@ -1,3 +1,5 @@
+@import url("//netdna.bootstrapcdn.com/bootstrap/3.0.0-rc2/css/bootstrap-glyphicons.css");
+
 /*****************************************************
   Cards
 
@@ -163,7 +165,7 @@
     min-height: 400px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
     padding: 20px 10px;
-    z-index:9999;
+    z-index:999;
 }
 
 .player-container {
@@ -177,7 +179,7 @@
     height: 820px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
     padding: 20px 10px;
-    z-index:9999;
+    z-index:999;
 }
 
 .game-body {
@@ -195,7 +197,7 @@
     min-height: 820px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
     padding: 20px 10px;
-    z-index:9999;
+    z-index:999;
 }
 
 .pool-container {
@@ -207,7 +209,7 @@
     margin: auto;
     height: 400px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
-    z-index:9999;
+    z-index:999;
 }
 
 .underpool-container {
@@ -221,7 +223,7 @@
     min-height: 220px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
     padding: 20px 10px;
-    z-index:9999;
+    z-index:999;
 }
 
 .poker-container {
@@ -234,7 +236,7 @@
     float: right;
     border-radius:8px;
     visibility: hidden;
-    z-index:9999;
+    z-index:999;
 }
 
 .login-title {
