@@ -123,14 +123,14 @@ def ws_receive(message):
             if active_user:
                 # b1. set winner
                 winner_id = active_user
-                winner = User.objects.get(id=winner_id).username
+                winner = User.objects.get(id=winner_id)
 
                 # b2. Update the previous user's fund
                 # TODO [Handle] maybe don't return here, and if not return, don't send this websocket
                 consumers_round_update.fund_update(game, game_round, user, op, min_bet, message.channel_layer)
 
                 # b3. Send a new WS for [SHOW-Result-CARD]
-                consumers_round_update.game_over(game, game_round, winner, message.channel_layer)
+                consumers_round_update.game_over_then_start_new_game(game, game_round, winner, message.channel_layer)
 
                 return
         # CHECK
@@ -208,18 +208,12 @@ def ws_receive(message):
                 # Send a new ws for [SHOW-Result-CARD]
                 consumers_round_update.showdown(game, game_round, message.channel_layer)
                 winner_id = game_round.get_winner()
-                winner = User.objects.get(id=winner_id).username
-                consumers_round_update.game_over(game, game_round, winner, message.channel_layer)
+                winner = User.objects.get(id=winner_id)
 
-                # Update winner's round balance
-                # ---------------get fund-------------
-                funds = json.loads(game_round.player_fund_dict)
-                round_balance = funds[str(winner_id)]
-                round_balance += game_round.pot
-                game_round.save()
+                # TODO start a new round
+                #
+                consumers_round_update.game_over_then_start_new_game(game, game_round, winner, message.channel_layer)
 
-                # Update all user's game balance
-                # TODO [Function] Update all user's game balance
 
                 return
             else:
