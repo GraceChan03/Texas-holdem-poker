@@ -116,10 +116,10 @@ def search_friend(request):
         return render(request, "search_friend.html", context)
     keyword = form.cleaned_data['keyword']
     keyword = keyword.strip()
-    # if keyword == '':
-    #     users = User.objects.all()
-    #     context['users'] = users
-    #     return render(request, 'search_friend.html', context)
+    if keyword == '':
+        users = User.objects.all()
+        context['users'] = users
+        return render(request, 'search_friend.html', context)
     users = User.objects.filter(username__icontains=keyword)
     context['users'] = users
     # edit here

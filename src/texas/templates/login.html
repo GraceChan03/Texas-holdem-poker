@@ -13,15 +13,17 @@
                 <div class="login-inner">
                     <form method="POST" action="{% url 'login' %}">
                         {% csrf_token %}
-                    <fieldset>
-                        <input type="text" id="inputUsername" name="username" class="grumblr-input-text" placeholder="Username"
-                       required autofocus>
-                    </fieldset>
-                    <br>
-                    <fieldset>
-                        <input type="password" id="inputPassword" name="password" class="grumblr-input-password" placeholder="Password"
-                       required>
-                    </fieldset>
+                        <fieldset>
+                            <input type="text" id="inputUsername" name="username" class="grumblr-input-text"
+                                   placeholder="Username"
+                                   required autofocus>
+                        </fieldset>
+                        <br>
+                        <fieldset>
+                            <input type="password" id="inputPassword" name="password" class="grumblr-input-password"
+                                   placeholder="Password"
+                                   required>
+                        </fieldset>
                         <br>
                         <button type="submit" class="btn-red">
                             Log in
@@ -33,10 +35,13 @@
                         </p>
                     </form>
                     <div class="alert alert-light login-alert-div" role="alert">
+                        <hr class="login-alert">
                         <a href="/forget_password" class="alert-link login-link">Forgot your password?</a>
                         <hr class="login-alert">
                         <span class="login-link">Not on CMU-Texas yet?</span>
                         <a href="register" class="alert-link login-link">Sign up</a>
+                        <br><span class="login-link">Or login with </span>
+                        <a class="btn btn-link" href="{% url 'social:begin' 'facebook' %}"><i class="fa fa-facebook"></i> Facebook</a>
                     </div>
 
                 </div>

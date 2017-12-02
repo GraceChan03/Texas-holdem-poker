@@ -12,13 +12,13 @@
             <div class="login-outer">
                 <div class="login-inner">
                     <p>
-                        <i class="glyphicon glyphicon-envelope"></i> {{ profile_user.email }}
+                        <i class="fa fa-envelope"></i> {{ profile_user.email }}
                         <br/>
-                        <i class="glyphicon glyphicon-user"></i> {{ profile_user.first_name }} {{ profile_user.last_name }}
+                        <i class="fa fa-address-card"></i> {{ profile_user.first_name }} {{ profile_user.last_name }}
                         <br/>
-                        <i class="glyphicon glyphicon-gift"></i> {{ profile.dob }}
+                        <i class="fa fa-birthday-cake"></i> {{ profile.dob }}
                         <br/>
-                        {% if profile_user == user %}<i class="glyphicon glyphicon-check"></i> Balance:
+                        {% if profile_user == user %}<i class="fa fa-money"></i> Balance:
                             {{ profile.balance }}<br>{% endif %}
                     </p>
                     {% if profile_user != user %}<h5>Balance: {{ profile.balance }}</h5><br>{% endif %}

@@ -37,6 +37,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'channels',
+    'social_django'
     # 'channels_panel',
     # 'debug_toolbar'
 ]
@@ -56,6 +57,7 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     # 'debug_toolbar.middleware.DebugToolbarMiddleware',
+    'social_django.middleware.SocialAuthExceptionMiddleware',
 ]
 
 ROOT_URLCONF = 'webapps.urls'
@@ -73,6 +75,9 @@ TEMPLATES = [
                 'django.contrib.messages.context_processors.messages',
                 "django.template.context_processors.media",  # Mandatory for Media file uploads
                 "django.template.context_processors.static",
+                #facebook login
+                'social_django.context_processors.backends',  # <--
+                'social_django.context_processors.login_redirect',  # <--
             ],
         },
     },
@@ -189,3 +194,17 @@ LOGGING = {
 # INTERNAL_IPS=[
 #     # '127.0.0.1'
 # ]
+
+# facebook login
+SOCIAL_AUTH_FACEBOOK_KEY = '1278381142264340'  # App ID
+SOCIAL_AUTH_FACEBOOK_SECRET = '0db7d457617a542e7d53fae8d7b707d4'  # App Secret
+
+AUTHENTICATION_BACKENDS = (
+    'social_core.backends.facebook.FacebookOAuth2',
+
+    'django.contrib.auth.backends.ModelBackend',
+)
+
+LOGIN_URL = 'login'
+LOGOUT_URL = 'logout'
+LOGIN_REDIRECT_URL = 'homepage'
