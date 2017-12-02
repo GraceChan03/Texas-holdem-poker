@@ -287,3 +287,13 @@ class BalanceHistory(models.Model):
     # Whether this is an modification by coupon or google pay
     type = models.CharField(max_length=200)
     # coupon = models.ForeignKey(Coupon)
+
+
+class FriendshipRequests(models.Model):
+    from_user = models.ForeignKey(User, related_name="friend_request_from_user")
+    to_user = models.ForeignKey(User, related_name="friend_request_to_user")
+    sent_time = models.DateTimeField(auto_now_add=True)
+    is_replied = models.BooleanField(default=False)
+    replied_time = models.DateTimeField(null=True, blank=True)
+    is_accepted = models.BooleanField(default=False)
+    is_declined = models.BooleanField(default=False)

@@ -21,6 +21,7 @@ from mimetypes import guess_type
 # guess this should be dashboard?
 def home(request):
     context = {}
+    context['searchForm'] = SearchUser()
     # context['post_form'] = PostForm()
     return render(request, "homepage.html", context)
 
@@ -33,6 +34,7 @@ def get_profile_image(request, id):
 def profile(request, user_name):
     try:
         context={}
+        context['searchForm'] = SearchUser()
         user = User.objects.get(username=user_name)
         userinfo = UserInfo.objects.get(user=user)
         context['profile_user'] = user
@@ -40,13 +42,14 @@ def profile(request, user_name):
     except ObjectDoesNotExist:
         # when there is not such id for retrieve
         # messages.error(request, 'The user id does not exist!')
-        return redirect(reverse(""))
+        return redirect("/")
     return render(request, 'profile.html', context)
 
 @login_required
 def edit_profile(request):
     # display form if this is a GET request
     context = {}
+    context['searchForm'] = SearchUser()
     instance = UserInfo.objects.get(user=request.user)
     # instance2 = User.objects.get(id = request.user.id);
     if request.method == 'GET':
@@ -71,6 +74,7 @@ def edit_profile(request):
 def change_password(request):
     # display form if this is a GET request
     context = {}
+    context['searchForm'] = SearchUser()
     if request.method == 'GET':
         context['form'] = ChangePasswordForm()
         return render(request, 'change_password.html', context)
@@ -85,17 +89,19 @@ def change_password(request):
     user = authenticate(username=request.user.username, password=form.cleaned_data['newpassword1'])
     login(request, user)
     # messages.error(request, 'You sucessfully change your password!')
-    return redirect(reverse(''))
+    return redirect('/')
 
 
-def password_reset(request, key):
+def password_reset(request, user_name, token):
     if request.user.is_authenticated():
-        return redirect(reverse(""))
-    userinfo = get_object_or_404(UserInfo, activation_key=key)
-    user = userinfo.user
+        return redirect("/")
     context = {}
-    context['key'] = key
-    context['username'] = user.username
+    context['searchForm'] = SearchUser()
+    if User.objects.filter(username=user_name):
+        user = User.objects.get(username=user_name)
+        if default_token_generator.check_token(user, token):
+            context['key'] = token
+            context['username'] = user.username
     if request.method == 'GET':
         context['form'] = ChangePasswordForm()
         return render(request, 'change_password.html', context)
@@ -103,18 +109,19 @@ def password_reset(request, key):
     context['form'] = form
     if not form.is_valid():
         # messages.error(request, 'Confirmed password does not match!')
-        return redirect(reverse(""))
+        return redirect("/")
     newpassword = User.objects.get(username=user.username)
     newpassword.set_password(form.cleaned_data['newpassword1'])
     newpassword.save()
     # messages.error(request, 'You sucessfully change your password!')
-    return redirect(reverse(""))
+    return redirect("/")
 
 
 def forget_password(request):
     if request.user.is_authenticated():
-        return redirect(reverse(""))
+        return redirect("/")
     context = {}
+    context['searchForm'] = SearchUser()
     if request.method == 'GET':
         context['form'] = EmailPassword()
         return render(request, 'resetemail.html', context)
@@ -123,19 +130,19 @@ def forget_password(request):
     if not form.is_valid():
         return render(request, "resetemail.html", context)
     user = User.objects.get(email=form.cleaned_data['email'])
-    key = UserInfo.objects.get(user=user).activation_key
+    key = default_token_generator.make_token(user)
     # send email for reset
     email_body = """
-        Welcome to Grumblr. Please click the link below to reset your password:
+        Welcome to CMU Texas Hold'em. Please click the link below to reset your password:
 
         http://%s%s
-        """ % (request.get_host(), reverse("password_reset", args=(key,)))
+        """ % (request.get_host(), reverse("password_reset", args=(user.username,key,)))
     send_mail(subject="Change your password",
               message=email_body,
-              from_email="grumblr <no-replay>@grumblr.com",
+              from_email="admin <no-replay>@cmutexas.com",
               recipient_list=[form.cleaned_data['email']])
     # messages.error(request, 'A reset link was sent to your email')
-    return redirect(reverse(''))
+    return redirect('/')
 
 @login_required(login_url='login')
 def add_friend(request, user_name):
@@ -168,6 +175,7 @@ def my_friend(request):
 # @login_required(login_url='login')
 def about(request):
     context = {}
+    context['searchForm'] = SearchUser()
     user = request.user
     # edit here
     return render(request, 'about.html', context)

@@ -1,38 +1,39 @@
 {% extends "base.html" %}
+{% load staticfiles %}
+{% block title %}Reset Password{% endblock %}
 {% block content %}
-    <!--Head-->
     <div class="container">
-        <div class="starter-template">
-            <h1>Welcome to Grumblr.</h1>
-        </div>
-    </div>
-
-    <!--Login block-->
-    <div class="container">
-        <div class="card card-container">
-            <div class="form-top">
-                <h3 class="text-center">Change your password</h3><br>
+        <div class="login-container">
+            <div class="login-title-div">
+                <h3 class="login-title">Enter your email address</h3>
+                {% if user %}
+                    <h3 class="text-center"> {{ user.username }}</h3>
+                {% endif %}
             </div>
-            <!--Login form-->
-            <form class="form-signin" action="{% url 'forgot_password' %}" method="post">
-                {% for field in form.visible_fields %}
-                    <tr>
-                        <td>{{ field }}</td>
-                    </tr>
-                {% endfor %}
-                <input type="submit" class="btn btn-lg btn-primary btn-block btn-signin" value="Confirm"><br>
-                {% for error in form.non_field_errors %}
-                    <a>{{ error }}</a>
-                {% endfor %}
-                {% for field in form.visible_fields %}
-                    <a>{{ field.errors }}</a>
-                {% endfor %}
-                {% csrf_token %}
-            </form>
-            {% for message in messages %}
-                <br><a>{{ message }}</a>
-            {% endfor %}
+            <div class="login-outer">
+                <div class="login-inner">
+                    <!--Login form-->
+                    <form class="form-signin" action="{% url 'forget_password' %}" method="post">
+                        {% for field in form.visible_fields %}
+                            <tr>
+                                <td>{{ field }}</td>
+                            </tr>
+                            <br><br>
+                        {% endfor %}
+                        <input type="submit" class="btn-red" value="Confirm"><br>
+                        {% for error in form.non_field_errors %}
+                            <a>{{ error }}</a>
+                        {% endfor %}
+                        {% for field in form.visible_fields %}
+                            <a>{{ field.errors }}</a>
+                        {% endfor %}
+                        {% csrf_token %}
+                    </form>
+                    {% for message in messages %}
+                        <br><a>{{ message }}</a>
+                    {% endfor %}
+                </div>
+            </div>
         </div>
     </div>
-
 {% endblock %}

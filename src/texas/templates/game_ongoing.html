@@ -17,15 +17,20 @@
             <div class="new-game-container">
                 <div class="login-title-div pull-left">
                     <h5 class="game-title"><span id="page_title">Welcome to room {{ game_no }}</span></h5>
+
                 </div>
                 <div class="login-title-div pull-right">
+                    <audio id = "background" src = "../static/media/music/background.mp3" autoplay loop>
+                    </audio>
+                    <img class = "music-btn" src="../static/media/default/play.jpg" onclick="background.play()">
+                    <img class = "music-btn" src="../static/media/default/stop.jpg" onclick="background.pause()">
                     <a class="btn btn-success" target="_blank"
                        data-toggle="modal" data-target="#myModal">Combination Menu</a>
                     <!-- Instruction（Modal） -->
                     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
                          aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
+                        <div class="modal-dialog" style="z-index: 9999">
+                            <div class="modal-content" style="z-index: 9999">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                                         &times;
