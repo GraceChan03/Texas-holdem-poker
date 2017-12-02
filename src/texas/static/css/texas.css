@@ -16,7 +16,7 @@
     background-repeat: no-repeat;
     width: 75px;
     height: 125px;
-    border-radius: 3px;
+    border-radius: 5px;
 }
 .card.medium {
     background-image: url(../media/default/cards-medium.png);
@@ -43,24 +43,8 @@
 
  *****************************************************/
 
-.selector-bet {
-    visibility: hidden;
-}
-
-.btn-bet {
-    visibility: hidden;
-}
-
-.btn-check {
-    visibility: hidden;
-}
-
-.btn-fold {
-    visibility: hidden;
-}
-
-.btn-allin {
-    display: none;
+#btn_bar {
+    /*visibility: hidden;*/
 }
 
 .txt-fund {
@@ -741,4 +725,8 @@ body, html {
   	position: fixed;
   	top: 0px;
   	z-index:1;
+}
+
+.navbar-first {
+    z-index: 9999;
 }
