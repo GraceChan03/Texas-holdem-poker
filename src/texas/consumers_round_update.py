@@ -139,9 +139,9 @@ def add_dealer_card(game, game_round, channel_layer):
     add_dealer_card_message['event'] = "add-dealer-card"
 
     # Deal cards
-    dealer_string = str(game_round.dealer_cards)
+    dealer_cards = eval(game_round.dealer_cards)
     cards = []
-    for card in dealer_string.split(','):
+    for card in dealer_cards:
         cards.append(deuces.Card.int_to_str(int(card)))
 
     if game_round.current_approach == 3:
@@ -167,8 +167,12 @@ def showdown(game, game_round, channel_layer):
     for player in player_active_dict:
         # If active, add the user and the card to the result
         if player_active_dict[player]:
-            cards_str = eval(player_cards[player])
-            user_cards = {player:cards_str}
+            # Parse the cards
+            curt_player_cards = player_cards[player]
+            player_cards_parsed = []
+            for card in curt_player_cards:
+                player_cards_parsed.append(deuces.Card.int_to_str(int(card)))
+            user_cards = {player:player_cards_parsed}
             cards.append(user_cards)
     showdown_message['cards'] = json.dumps(cards)
     # Tell client the active users
