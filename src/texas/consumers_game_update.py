@@ -22,6 +22,15 @@ def player_add(game, user, channel_layer):
     data["player_id"] = user.id
     players = []
     # Send all the users together to the client
+    player_order = game.player_order
+    if not player_order:
+        game.player_order = str(user.id)
+        # game.player_order = game.player_order + ',' + str(request.user.id)
+    else:
+        game.player_order = game.player_order + ',' + str(user.id)
+    game.save()
+    if not game.players.filter(username=user.username):
+        game.players.add(user)
     player_order_list = game.player_order.split(",")
     for pid in player_order_list:
         p = User.objects.get(id=pid)
