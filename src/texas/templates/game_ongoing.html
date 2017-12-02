@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="{% static 'css/gamepage.css' %}" type="text/css">
     <link rel="stylesheet" href="{% static 'css/TimeCircles.css' %}" type="text/css">
     <link rel="stylesheet" href="{% static 'css/buttons.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/font.css' %}" type="text/css">
 {% endblock %}
 {% block new-game %}
     <li class="dropdown active">
@@ -20,10 +21,10 @@
 
                 </div>
                 <div class="login-title-div pull-right">
-{#                    <audio id = "background" src = "../static/media/music/background.mp3" autoplay loop>#}
-{#                    </audio>#}
-                    <img class = "music-btn" src="../static/media/default/play.jpg" onclick="background.play()">
-                    <img class = "music-btn" src="../static/media/default/stop.jpg" onclick="background.pause()">
+                    {#                    <audio id = "background" src = "../static/media/music/background.mp3" autoplay loop>#}
+                    {#                    </audio>#}
+                    <img class="music-btn" src="../static/media/default/play.jpg" onclick="background.play()">
+                    <img class="music-btn" src="../static/media/default/stop.jpg" onclick="background.pause()">
                     <a class="btn btn-success" target="_blank"
                        data-toggle="modal" data-target="#myModal">Combination Menu</a>
                     <!-- Instruction（Modal） -->
@@ -67,6 +68,20 @@
                 <div class="total-pool" id="pot">
                     <span>Pot: 0</span>
                 </div>
+                {#                <div class="wrapper countdown-show">#}
+                {#                    <div class='time-part-wrapper'>#}
+                {#                        <div class='time-part seconds ones'>#}
+                {#                            <div class='digit-wrapper'>#}
+                {#                                <span class='digit'>1</span>#}
+                {#                                <span class='digit'>5</span>#}
+                {#                                <span class='digit'>4</span>#}
+                {#                                <span class='digit'>3</span>#}
+                {#                                <span class='digit'>2</span>#}
+                {#                                <span class='digit'>1</span>#}
+                {#                            </div>#}
+                {#                        </div>#}
+                {#                    </div>#}
+                {#                </div>#}
                 <div class="user-container row">
                     <div class="col-sm-2">
                         <div id="outer-circle">
@@ -103,7 +118,11 @@
                         </div>
                     </div>
                 </div>
-
+                <div class="game-result">
+                    <div class="winner">
+                        <span class="font-win"></span>
+                    </div>
+                </div>
                 <div id="players">
                     <div id="player-0">
                     </div>

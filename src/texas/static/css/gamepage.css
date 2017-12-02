@@ -171,7 +171,7 @@
 
 #player-3 {
     position: absolute;
-    top: 11%;
+    top: 10%;
     left: 44%;
     visibility: visible;
 }
@@ -199,9 +199,9 @@
 
 #stack-0 { position: absolute;top: 59%;left: 24%; visibility: hidden; }
 #stack-1 { position: absolute;top: 41%;left: 20%; visibility: hidden; }
-#stack-2 { position: absolute;top: 31%;left: 25%; visibility: hidden; }
-#stack-3 { position: absolute;top: 27%;left: 45%; visibility: hidden; }
-#stack-4 { position: absolute;top: 26%;left: 65%; visibility: hidden; }
+#stack-2 { position: absolute;top: 25%;left: 30%; visibility: hidden; }
+#stack-3 { position: absolute;top: 25%;left: 53%; visibility: hidden; }
+#stack-4 { position: absolute;top: 25%;left: 65%; visibility: hidden; }
 #stack-5 { position: absolute;top: 41%;left: 71%; visibility: hidden; }
 #stack-6 { position: absolute;top: 59%;left: 67%; visibility: hidden; }
 
@@ -273,4 +273,19 @@
     transform: scale(0.8);
 }
 
+.countdown-show {
+    visibility: hidden;
+}
 
+.game-result {
+    position: absolute;
+    top:25%;
+    padding-top: 20px;
+    visibility: hidden;
+    width:100%;
+    text-align: center;
+}
+
+.winner {
+    display: inline-block;
+}
