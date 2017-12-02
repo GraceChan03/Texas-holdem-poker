@@ -19,6 +19,9 @@ def start_new_round(game, channel_layer):
     new_game_round = GameRound(game=game, min_bet=half_min)
 
     # 2. Save a new round into db
+    # TODO: if full
+    game.init_fund_dict()
+    game.save()
     new_game_round.start()
     new_game_round.save()
 
@@ -186,9 +189,24 @@ def game_over(game, game_round, winner, channel_layer):
     end_round_message = {}
     end_round_message['message_type'] = "round-update"
     end_round_message['event'] = "game-over"
-    end_round_message['winner'] = winner
+    end_round_message['winner'] = winner.username
 
     # Tell client to add a card
     Group('bet-' + game.game_no, channel_layer=channel_layer).send(
         {"text": json.dumps(end_round_message)})
 
+
+def game_over_then_start_new_game(game, game_round, winner, channel_layer):
+    # Update winner's round balance
+    # ---------------get fund-------------
+    round_funds = json.loads(game_round.player_fund_dict)
+    round_funds[str(winner.id)] += game_round.pot
+    game_round.player_fund_dict = json.dumps(round_funds)
+    game_round.save()
+
+    # Update all user's game balance
+    game.player_fund_dict = game_round.player_fund_dict
+    game.save()
+    game_over(game, game_round, winner.username, channel_layer)
+
+    start_new_round(game, channel_layer)
