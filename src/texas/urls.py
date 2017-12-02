@@ -1,12 +1,14 @@
-from django.conf.urls import url
+from django.conf.urls import url,include
 from . import views, views_account, views_game
 from django.contrib.auth import views as auth_views
 from .forms import *
 
 urlpatterns = [
     url(r'^register$', views_account.register, name='register'),
-    url(r'^login$', auth_views.LoginView.as_view(template_name='login.html', redirect_authenticated_user=True),name='login'),
+    url(r'^login$', auth_views.LoginView.as_view(template_name='login.html', redirect_authenticated_user=True),
+        name='login'),
     url(r'^logout$', auth_views.logout_then_login, name='logout'),
+    url(r'^oauth/', include('social_django.urls', namespace='social')), # facebook login
     url(r'^activate/(?P<user_name>.+)/(?P<token>.+)$', views_account.activate, name='activate'),
     url(r'^get_profile_image/(?P<id>.+)$', views.get_profile_image, name='get_profile_image'),
 

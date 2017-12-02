@@ -139,9 +139,9 @@ def add_dealer_card(game, game_round, channel_layer):
     add_dealer_card_message['event'] = "add-dealer-card"
 
     # Deal cards
-    dealer_string = str(game_round.dealer_cards)
+    dealer_cards = eval(game_round.dealer_cards)
     cards = []
-    for card in dealer_string.split(','):
+    for card in dealer_cards:
         cards.append(deuces.Card.int_to_str(int(card)))
 
     if game_round.current_approach == 3:
@@ -156,6 +156,30 @@ def add_dealer_card(game, game_round, channel_layer):
         {"text": json.dumps(add_dealer_card_message)})
 
 
+def showdown(game, game_round, channel_layer):
+    showdown_message = {}
+    showdown_message['message_type'] = "round-update"
+    showdown_message['event'] = "showdown"
+    cards = []
+    player_active_dict = json.loads(game_round.player_active_dict)
+    player_cards = json.loads(game_round.player_cards)
+
+    for player in player_active_dict:
+        # If active, add the user and the card to the result
+        if player_active_dict[player]:
+            # Parse the cards
+            curt_player_cards = player_cards[player]
+            player_cards_parsed = []
+            for card in curt_player_cards:
+                player_cards_parsed.append(deuces.Card.int_to_str(int(card)))
+            user_cards = {player:player_cards_parsed}
+            cards.append(user_cards)
+    showdown_message['cards'] = json.dumps(cards)
+    # Tell client the active users
+    Group('bet-' + game.game_no, channel_layer=channel_layer).send(
+        {"text": json.dumps(showdown_message)})
+
+
 def game_over(game, game_round, winner, channel_layer):
     end_round_message = {}
     end_round_message['message_type'] = "round-update"
@@ -165,3 +189,4 @@ def game_over(game, game_round, winner, channel_layer):
     # Tell client to add a card
     Group('bet-' + game.game_no, channel_layer=channel_layer).send(
         {"text": json.dumps(end_round_message)})
+

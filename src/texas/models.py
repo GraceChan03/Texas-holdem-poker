@@ -57,6 +57,8 @@ class Game(models.Model):
     is_active = models.BooleanField(default=True)
     # sit order
     player_order = models.CharField(max_length=200, default='')
+    # player fund
+    # player_fund_dict = models.CharField(max_length=200, default='')
 
     # when the players' number match the set player num,
     # the game is full
@@ -136,8 +138,10 @@ class GameRound(models.Model):
                 return None
         return active_user
 
-    def get_winner(self):
-
+    # Get the rank of all the users' hand, return a dict for indexing
+    def process_user_class(self):
+        # Save in a dict
+        rank_dict = {}
         board = list(eval(self.dealer_cards))
         # create an evaluator
         evaluator = deuces.Evaluator()
@@ -145,20 +149,43 @@ class GameRound(models.Model):
         player_cards_dict = json.loads(self.player_cards)
         player_active_dict = json.loads(self.player_active_dict)
 
-        best_rank = 7463
-        winner = 0
         for player in player_cards_dict:
             if player_active_dict[player]:
                 hand = player_cards_dict[player]
             # and rank your hand
-            rank = evaluator.evaluate(board, hand)
+                rank = evaluator.evaluate(board, hand)
+            else:
+                rank = -1
 
-            # detect winner
-            if rank < best_rank:
-                winner = player
-                best_rank = rank
+            rank_dict[player] = rank
 
-        return winner
+        return rank_dict
+
+    # Return a dict with user rank {1:["id", "id"], 2:["id"]}
+    def process_user_rank(self):
+        class_dict = self.process_user_class()
+        sorted_class_dict = sorted(class_dict.items(), lambda x, y: cmp(x[1], y[1]), reverse=True)
+
+        best_rank = 7463
+
+        prev_class = best_rank
+        rank_dict = {}
+
+        rank = 0
+
+        for item in sorted_class_dict:
+            curt_user_id = item[0]
+            curt_class = item[1]
+            if curt_class < prev_class:
+                rank += 1
+                rank_dict[rank] = [curt_user_id]
+            else:
+                rank_dict[rank].append(curt_user_id)
+        return rank_dict
+
+    # TODO [Function] wrong function just set a position
+    def get_winner(self):
+        return self.process_user_rank()[1][0]
 
     def set_player_entry_funds_dict(self):
         dict = {}
@@ -202,6 +229,10 @@ class GameRound(models.Model):
         if prev > 0:
             order_str += (',' + str(ord[i]) for i in xrange(0, prev))
         self.player_order = order_str[1:]
+
+    def remove_user(self, userid):
+        # TODO [Function] remove user from database
+        pass
 
     def start(self, **kwargs):
         if self.player_order == "" or not self.player_order:
