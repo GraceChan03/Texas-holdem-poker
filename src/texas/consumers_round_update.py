@@ -156,6 +156,26 @@ def add_dealer_card(game, game_round, channel_layer):
         {"text": json.dumps(add_dealer_card_message)})
 
 
+def showdown(game, game_round, channel_layer):
+    showdown_message = {}
+    showdown_message['message_type'] = "round-update"
+    showdown_message['event'] = "showdown"
+    cards = []
+    player_active_dict = json.loads(game_round.player_active_dict)
+    player_cards = json.loads(game_round.player_cards)
+
+    for player in player_active_dict:
+        # If active, add the user and the card to the result
+        if player_active_dict[player]:
+            cards_str = eval(player_cards[player])
+            user_cards = {player:cards_str}
+            cards.append(user_cards)
+    showdown_message['cards'] = json.dumps(cards)
+    # Tell client the active users
+    Group('bet-' + game.game_no, channel_layer=channel_layer).send(
+        {"text": json.dumps(showdown_message)})
+
+
 def game_over(game, game_round, winner, channel_layer):
     end_round_message = {}
     end_round_message['message_type'] = "round-update"
@@ -165,3 +185,4 @@ def game_over(game, game_round, winner, channel_layer):
     # Tell client to add a card
     Group('bet-' + game.game_no, channel_layer=channel_layer).send(
         {"text": json.dumps(end_round_message)})
+
