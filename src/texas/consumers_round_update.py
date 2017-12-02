@@ -172,7 +172,9 @@ def showdown(game, game_round, channel_layer):
             player_cards_parsed = []
             for card in curt_player_cards:
                 player_cards_parsed.append(deuces.Card.int_to_str(int(card)))
-            user_cards = {player:player_cards_parsed}
+            user_cards = {}
+            user_cards['id'] = player
+            user_cards['card'] = player_cards_parsed
             cards.append(user_cards)
     showdown_message['cards'] = json.dumps(cards)
     # Tell client the active users

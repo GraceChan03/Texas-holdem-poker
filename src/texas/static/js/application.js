@@ -618,17 +618,18 @@ Texas = {
                     }
                     break;
             }
+        },
+
+        showPlayersCards: function (data) {
+            var cards = JSON.parse(data.cards);
+            for (i in cards) {
+                var userid = cards[i].id;
+                var card = cards[i].card;
+                Texas.GameRound.showPlayerCard($('.seat[seated-player-id=' + userid + ']'), card);
+            }
         }
     },
 
-    showPlayersCards: function (data) {
-        var cards = data.cards;
-        for (i in cards) {
-            var userid = cards[i].id;
-            var card = cards[i].card;
-            Texas.GameRound.showPlayerCard($('.seat[seated-player-id=' + userid +']'), card);
-        }
-    },
 
     init: function () {
         var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";
