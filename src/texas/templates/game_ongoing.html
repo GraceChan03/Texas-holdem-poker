@@ -5,6 +5,7 @@
 {% block css %}
     <link rel="stylesheet" href="{% static 'css/gamepage.css' %}" type="text/css">
     <link rel="stylesheet" href="{% static 'css/TimeCircles.css' %}" type="text/css">
+    <link rel="stylesheet" href="{% static 'css/buttons.css' %}" type="text/css">
 {% endblock %}
 {% block new-game %}
     <li class="dropdown active">
@@ -28,8 +29,8 @@
                     <!-- Instruction（Modal） -->
                     <div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
                          aria-hidden="true">
-                        <div class="modal-dialog">
-                            <div class="modal-content">
+                        <div class="modal-dialog" style="z-index: 9999">
+                            <div class="modal-content" style="z-index: 9999">
                                 <div class="modal-header">
                                     <button type="button" class="close" data-dismiss="modal" aria-hidden="true">
                                         &times;
@@ -66,60 +67,43 @@
                 <div class="total-pool" id="pot">
                     <span>Pot: 0</span>
                 </div>
-                <div class="user-container">
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-3" style="margin: 10px;"><br>
-                            <div>
-                                <img src="{% url 'get_profile_image' login_user.id %}" alt=""
-                                     class="img-circle img-user"/><br>
-                            </div>
+                <div class="user-container row">
+                    <div class="col-sm-2">
+                        <div id="outer-circle">
                             <div class="curr-timer" data-timer="30" id="timer0"></div>
-                            <div>
-                                <span class="login-link">{{ login_user.username }}</span><br/>
-                                <span class="txt-fund" id="txt_myfund">Stack: <span id="my_fund"></span></span>
-                                <input type="hidden" value="{{ login_user.id }}" id="current-player-id">
-                                <input type="hidden" value="{{ login_user.username }}" id="current-player-username">
-                            </div>
-
-
+                            <img src="{% url 'get_profile_image' login_user.id %}" alt=""
+                                 class="img-circle img-user"/><br>
                         </div>
-                        <div id="player-cards">
-                            {#                            <div class="col-xs-12 col-sm-3">#}
-                            <img class=" card-large card0" id="card0">
-                            {#                            </div>#}
-                            {#                            <div class="col-xs-12 col-sm-3">#}
-                            <img class=" card-large card1" id="card1">
-                            {#                            </div>#}
+                        <div id="user-info">
+                            <span class="login-link">{{ login_user.username }}</span><br/>
+                            <span class="txt-fund" id="txt_myfund">Stack: <span id="my_fund"></span></span>
+                            <input type="hidden" value="{{ login_user.id }}" id="current-player-id">
+                            <input type="hidden" value="{{ login_user.username }}" id="current-player-username">
                         </div>
-                        {#                                                <div class="col-xs-12 col-sm-3"><br><br>#}
-                        {#                                                    <img class="img-circle img-user" alt="" src="{% static 'media/default/chip.png' %}">#}
-                        {#                                                    #}
-                        {#                                                </div>#}
                     </div>
-                    <br>
-                    <div class="row">
-                        <div class="col-xs-12 col-sm-3 selector-bet" id="chips">
-                            <div id="slidecontainer">
-                                <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
-                                <p>$<span id="demo"></span></p>
+                    <div class="col-sm">
+                        <div id="player-cards">
+                            <img class=" card-large card0" id="card0">
+                            <img class=" card-large card1" id="card1">
+                        </div>
+                    </div>
+                    <div id="btn_bar">
+                        <div class="btn-group" style="background-color: #666666; height: 65px;margin: 15px 0 0 0;">
+                            <section class="alpha" style="padding: 2px 32px">
+                                <button class="btn btn-light" id="btn_bet" disabled>Bet</button>
+                                <button class="btn btn-gray" id="btn_check" disabled>Check</button>
+                                <button class="btn btn-dark" id="btn_fold" disabled>Fold</button>
+                            </section>
+                            <div class="selector-bet" id="chips" style="margin-top: 5px; visibility: hidden">
+                                <div id="slidecontainer">
+                                    <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+                                    <p>$<span id="demo"></span></p>
+                                </div>
                             </div>
-                        </div>
-                        <div class="col-xs-12 col-sm-3 btn-bet" id="btn_bet">
-                            <a class="btn btn-success">Bet</a>
-                        </div>
-                        <div class="col-xs-12 col-sm-3 btn-allin" id="btn_allin">
-                            <a class="btn btn-success">All in</a>
-                            <input type="hidden" id="hidden_allin">
-                        </div>
-                        <div class="col-xs-12 col-sm-3 btn-check" id="btn_check">
-                            <a class="btn btn-info">Check</a>
-                        </div>
-                        <div class="col-xs-12 col-sm-3 btn-fold" id="btn_fold">
-                            <a class="btn btn-default">Fold</a>
                         </div>
                     </div>
                 </div>
-                {#                this part should be adjustify , I wrote them as static#}
+
                 <div id="players">
                     <div id="player-0">
                     </div>
@@ -153,41 +137,6 @@
             </div>
         </div>
     </div>
-    {#    <div class="row">#}
-    {#        <div class="col-md-2 col-md-offset-4">#}
-    {#            <div class="player-container">#}
-    {#                <div class="login-title-div">#}
-    {#                    <h5 class="login-title">Players</h5>#}
-    {#                </div>#}
-    {#                    I think its better to sort people by its turn every round. And maybe change its name color to indicate big blind or small blind#}
-    {#                <div class="login-outer">#}
-    {#                    <div class="login-inner">#}
-    {#                        <ul class="list-group" id="contact-list">#}
-    {#                            {% if players %}#}
-    {#                                {% for player in players %}#}
-    {#                                    <li class="list-group-item">#}
-    {#                                        <div class="col-xs-12 col-sm-3">#}
-    {#                                            <img src="{% url 'get_profile_image' player.id %}"#}
-    {#                                                 alt="Scott Stevens"#}
-    {#                                                 class="img-responsive img-circle"/><span#}
-    {#                                                class="login-link">{{ player.username }}</span><br/>#}
-    {#                                        </div>#}
-    {#                                        <div class="col-xs-12 col-sm-9">#}
-    {#                                            <span id="txt_fund_{{ player.id }}" class="txt-fund"></span><br/><br/>#}
-    {#                                            <span id="txt_turn_{{ player.id }}" class="txt-turn"></span><br/>#}
-    {#                                        </div>#}
-    {#                                        <div class="clearfix"></div>#}
-    {#                                    </li>#}
-    {#                                {% endfor %}#}
-    {#                            {% endif %}#}
-    {#                        </ul>#}
-    {#                        <a class="btn btn-danger" href="{% url 'new_game' %}">Exit the#}
-    {#                            room</a>#}
-    {#                    </div>#}
-    {#                </div>#}
-    {#            </div>#}
-    {#        </div>#}
-    {#    </div>#}
 {% endblock %}
 {% block js %}
     <script src={% static 'js/TimeCircles.js' %}></script>

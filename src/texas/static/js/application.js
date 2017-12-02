@@ -96,9 +96,21 @@ Texas = {
         },
 
         setOperationInvisible: function () {
-            for (i in Texas.Game.players) {
-                $('#txt_op_' + i).css('visibility', 'hidden');
+            var players = Texas.Game.players;
+            for (i in players) {
+                $('#op' + players[i]).css('visibility', 'hidden');
             }
+        },
+
+        setChipsInvisible: function () {
+            var seats = Texas.Game.seats;
+            for (i = 0; i < seats; i++) {
+                $('#stack-' + i).css('visibility', 'hidden');
+            }
+        },
+
+        setAchipInvisible: function ($stack) {
+            $stack.css('visibility', 'hidden');
         },
 
         turnoverCard: function (data) {
@@ -134,7 +146,10 @@ Texas = {
             Texas.Player.disableTimer();
             Texas.Player.disableBetMode();
             Texas.GameRound.setOperationInvisible();
-            $('#pot').text("Pot: " + 0);
+            Texas.GameRound.setChipsInvisible();
+            // $('#pot').text("Pot: " + 0);
+            // show users' cards
+            // new form of showing winner!!!!!!!!!!!!!!!!!!!!!!!!!!!
             $('#page_title').text(data.winner + " wins! Congratulations!");
         },
 
@@ -211,14 +226,14 @@ Texas = {
                     for (s = 0; s < seats; s++) {
                         $seat = $('#player-' + s);
                         if ($seat.attr('seated-player-id') == userid) {
-                            $seat.css('opacity', '0.5');
+                            $seat.css('opacity', '0.8');
                         }
+                        Texas.GameRound.setAchipInvisible($('#stack-' + s));
                     }
                 }
+            } else {
+                $('#my_fund').text(prev_player.fund);
             }
-            // else {
-            //     $('#my_fund').text(prev_player.fund);
-            // }
         },
 
         newRound: function (data) {
@@ -275,34 +290,53 @@ Texas = {
         setBetVisible: function (data) {
             var min = data.min_bet; // the minimum fund that a player should pay to bet
             var max = data.max_bet; // the maximum fund that a player is able to bet
-            // all in
-            if (min >= max) {
-                $('#btn_fold').css('visibility', 'visible');
-                $('#btn_allin').css('display', 'inline');
-            } else {
-                $('#btn_check').css('visibility', 'visible');
-                $('#btn_fold').css('visibility', 'visible');
-                $('#btn_bet').css('visibility', 'visible');
-                var slider = $('#myRange');
-                slider.attr({
-                    min: data.min_bet,
-                    max: data.max_bet,
-                    value: data.min_bet
-                });
-                var output = $('#demo');
-                output.text(slider.val());
-                slider.on('input', function () {
-                    output.text($(this).val())
-                });
-                $('#chips').css('visibility', 'visible');
+            var money = data.player.money;
+            // check available
+            if (max - money == min) {
+                $('#btn_check').removeAttr("disabled");
             }
+            $('#btn_bet').removeAttr("disabled");
+            $('#btn_fold').removeAttr("disabled");
+            var slider = $('#myRange');
+            slider.attr({
+                min: data.min_bet,
+                max: data.max_bet,
+                value: data.min_bet
+            });
+            var output = $('#demo');
+            output.text(slider.val());
+            slider.on('input', function () {
+                output.text($(this).val())
+            });
+            $('#chips').css('visibility', 'visible');
+            // // all in
+            // if (min >= max) {
+            //     $('#btn_fold').css('visibility', 'visible');
+            //     $('#btn_allin').css('display', 'inline');
+            // } else {
+            //     $('#btn_check').css('visibility', 'visible');
+            //     $('#btn_fold').css('visibility', 'visible');
+            //     $('#btn_bet').css('visibility', 'visible');
+            //     var slider = $('#myRange');
+            //     slider.attr({
+            //         min: data.min_bet,
+            //         max: data.max_bet,
+            //         value: data.min_bet
+            //     });
+            //     var output = $('#demo');
+            //     output.text(slider.val());
+            //     slider.on('input', function () {
+            //         output.text($(this).val())
+            //     });
+            //     $('#chips').css('visibility', 'visible');
+            // }
         },
 
         setBetInVisible: function () {
-            $('#btn_check').css('visibility', 'hidden');
-            $('#btn_fold').css('visibility', 'hidden');
-            $('#btn_bet').css('visibility', 'hidden');
-            $('#btn_allin').css('visibility', 'hidden');
+            $('#btn_check').attr('disabled', 'disabled');
+            $('#btn_fold').attr('disabled', 'disabled');
+            $('#btn_bet').attr('disabled', 'disabled');
+            // $('#btn_allin').css('visibility', 'hidden');
             $('#chips').css('visibility', 'hidden');
         },
 
@@ -310,7 +344,32 @@ Texas = {
             Texas.Player.betMode = true;
             Texas.Player.setBetVisible(data);
             // set timer0
-            $('#timer0').TimeCircles({
+            Texas.Player.enableTimer($('#timer0'));
+        },
+
+        disableBetMode: function () {
+            Texas.Player.betMode = false;
+            Texas.Player.setBetInVisible();
+        },
+
+        disableLastTurn: function () {
+            if (Texas.Player.currPlayer !== null) {
+                $('#timer' + Texas.Player.currPlayer).TimeCircles().destroy();
+            }
+        },
+
+        disableTimer: function () {
+            var currentPlayerId = $('#current-player-id').val();
+            if (Texas.Player.currPlayer == currentPlayerId) {
+                // disable current player's timer
+                $('#timer0').TimeCircles().destroy();
+            } else {
+                $('#timer' + Texas.Player.currPlayer).TimeCircles().destroy();
+            }
+        },
+
+        enableTimer: function ($timer) {
+            $timer.TimeCircles({
                 "start": true,
                 "animation": "smooth",
                 "bg_width": 2,
@@ -331,28 +390,6 @@ Texas = {
                     // fold
                     Texas.Player.fold();
                 }
-            }
-        },
-
-        disableBetMode: function () {
-            Texas.Player.betMode = false;
-            Texas.Player.setBetInVisible();
-        },
-
-        disableLastTurn: function () {
-            if (Texas.Player.currPlayer !== null) {
-                $('#timer' + Texas.Player.currPlayer).TimeCircles().destroy();
-                $('#txt_turn_' + Texas.Player.currPlayer).css('visibility', 'hidden');
-            }
-        },
-
-        disableTimer: function () {
-            var currentPlayerId = $('#current-player-id').val();
-            if (Texas.Player.currPlayer == currentPlayerId) {
-                // disable current player's timer
-                $('#timer0').TimeCircles().destroy();
-            } else {
-                $('#timer' + Texas.Player.currPlayer).TimeCircles().destroy();
             }
         },
 
@@ -370,10 +407,6 @@ Texas = {
             currentPlayerId = $('#current-player-id').val();
             isCurrentPlayer = data.player.userid.toString() === currentPlayerId;
 
-
-            if (isCurrentPlayer) {
-                Texas.Player.enableBetMode(data);
-            }
             // renew the pot
             $('#pot').text("Pot: " + data.pot);
             // disable last turn
@@ -381,28 +414,11 @@ Texas = {
             // enable this turn
             var currplayer = data.player.userid;
             Texas.Player.currPlayer = currplayer;
-            // set timers
-            $('#timer' + currplayer).TimeCircles({
-                "start": true,
-                "animation": "smooth",
-                "bg_width": 2,
-                "fg_width": 0.05,
-                "count_past_zero": false,
-                "total_duration": 30,
-                "direction": "Counter-clockwise",
-                "time": {
-                    "Days": {show: false},
-                    "Hours": {show: false},
-                    "Minutes": {show: false},
-                    "Seconds": {show: true}
-                }
-            }).addListener(countdownComplete);
-
-            function countdownComplete(unit, value, total) {
-                if (total <= 0) {
-                    // fold
-                    Texas.Player.fold();
-                }
+            if (isCurrentPlayer) {
+                Texas.Player.enableBetMode(data);
+            } else {
+                // only set timers
+                Texas.Player.enableTimer($('#timer' + currplayer));
             }
         },
 
@@ -639,7 +655,7 @@ Texas = {
             // $('#my_fund').text(origin - bet);
             Texas.socket.send(JSON.stringify({
                 'message_type': 'bet',
-                'bet': $('#myRange').val(),
+                'bet': -2,
                 'round_id': Texas.GameRound.roundId
             }));
             Texas.Player.disableBetMode();

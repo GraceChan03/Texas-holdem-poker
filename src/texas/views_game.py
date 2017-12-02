@@ -21,6 +21,7 @@ log = logging.getLogger(__name__)
 @login_required(login_url='login')
 def new_game(request):
     context = {}
+    context['searchForm'] = SearchUser()
     user = request.user
     # edit here
 
@@ -43,6 +44,7 @@ def new_game(request):
 @login_required(login_url='login')
 def game_join(request):
     context = {}
+    context['searchForm'] = SearchUser()
     if request.method == 'GET':
         context['join_room_form'] = JoinRoomForm()
         return render(request, 'game_join.html', context)
@@ -63,6 +65,7 @@ def game_join(request):
 @login_required(login_url='login')
 def game_ongoing(request, game_no):
     context = {}
+    context['searchForm'] = SearchUser()
     # Update the user's balance for entry funds
     game = Game.objects.get(game_no=game_no)
     if request.user.userinfo.balance < game.entry_funds:
@@ -89,12 +92,14 @@ def exit_room(request, game_no, id):
 # @login_required(login_url='login')
 def dashboard(request):
     context = {}
+    context['searchForm'] = SearchUser()
     user = request.user
     # edit here
     return render(request, 'dashboard.html', context)
 # @login_required(login_url='login')
 def myfriends(request):
     context = {}
+    context['searchForm'] = SearchUser()
     user = request.user
     # edit here
     return render(request, 'myfriends.html', context)
@@ -102,6 +107,7 @@ def myfriends(request):
 # @login_required(login_url='login')
 def scoreboard(request):
     context = {}
+    context['searchForm'] = SearchUser()
     user = request.user
     # edit here
     return render(request, 'scoreboard.html', context)
@@ -109,13 +115,29 @@ def scoreboard(request):
 # @login_required(login_url='login')
 def search_friend(request):
     context = {}
-    user = request.user
+    if request.method == 'GET':
+        context['searchForm'] = SearchUser()
+        return render(request, 'search_friend.html', context)
+
+    form = SearchUser(request.POST)
+    context['searchForm'] = form
+    if not form.is_valid():
+        return render(request, "search_friend.html", context)
+    keyword = form.cleaned_data['keyword']
+    keyword = keyword.strip()
+    # if keyword == '':
+    #     users = User.objects.all()
+    #     context['users'] = users
+    #     return render(request, 'search_friend.html', context)
+    users = User.objects.filter(username__icontains=keyword)
+    context['users'] = users
     # edit here
     return render(request, 'search_friend.html', context)
 
 # @login_required(login_url='login')
 def game_result(request):
     context = {}
+    context['searchForm'] = SearchUser()
     user = request.user
     # edit here
     return render(request, 'game_result.html', context)

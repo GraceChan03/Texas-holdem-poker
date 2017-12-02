@@ -12,7 +12,7 @@
     background-image: url("../media/default/field.png");
     background-position: 50% 50%;
     background-repeat: no-repeat;
-    z-index:9999;
+    z-index:999;
 }
 
 .total-pool{
@@ -32,7 +32,7 @@
     font-weight: bold;
     font-family: Helvetica;
     visibility: hidden;
-    z-index:9999;
+    z-index:999;
 }
 
 .pool-cards {
@@ -58,21 +58,29 @@
     background-color: rgb(28, 28, 28);
     border-radius: 20px;
     text-align: center;
-    width: 400px;
+    width: 320px;
     margin-top: -40px;
-    height: 215px;
+    height: 250px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
-    padding: 10px 10px;
+    padding: 10px 0px;
     size: 10px;
     color: navajowhite;
     font-family: Helvetica;
-    z-index:9999;
+    z-index:999;
 }
 
 .img-user {
     background-color: white;
     width: 60px;
     height: 60px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin: -30px 0px 0px -30px;
+}
+
+#user-info {
+    width: 100px;
 }
 
 .players {
@@ -101,6 +109,7 @@
     top: -15%;
     left: 18%;
     width: 90px;
+    height: 90px;
     text-align: center;
     display: inline-flex;
 }
@@ -109,13 +118,22 @@
     display: none;
 }
 
+#outer-circle {
+    position: relative;
+    height: 100px;
+    width: 100px;
+}
+
 .curr-timer {
     position: absolute;
-    margin-top: -73%;
-    margin-left: -44%;
+    /*margin-top: -90%;*/
+    /*margin-left: -44%;*/
+    top: 50%;
+    left: 50%;
     /*left: -1px;*/
     width: 90px;
-    display: inline-block;
+    margin: -45px 0px 0px -45px;
+    /*display: inline-block;*/
 }
 
 .curr-timer .textDiv_Seconds {
@@ -197,7 +215,11 @@
 }
 
 #player-cards {
-
+    width: 200px;
+    position: absolute;
+    top: 5%;
+    left: 20%;
+    margin-left: 50px;
 }
 
 .card0 {
@@ -231,3 +253,18 @@
     position:relative;
     visibility: hidden;
 }
+
+.music-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 5px;
+}
+.music-btn:hover{
+    transform: scale(1.2);
+}
+
+.music-btn:active{
+    transform: scale(0.8);
+}
+
+
