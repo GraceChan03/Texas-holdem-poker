@@ -126,7 +126,7 @@ def ws_receive(message):
                 winner = User.objects.get(id=winner_id).username
 
                 # b2. Update the previous user's fund
-                # TODO maybe don't return here, and if not return, don't send this websocket
+                # TODO [Handle] maybe don't return here, and if not return, don't send this websocket
                 consumers_round_update.fund_update(game, game_round, user, op, min_bet, message.channel_layer)
 
                 # b3. Send a new WS for [SHOW-Result-CARD]
@@ -143,7 +143,7 @@ def ws_receive(message):
                 return
             else:
                 op = "checks"
-        # TODO
+        # TODO [Function] Allin
         # ALLIN
         elif bet == -2:
             # don't need to change pot, min_bet, max_player
@@ -184,7 +184,7 @@ def ws_receive(message):
         # B. Is this the first player with max bet?
         # B1. If no, let next player bet (ws [PLAYER-ACTION])
         # B2. If yes, check if we should go to next approach, add-dealer-card
-        # TODO 跳过不active的user
+        # TODO [Function] skip inactive users
         if next_user_id != game_round.current_max_player:
             # Send a new ws for [PLAYER-ACTION]
             try:
@@ -206,8 +206,8 @@ def ws_receive(message):
             # If no, send dealer card and let the small blind bet first.
             if game_round.current_approach == 5:
                 # Send a new ws for [SHOW-Result-CARD]
-                consumers_round_update.showdown()
-                winner_id = game_round.get_winner(game, game_round, message.channel_layer)
+                consumers_round_update.showdown(game, game_round, message.channel_layer)
+                winner_id = game_round.get_winner()
                 winner = User.objects.get(id=winner_id).username
                 consumers_round_update.game_over(game, game_round, winner, message.channel_layer)
 
@@ -219,7 +219,7 @@ def ws_receive(message):
                 game_round.save()
 
                 # Update all user's game balance
-                # TODO
+                # TODO [Function] Update all user's game balance
 
                 return
             else:
