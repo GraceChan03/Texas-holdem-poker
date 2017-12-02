@@ -45,6 +45,10 @@ class Chat(models.Model):
 
 # Game
 class Game(models.Model):
+    # Game Start Time
+    create_time = models.DateTimeField(auto_now_add=True, null=True)
+    # Game Modified Time
+    modified_time = models.DateTimeField(auto_now=True, null=True)
     # The user who creates the game room
     creator = models.ForeignKey(User,related_name="creator")
     # The code for the others to enter
@@ -58,7 +62,7 @@ class Game(models.Model):
     # sit order
     player_order = models.CharField(max_length=200, default='')
     # player fund
-    # player_fund_dict = models.CharField(max_length=200, default='')
+    player_fund_dict = models.CharField(max_length=200, default='')
 
     # when the players' number match the set player num,
     # the game is full
@@ -68,10 +72,24 @@ class Game(models.Model):
         else:
             return False
 
+    # When the fund_dict is empty, add the entry fund to everyone
+    def init_fund_dict(self):
+        if self.player_fund_dict == '':
+            player_fund_dict = {}
+            for player in self.players.all():
+                player_fund_dict[player.id] = self.entry_funds
+            self.player_fund_dict = json.dumps(player_fund_dict)
+
 
 class GameRound(models.Model):
     # Game Round info
     game = models.ForeignKey(Game)
+
+    # Game Start Time
+    create_time = models.DateTimeField(auto_now_add=True, null=True)
+
+    # Game Modified Time
+    modified_time = models.DateTimeField(auto_now=True, null=True)
 
     # Cards are stored as string and parsed one by one
     # Dealer
@@ -187,12 +205,6 @@ class GameRound(models.Model):
     def get_winner(self):
         return self.process_user_rank()[1][0]
 
-    def set_player_entry_funds_dict(self):
-        dict = {}
-        for player in self.game.players.all():
-            dict[player.id] = self.game.entry_funds
-        self.player_fund_dict = json.dumps(dict)
-
     def set_player_fund(self, player_id, fund):
         dict = json.loads(self.player_fund_dict)
         dict[player_id] = fund
@@ -253,17 +265,12 @@ class GameRound(models.Model):
 
         player_hands_dict = {}
         num = self.game.player_num
-        # for i in xrange(num):
-        #     player_hands_dict[i] = new_deck.draw(2)
+
         for player in self.game.players.all():
             player_hands_dict[player.id] = new_deck.draw(2)
         self.player_cards = json.dumps(player_hands_dict)
 
-        # Count round
-        prev_round_cnt = GameRound.objects.filter(game=self.game).count()
-        # Set entry fund if no round in this room before
-        if prev_round_cnt == 0:
-            self.set_player_entry_funds_dict()
+        self.player_fund_dict = self.game.player_fund_dict
 
         # ------------Send small blind and big blind -------------
         player_order = self.player_order
