@@ -96,9 +96,21 @@ Texas = {
         },
 
         setOperationInvisible: function () {
-            for (i in Texas.Game.players) {
-                $('#txt_op_' + i).css('visibility', 'hidden');
+            var players = Texas.Game.players;
+            for (i in players) {
+                $('#op' + players[i]).css('visibility', 'hidden');
             }
+        },
+
+        setChipsInvisible: function () {
+            var seats = Texas.Game.seats;
+            for (i = 0; i < seats; i++) {
+                $('#stack-' + i).css('visibility', 'hidden');
+            }
+        },
+
+        setAchipInvisible: function ($stack) {
+            $stack.css('visibility', 'hidden');
         },
 
         turnoverCard: function (data) {
@@ -134,7 +146,10 @@ Texas = {
             Texas.Player.disableTimer();
             Texas.Player.disableBetMode();
             Texas.GameRound.setOperationInvisible();
-            $('#pot').text("Pot: " + 0);
+            Texas.GameRound.setChipsInvisible();
+            // $('#pot').text("Pot: " + 0);
+            // show users' cards
+            // new form of showing winner!!!!!!!!!!!!!!!!!!!!!!!!!!!
             $('#page_title').text(data.winner + " wins! Congratulations!");
         },
 
@@ -211,8 +226,9 @@ Texas = {
                     for (s = 0; s < seats; s++) {
                         $seat = $('#player-' + s);
                         if ($seat.attr('seated-player-id') == userid) {
-                            $seat.css('opacity', '0.5');
+                            $seat.css('opacity', '0.8');
                         }
+                        Texas.GameRound.setAchipInvisible($('#stack-' + s));
                     }
                 }
             } else {
@@ -339,7 +355,6 @@ Texas = {
         disableLastTurn: function () {
             if (Texas.Player.currPlayer !== null) {
                 $('#timer' + Texas.Player.currPlayer).TimeCircles().destroy();
-                $('#txt_turn_' + Texas.Player.currPlayer).css('visibility', 'hidden');
             }
         },
 
@@ -392,10 +407,6 @@ Texas = {
             currentPlayerId = $('#current-player-id').val();
             isCurrentPlayer = data.player.userid.toString() === currentPlayerId;
 
-
-            if (isCurrentPlayer) {
-                Texas.Player.enableBetMode(data);
-            }
             // renew the pot
             $('#pot').text("Pot: " + data.pot);
             // disable last turn
@@ -403,8 +414,12 @@ Texas = {
             // enable this turn
             var currplayer = data.player.userid;
             Texas.Player.currPlayer = currplayer;
-            // set timers
-            Texas.Player.enableTimer($('#timer' + currplayer));
+            if (isCurrentPlayer) {
+                Texas.Player.enableBetMode(data);
+            } else {
+                // only set timers
+                Texas.Player.enableTimer($('#timer' + currplayer));
+            }
         },
 
         setPlayerOperation: function ($op, type) {
