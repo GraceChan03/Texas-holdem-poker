@@ -1,23 +1,24 @@
 .new-game-container {
-    position: relative;
-    top: 50px;
+    position: absolute;
+    top: 7%;
+    /*left: 15%;*/
+    display: inline-block;
     background-color: rgb(55, 60, 56);
     border-radius: 20px;
     text-align: center;
     width: 1250px;
-    margin: auto;
     min-height: 700px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.45);
     padding: 20px 10px;
     background-image: url("../media/default/field.png");
-    background-position: 50% 50%;
+    background-position: 50% 40%;
     background-repeat: no-repeat;
     z-index:999;
 }
 
 .total-pool{
     position: absolute;
-    top: 62%;
+    top: 58%;
     left: 47%;
     background-color: darkgreen;
     border-radius: 3px;
@@ -38,7 +39,7 @@
 .pool-cards {
     position: absolute;
     left: 32%;
-    top: 40%;
+    top: 36%;
     margin: auto;
 }
 
@@ -53,8 +54,8 @@
 
 .user-container {
     position: absolute;
-    top: 74%;
-    left: 36%;
+    top: 70%;
+    left: 40%;
     background-color: rgb(28, 28, 28);
     border-radius: 20px;
     text-align: center;
@@ -83,7 +84,7 @@
     width: 100px;
 }
 
-.players {
+.player-info {
     background-color: rgb(28, 28, 28);
     border-radius: 10px;
     text-align: center;
@@ -149,60 +150,60 @@
 
 #player-0 {
     position: absolute;
-    top: 57%;
+    top: 53%;
     left: 12%;
     visibility: visible;
 }
 
 #player-1 {
     position: absolute;
-    top: 34%;
+    top: 30%;
     left: 8%;
     visibility: visible;
 }
 
 #player-2 {
     position: absolute;
-    top: 15%;
+    top: 11%;
     left: 21%;
     visibility: visible;
 }
 
 #player-3 {
     position: absolute;
-    top: 15%;
+    top: 11%;
     left: 44%;
     visibility: visible;
 }
 
 #player-4 {
     position: absolute;
-    top: 15%;
+    top: 11%;
     left: 67%;
     visibility: visible;
 }
 
 #player-5 {
     position: absolute;
-    top: 34%;
+    top: 30%;
     left: 80%;
     visibility: visible;
 }
 
 #player-6 {
     position: absolute;
-    top: 57%;
+    top: 53%;
     left: 76%;
     visibility: visible;
 }
 
-#stack-0 { position: absolute;top: 63%;left: 24%; visibility: hidden; }
-#stack-1 { position: absolute;top: 45%;left: 20%; visibility: hidden; }
-#stack-2 { position: absolute;top: 35%;left: 25%; visibility: hidden; }
-#stack-3 { position: absolute;top: 31%;left: 45%; visibility: hidden; }
-#stack-4 { position: absolute;top: 30%;left: 65%; visibility: hidden; }
-#stack-5 { position: absolute;top: 45%;left: 71%; visibility: hidden; }
-#stack-6 { position: absolute;top: 63%;left: 67%; visibility: hidden; }
+#stack-0 { position: absolute;top: 59%;left: 24%; visibility: hidden; }
+#stack-1 { position: absolute;top: 41%;left: 20%; visibility: hidden; }
+#stack-2 { position: absolute;top: 31%;left: 25%; visibility: hidden; }
+#stack-3 { position: absolute;top: 27%;left: 45%; visibility: hidden; }
+#stack-4 { position: absolute;top: 26%;left: 65%; visibility: hidden; }
+#stack-5 { position: absolute;top: 41%;left: 71%; visibility: hidden; }
+#stack-6 { position: absolute;top: 59%;left: 67%; visibility: hidden; }
 
 .chip { width: 30px }
 .chip-info {
@@ -236,6 +237,11 @@
     transform: rotate(5deg); /* Standard syntax */
     margin-left: -15px;
     margin-top: 20px;
+    position: relative;
+}
+
+.card-show {
+    margin-top: -115%;
     position: relative;
 }
 
