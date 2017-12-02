@@ -85,6 +85,9 @@ class GameRound(models.Model):
     # Game Round info
     game = models.ForeignKey(Game)
 
+    # Game Round ended or not
+    is_active = models.BooleanField(default=True)
+
     # Game Start Time
     create_time = models.DateTimeField(auto_now_add=True, null=True)
 
@@ -180,6 +183,7 @@ class GameRound(models.Model):
         return rank_dict
 
     # Return a dict with user rank {1:["id", "id"], 2:["id"]}
+    # Does not return folded user
     def process_user_rank(self):
         class_dict = self.process_user_class()
         sorted_class_dict = sorted(class_dict.items(), lambda x, y: cmp(x[1], y[1]), reverse=True)
@@ -194,7 +198,9 @@ class GameRound(models.Model):
         for item in sorted_class_dict:
             curt_user_id = item[0]
             curt_class = item[1]
-            if curt_class < prev_class:
+            if curt_class == -1:
+                return rank_dict
+            elif curt_class < prev_class:
                 rank += 1
                 rank_dict[rank] = [curt_user_id]
             else:
@@ -241,10 +247,6 @@ class GameRound(models.Model):
         if prev > 0:
             order_str += (',' + str(ord[i]) for i in xrange(0, prev))
         self.player_order = order_str[1:]
-
-    def remove_user(self, userid):
-        # TODO [Function] remove user from database
-        pass
 
     def start(self, **kwargs):
         if self.player_order == "" or not self.player_order:

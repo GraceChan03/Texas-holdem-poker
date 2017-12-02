@@ -65,9 +65,6 @@ def game_ongoing(request, game_no):
         log.debug('user %s fund insufficient', request.user.id)
         # Make the user not able to enter
         return render(request, 'new_game.html', context)
-    # decrease fund
-    request.user.userinfo.balance -= game.entry_funds
-    request.user.userinfo.save()
 
     context['game_no'] = game_no
     context['login_user'] = request.user

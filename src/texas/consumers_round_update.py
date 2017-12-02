@@ -189,11 +189,16 @@ def game_over(game, game_round, winner, channel_layer):
     end_round_message = {}
     end_round_message['message_type'] = "round-update"
     end_round_message['event'] = "game-over"
-    end_round_message['winner'] = winner.username
+    end_round_message['winner'] = winner
 
-    # Tell client to add a card
+    # Tell client the game is over
     Group('bet-' + game.game_no, channel_layer=channel_layer).send(
         {"text": json.dumps(end_round_message)})
+
+    # TODO
+    # Make the game_round inactive
+    game_round.is_active = False
+    game_round.save()
 
 
 def game_over_then_start_new_game(game, game_round, winner, channel_layer):

@@ -21,16 +21,19 @@ def player_add(game, user, channel_layer):
     data["player_num"] = game.player_num
     data["player_id"] = user.id
     players = []
-    # Send all the users together to the client
+    # Add current player to db
     player_order = game.player_order
     if not player_order:
         game.player_order = str(user.id)
-        # game.player_order = game.player_order + ',' + str(request.user.id)
     else:
         game.player_order = game.player_order + ',' + str(user.id)
     game.save()
+    # Decrease curt user's fund
+    user.userinfo.balance -= game.entry_funds
+    user.userinfo.save()
     if not game.players.filter(username=user.username):
         game.players.add(user)
+    # Send all the users together to the client
     player_order_list = game.player_order.split(",")
     for pid in player_order_list:
         p = User.objects.get(id=pid)
