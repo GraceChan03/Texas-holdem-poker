@@ -69,7 +69,7 @@ def game_ongoing(request, game_no):
     # Update the user's balance for entry funds
     game = Game.objects.get(game_no=game_no)
     if request.user.userinfo.balance < game.entry_funds:
-        # TODO 进入游戏fund不够时不会提示，需要改html，或者弄form
+        # TODO [Handle] no notification while fund efficient，need to change html or form
         log.debug('user %s fund insufficient', request.user.id)
         # Make the user not able to enter
         return render(request, 'new_game.html', context)

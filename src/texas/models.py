@@ -183,7 +183,7 @@ class GameRound(models.Model):
                 rank_dict[rank].append(curt_user_id)
         return rank_dict
 
-    # TODO wrong function just set a position
+    # TODO [Function] wrong function just set a position
     def get_winner(self):
         return self.process_user_rank()[1][0]
 
@@ -231,7 +231,7 @@ class GameRound(models.Model):
         self.player_order = order_str[1:]
 
     def remove_user(self, userid):
-        # TODO
+        # TODO [Function] remove user from database
         pass
 
     def start(self, **kwargs):
