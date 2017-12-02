@@ -95,6 +95,19 @@ Texas = {
             }
         },
 
+        showPlayerCard: function ($player, cards) {
+            var div = $('<div></div>');
+            div.addClass('card-show');
+            for (i in cards) {
+                $card = $('<img>');
+                $card.addClass('card-medium');
+                $card.addClass('card' + i);
+                Texas.GameRound.setCard(cards[i], $card, "medium");
+                div.append($card);
+            }
+            $player.append(div);
+        },
+
         setOperationInvisible: function () {
             var players = Texas.Game.players;
             for (i in players) {
@@ -213,23 +226,28 @@ Texas = {
                 $('#txt_fund_' + userid).text("Stake: " + prev_player.fund);
                 Texas.Player.setPlayerOperation($('#op' + userid), prev_player.op);
                 if (prev_player.op === 'bets') {
-                    var seats = Texas.Game.seats;
-                    for (s = 0; s < seats; s++) {
-                        $stack = $('#stack-' + s);
-                        if ($stack.attr('seated-player-id') == userid) {
-                            $('#bet' + userid).text("$" + prev_player.bet);
-                            $stack.css('visibility', 'visible');
-                        }
-                    }
+                    // var seats = Texas.Game.seats;
+                    // for (s = 0; s < seats; s++) {
+                    //     $stack = $('#stack-' + s);
+                    //     if ($stack.attr('seated-player-id') == userid) {
+                    //         $('#bet' + userid).text("$" + prev_player.bet);
+                    //         $stack.css('visibility', 'visible');
+                    //     }
+                    // }
+                    $('#bet' + userid).text("$" + prev_player.bet);
+                    $('.stack[seated-player-id=' + userid + ']').css('visibility', 'visible');
                 } else if (prev_player.op === 'folds') {
-                    var seats = Texas.Game.seats;
-                    for (s = 0; s < seats; s++) {
-                        $seat = $('#player-' + s);
-                        if ($seat.attr('seated-player-id') == userid) {
-                            $seat.css('opacity', '0.8');
-                        }
-                        Texas.GameRound.setAchipInvisible($('#stack-' + s));
-                    }
+                    // var seats = Texas.Game.seats;
+                    // for (s = 0; s < seats; s++) {
+                    //     $seat = $('#player-' + s);
+                    //     if ($seat.attr('seated-player-id') == userid) {
+                    //         $seat.css('opacity', '0.8');
+                    //     }
+                    //     Texas.GameRound.setAchipInvisible($('#stack-' + s));
+                    // }
+                    $('.seat[seated-player-id=' + userid + '] .player-img').css('opacity', '0.8');
+                    $('.seat[seated-player-id=' + userid + '] .player-info').css('opacity', '0.8');
+                    Texas.GameRound.setAchipInvisible($('.stack[seated-player-id=' + userid + ']'));
                 }
             } else {
                 $('#my_fund').text(prev_player.fund);
@@ -274,7 +292,9 @@ Texas = {
                 case 'game-over':
                     Texas.GameRound.gameOver(data);
                     break;
-
+                case 'showdown':
+                    Texas.Game.showPlayersCards(data);
+                    break;
             }
         }
     },
@@ -287,16 +307,16 @@ Texas = {
 
         },
 
-        setBetVisible: function (data) {
+        enableBet: function (data) {
             var min = data.min_bet; // the minimum fund that a player should pay to bet
             var max = data.max_bet; // the maximum fund that a player is able to bet
             var money = data.player.money;
             // check available
             if (max - money == min) {
-                $('#btn_check').removeAttr("disabled");
+                $('#btn_check').removeAttr("disabled").removeClass('btn-disabled');
             }
-            $('#btn_bet').removeAttr("disabled");
-            $('#btn_fold').removeAttr("disabled");
+            $('#btn_bet').removeAttr("disabled").removeClass('btn-disabled');
+            $('#btn_fold').removeAttr("disabled").removeClass('btn-disabled');
             var slider = $('#myRange');
             slider.attr({
                 min: data.min_bet,
@@ -332,24 +352,24 @@ Texas = {
             // }
         },
 
-        setBetInVisible: function () {
-            $('#btn_check').attr('disabled', 'disabled');
-            $('#btn_fold').attr('disabled', 'disabled');
-            $('#btn_bet').attr('disabled', 'disabled');
+        disableBet: function () {
+            $('#btn_check').attr('disabled', 'disabled').addClass('btn-disabled');
+            $('#btn_fold').attr('disabled', 'disabled').addClass('btn-disabled');
+            $('#btn_bet').attr('disabled', 'disabled').addClass('btn-disabled');
             // $('#btn_allin').css('visibility', 'hidden');
             $('#chips').css('visibility', 'hidden');
         },
 
         enableBetMode: function (data) {
             Texas.Player.betMode = true;
-            Texas.Player.setBetVisible(data);
+            Texas.Player.enableBet(data);
             // set timer0
             Texas.Player.enableTimer($('#timer0'));
         },
 
         disableBetMode: function () {
             Texas.Player.betMode = false;
-            Texas.Player.setBetInVisible();
+            Texas.Player.disableBet();
         },
 
         disableLastTurn: function () {
@@ -464,7 +484,10 @@ Texas = {
         availableSeat: 0,
 
         createPlayer: function ($seat, player) {
+            $seat.addClass("seat");
+            $seat.attr('seated-player-id', player.id);
             var div1 = $('<div></div>');
+            div1.addClass('player-img');
             div1.append($("<img>").attr({
                 src: "/" + player.photo_src,
                 alt: "", // add a photo as alternative
@@ -477,7 +500,7 @@ Texas = {
                 "data-timer": 30
             });
             $seat.append(div2);
-            var div3 = $('<div></div>').attr({class: "players"});
+            var div3 = $('<div></div>').attr({class: "player-info"});
             div3.append($("<span></span>").text(player.name));
             div3.append($("<br>"));
             div3.append($("<span></span>").attr({
@@ -493,6 +516,7 @@ Texas = {
         },
 
         setBetChips: function ($stack, player) {
+            $stack.addClass("stack");
             $stack.append($("<img>").attr({
                 src: "/static/media/default/chip_default.png",
                 alt: "",
@@ -569,17 +593,10 @@ Texas = {
                                 player = data.players[p];
                             }
                         }
-                        // for (i = 0; i < Texas.Game.seats; i++) {
-                        //     $seat = $('#player-' + i);
-                        //     if ($seat.attr('seated-player-id') == null) {
-                        //         break;
-                        //     }
-                        // }
                         $seat = $('#player-' + Texas.Game.availableSeat);
                         Texas.Game.createPlayer($seat, player);
                         $stack = $('#stack-' + Texas.Game.availableSeat);
                         Texas.Game.setBetChips($stack, player);
-                        $seat.attr('seated-player-id', playerId);
                         Texas.Game.players.push(player.id);
                         if (Texas.Game.availableSeat === (Texas.Game.seats - 1)) {
                             Texas.Game.availableSeat = 0;
@@ -601,8 +618,18 @@ Texas = {
                     }
                     break;
             }
+        },
+
+        showPlayersCards: function (data) {
+            var cards = JSON.parse(data.cards);
+            for (i in cards) {
+                var userid = cards[i].id;
+                var card = cards[i].card;
+                Texas.GameRound.showPlayerCard($('.seat[seated-player-id=' + userid + ']'), card);
+            }
         }
     },
+
 
     init: function () {
         var ws_scheme = window.location.protocol == "https:" ? "wss" : "ws";

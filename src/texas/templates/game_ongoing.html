@@ -20,8 +20,8 @@
 
                 </div>
                 <div class="login-title-div pull-right">
-                    <audio id = "background" src = "../static/media/music/background.mp3" autoplay loop>
-                    </audio>
+{#                    <audio id = "background" src = "../static/media/music/background.mp3" autoplay loop>#}
+{#                    </audio>#}
                     <img class = "music-btn" src="../static/media/default/play.jpg" onclick="background.play()">
                     <img class = "music-btn" src="../static/media/default/stop.jpg" onclick="background.pause()">
                     <a class="btn btn-success" target="_blank"
@@ -90,9 +90,9 @@
                     <div id="btn_bar">
                         <div class="btn-group" style="background-color: #666666; height: 65px;margin: 15px 0 0 0;">
                             <section class="alpha" style="padding: 2px 32px">
-                                <button class="btn btn-light" id="btn_bet" disabled>Bet</button>
-                                <button class="btn btn-gray" id="btn_check" disabled>Check</button>
-                                <button class="btn btn-dark" id="btn_fold" disabled>Fold</button>
+                                <button id="btn_bet" class="btn btn-light btn-disabled" disabled>Bet</button>
+                                <button id="btn_check" class="btn btn-gray btn-disabled" disabled>Check</button>
+                                <button id="btn_fold" class="btn btn-dark btn-disabled" disabled>Fold</button>
                             </section>
                             <div class="selector-bet" id="chips" style="margin-top: 5px; visibility: hidden">
                                 <div id="slidecontainer">

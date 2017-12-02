@@ -20,14 +20,15 @@
     height: 125px;
     border-radius: 5px;
 }
-.card.medium {
+.card-medium {
     background-image: url(../media/default/cards-medium.png);
     background-position: 0px 0px;
     background-repeat: no-repeat;
     width: 45px;
     height: 75px;
+    border-radius: 3px;
 }
-.card.small {
+.card-small {
     background-image: url(../media/default/cards-small.png);
     background-position: 0px 0px;
     background-repeat: no-repeat;
