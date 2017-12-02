@@ -3,7 +3,7 @@ import logging
 from channels import Group
 from channels.sessions import channel_session
 
-from texas import consumer_round_update, consumer_game_update
+from texas import consumers_round_update, consumers_game_update
 from texas.models import *
 
 log = logging.getLogger(__name__)
@@ -47,11 +47,11 @@ def ws_connect(message):
         log.debug('no userid=%s', userid)
 
     # Send a ws for [PLAYER-ADD]
-    consumer_game_update.player_add(game, user, message.channel_layer)
+    consumers_game_update.player_add(game, user, message.channel_layer)
 
     # When the game is full, start a new game_round
     if game.is_full():
-        consumer_round_update.start_new_round(game, message.channel_layer)
+        consumers_round_update.start_new_round(game, message.channel_layer)
 
 
 @channel_session
@@ -125,8 +125,12 @@ def ws_receive(message):
                 winner_id = active_user
                 winner = User.objects.get(id=winner_id).username
 
-                # b2. Send a new WS for [SHOW-Result-CARD]
-                consumer_round_update.game_over(game, game_round, winner, message.channel_layer)
+                # b2. Update the previous user's fund
+                # TODO maybe don't return here, and if not return, don't send this websocket
+                consumers_round_update.fund_update(game, game_round, user, op, min_bet, message.channel_layer)
+
+                # b3. Send a new WS for [SHOW-Result-CARD]
+                consumers_round_update.game_over(game, game_round, winner, message.channel_layer)
 
                 return
         # CHECK
@@ -139,6 +143,18 @@ def ws_receive(message):
                 return
             else:
                 op = "checks"
+        # TODO
+        # ALLIN
+        elif bet == -2:
+            # don't need to change pot, min_bet, max_player
+            # check if eligible for check?
+            user_prev_bet = int(game_round.get_player_prev_bet(userid))
+            if user_prev_bet != min_bet:
+                log.debug("user %s previous bet: %s; global_min_bet: %s; not conformed", userid, user_prev_bet, min_bet)
+                return
+            else:
+                op = "allin"
+
         # BET
         else:
             op = "bets"
@@ -152,7 +168,7 @@ def ws_receive(message):
             game_round.save()
 
         # 5. Update the previous user's fund
-        consumer_round_update.fund_update(game, game_round, user, op, min_bet, message.channel_layer)
+        consumers_round_update.fund_update(game, game_round, user, op, min_bet, message.channel_layer)
 
         # 6. Find out next approach (in the same approach, or go back to the first user?):
         # A. Is this the last one of the player order?
@@ -168,6 +184,7 @@ def ws_receive(message):
         # B. Is this the first player with max bet?
         # B1. If no, let next player bet (ws [PLAYER-ACTION])
         # B2. If yes, check if we should go to next approach, add-dealer-card
+        # TODO 跳过不active的user
         if next_user_id != game_round.current_max_player:
             # Send a new ws for [PLAYER-ACTION]
             try:
@@ -175,7 +192,7 @@ def ws_receive(message):
             except User.DoesNotExist:
                 log.debug('next player does not exist. player id=%s', next_user_id)
                 return
-            consumer_round_update.player_action(game, game_round, next_user, message.channel_layer)
+            consumers_round_update.player_action(game, game_round, next_user, message.channel_layer)
         else:
             # This is the first player with max bet.
             next_user_id = player_order[0]
@@ -189,16 +206,28 @@ def ws_receive(message):
             # If no, send dealer card and let the small blind bet first.
             if game_round.current_approach == 5:
                 # Send a new ws for [SHOW-Result-CARD]
-                winner_id = game_round.get_winner()
+                consumers_round_update.showdown()
+                winner_id = game_round.get_winner(game, game_round, message.channel_layer)
                 winner = User.objects.get(id=winner_id).username
-                consumer_round_update.game_over(game, game_round, winner, message.channel_layer)
+                consumers_round_update.game_over(game, game_round, winner, message.channel_layer)
+
+                # Update winner's round balance
+                # ---------------get fund-------------
+                funds = json.loads(game_round.player_fund_dict)
+                round_balance = funds[str(winner_id)]
+                round_balance += game_round.pot
+                game_round.save()
+
+                # Update all user's game balance
+                # TODO
+
                 return
             else:
                 # end of current approach, add dealer card
                 game_round.increment_current_approach_by_1()
                 game_round.save()
                 # a new ws for [ADD-DEALER-CARD]
-                consumer_round_update.add_dealer_card(game, game_round, message.channel_layer)
+                consumers_round_update.add_dealer_card(game, game_round, message.channel_layer)
 
                 # Send a new ws for [PLAYER-ACTION] to small blind
                 try:
@@ -208,7 +237,7 @@ def ws_receive(message):
                     return
                 # If next one is not the max player, go to player-action
                 # Else go to next approach, add-dealer-card
-                consumer_round_update.player_action(game, game_round, next_user, message.channel_layer)
+                consumers_round_update.player_action(game, game_round, next_user, message.channel_layer)
 
 
 @channel_session
@@ -231,15 +260,20 @@ def ws_disconnect(message):
 
     Group('bet-' + game_no, channel_layer=message.channel_layer).discard(message.reply_channel)
 
-    # Remove current user from database
-
     # Update this person's balance
     # ---------------get fund-------------
-    game_round = GameRound.objects.get(game=game)
-    funds = json.loads(game_round.player_fund_dict)
-    round_balance = funds[str(userid)]
-    user.userinfo.balance += round_balance
-    user.userinfo.save()
+    try:
+        game_round = GameRound.objects.get(game=game)
+        funds = json.loads(game_round.player_fund_dict)
+        round_balance = funds[str(userid)]
+        user.userinfo.balance += round_balance
+        user.userinfo.save()
 
-    # ----------- Send a new ws for [PLAYER-ACTION] ----------
-    consumer_game_update.player_remove(game_no, userid, message.channel_layer)
+        # Remove current user from database
+        game_round.remove_user(userid)
+
+        # ----------- Send a new ws for [PLAYER-ACTION] ----------
+        consumers_game_update.player_remove(game_no, userid, message.channel_layer)
+    except GameRound.DoesNotExist:
+        log.debug('ws game round does not exist label=%s', game_no)
+        return

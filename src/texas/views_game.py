@@ -14,6 +14,10 @@ from texas.forms import *
 from texas.models import *
 from haikunator import Haikunator
 
+import logging
+
+log = logging.getLogger(__name__)
+
 @login_required(login_url='login')
 def new_game(request):
     context = {}
@@ -62,14 +66,19 @@ def game_join(request):
 def game_ongoing(request, game_no):
     context = {}
     context['searchForm'] = SearchUser()
-    # edit here
-    context['game_no'] = game_no
-    context['login_user'] = request.user
     # Update the user's balance for entry funds
     game = Game.objects.get(game_no=game_no)
+    if request.user.userinfo.balance < game.entry_funds:
+        # TODO 进入游戏fund不够时不会提示，需要改html，或者弄form
+        log.debug('user %s fund insufficient', request.user.id)
+        # Make the user not able to enter
+        return render(request, 'new_game.html', context)
+    # decrease fund
     request.user.userinfo.balance -= game.entry_funds
     request.user.userinfo.save()
 
+    context['game_no'] = game_no
+    context['login_user'] = request.user
     players = game.players.all()
     context['players'] = players
     return render(request, 'game_ongoing.html', context)
