@@ -66,3 +66,11 @@ pip install pypiwin32
 5. [How to deploy in Chinese](https://code.ziqiangxuetang.com/django/django-static-files.html)
 
 6. [Free Domain](http://www.freenom.com/zh/freeandpaiddomains.html)
+
+7. [How to deploy channels](http://channels.readthedocs.io/en/latest/deploying.html)
+
+8. [How to user supersord](http://liyangliang.me/posts/2015/06/using-supervisor/)
+
+9. [How to log in supervisor](http://supervisord.org/logging.html)
+
+10. [How to deploy channels with nginx](http://masnun.rocks/2016/11/02/deploying-django-channels-using-daphne/)
