@@ -215,10 +215,9 @@ Texas = {
                         }
                     }
                 }
+            } else {
+                $('#my_fund').text(prev_player.fund);
             }
-            // else {
-            //     $('#my_fund').text(prev_player.fund);
-            // }
         },
 
         newRound: function (data) {
@@ -275,34 +274,53 @@ Texas = {
         setBetVisible: function (data) {
             var min = data.min_bet; // the minimum fund that a player should pay to bet
             var max = data.max_bet; // the maximum fund that a player is able to bet
-            // all in
-            if (min >= max) {
-                $('#btn_fold').css('visibility', 'visible');
-                $('#btn_allin').css('display', 'inline');
-            } else {
-                $('#btn_check').css('visibility', 'visible');
-                $('#btn_fold').css('visibility', 'visible');
-                $('#btn_bet').css('visibility', 'visible');
-                var slider = $('#myRange');
-                slider.attr({
-                    min: data.min_bet,
-                    max: data.max_bet,
-                    value: data.min_bet
-                });
-                var output = $('#demo');
-                output.text(slider.val());
-                slider.on('input', function () {
-                    output.text($(this).val())
-                });
-                $('#chips').css('visibility', 'visible');
+            var money = data.player.money;
+            // check available
+            if (max - money == min) {
+                $('#btn_check').removeAttr("disabled");
             }
+            $('#btn_bet').removeAttr("disabled");
+            $('#btn_fold').removeAttr("disabled");
+            var slider = $('#myRange');
+            slider.attr({
+                min: data.min_bet,
+                max: data.max_bet,
+                value: data.min_bet
+            });
+            var output = $('#demo');
+            output.text(slider.val());
+            slider.on('input', function () {
+                output.text($(this).val())
+            });
+            $('#chips').css('visibility', 'visible');
+            // // all in
+            // if (min >= max) {
+            //     $('#btn_fold').css('visibility', 'visible');
+            //     $('#btn_allin').css('display', 'inline');
+            // } else {
+            //     $('#btn_check').css('visibility', 'visible');
+            //     $('#btn_fold').css('visibility', 'visible');
+            //     $('#btn_bet').css('visibility', 'visible');
+            //     var slider = $('#myRange');
+            //     slider.attr({
+            //         min: data.min_bet,
+            //         max: data.max_bet,
+            //         value: data.min_bet
+            //     });
+            //     var output = $('#demo');
+            //     output.text(slider.val());
+            //     slider.on('input', function () {
+            //         output.text($(this).val())
+            //     });
+            //     $('#chips').css('visibility', 'visible');
+            // }
         },
 
         setBetInVisible: function () {
-            $('#btn_check').css('visibility', 'hidden');
-            $('#btn_fold').css('visibility', 'hidden');
-            $('#btn_bet').css('visibility', 'hidden');
-            $('#btn_allin').css('visibility', 'hidden');
+            $('#btn_check').attr('disabled', 'disabled');
+            $('#btn_fold').attr('disabled', 'disabled');
+            $('#btn_bet').attr('disabled', 'disabled');
+            // $('#btn_allin').css('visibility', 'hidden');
             $('#chips').css('visibility', 'hidden');
         },
 
@@ -310,28 +328,7 @@ Texas = {
             Texas.Player.betMode = true;
             Texas.Player.setBetVisible(data);
             // set timer0
-            $('#timer0').TimeCircles({
-                "start": true,
-                "animation": "smooth",
-                "bg_width": 2,
-                "fg_width": 0.05,
-                "count_past_zero": false,
-                "total_duration": 30,
-                "direction": "Counter-clockwise",
-                "time": {
-                    "Days": {show: false},
-                    "Hours": {show: false},
-                    "Minutes": {show: false},
-                    "Seconds": {show: true}
-                }
-            }).addListener(countdownComplete);
-
-            function countdownComplete(unit, value, total) {
-                if (total <= 0) {
-                    // fold
-                    Texas.Player.fold();
-                }
-            }
+            Texas.Player.enableTimer($('#timer0'));
         },
 
         disableBetMode: function () {
@@ -353,6 +350,31 @@ Texas = {
                 $('#timer0').TimeCircles().destroy();
             } else {
                 $('#timer' + Texas.Player.currPlayer).TimeCircles().destroy();
+            }
+        },
+
+        enableTimer: function ($timer) {
+            $timer.TimeCircles({
+                "start": true,
+                "animation": "smooth",
+                "bg_width": 2,
+                "fg_width": 0.05,
+                "count_past_zero": false,
+                "total_duration": 30,
+                "direction": "Counter-clockwise",
+                "time": {
+                    "Days": {show: false},
+                    "Hours": {show: false},
+                    "Minutes": {show: false},
+                    "Seconds": {show: true}
+                }
+            }).addListener(countdownComplete);
+
+            function countdownComplete(unit, value, total) {
+                if (total <= 0) {
+                    // fold
+                    Texas.Player.fold();
+                }
             }
         },
 
@@ -382,28 +404,7 @@ Texas = {
             var currplayer = data.player.userid;
             Texas.Player.currPlayer = currplayer;
             // set timers
-            $('#timer' + currplayer).TimeCircles({
-                "start": true,
-                "animation": "smooth",
-                "bg_width": 2,
-                "fg_width": 0.05,
-                "count_past_zero": false,
-                "total_duration": 30,
-                "direction": "Counter-clockwise",
-                "time": {
-                    "Days": {show: false},
-                    "Hours": {show: false},
-                    "Minutes": {show: false},
-                    "Seconds": {show: true}
-                }
-            }).addListener(countdownComplete);
-
-            function countdownComplete(unit, value, total) {
-                if (total <= 0) {
-                    // fold
-                    Texas.Player.fold();
-                }
-            }
+            Texas.Player.enableTimer($('#timer' + currplayer));
         },
 
         setPlayerOperation: function ($op, type) {
@@ -639,7 +640,7 @@ Texas = {
             // $('#my_fund').text(origin - bet);
             Texas.socket.send(JSON.stringify({
                 'message_type': 'bet',
-                'bet': $('#myRange').val(),
+                'bet': -2,
                 'round_id': Texas.GameRound.roundId
             }));
             Texas.Player.disableBetMode();
