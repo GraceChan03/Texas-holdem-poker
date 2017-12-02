@@ -20,20 +20,28 @@ from mimetypes import guess_type
 @login_required(login_url='login')
 # guess this should be dashboard?
 def home(request):
+    # connect social network user with a profile
+    try:
+        UserInfo.objects.get(user = request.user)
+    except:
+        user_info = UserInfo.objects.create(user=request.user, balance=1000, activation=True)
+        user_info.save()
     context = {}
     context['searchForm'] = SearchUser()
     # context['post_form'] = PostForm()
     return render(request, "homepage.html", context)
+
 
 def get_profile_image(request, id):
     user = get_object_or_404(User, id=id)
     image = user.userinfo.profile_photo_src
     return HttpResponse(image, guess_type(image.name))
 
+
 @login_required
 def profile(request, user_name):
     try:
-        context={}
+        context = {}
         context['searchForm'] = SearchUser()
         user = User.objects.get(username=user_name)
         userinfo = UserInfo.objects.get(user=user)
@@ -45,6 +53,7 @@ def profile(request, user_name):
         return redirect("/")
     return render(request, 'profile.html', context)
 
+
 @login_required
 def edit_profile(request):
     # display form if this is a GET request
@@ -54,12 +63,12 @@ def edit_profile(request):
     # instance2 = User.objects.get(id = request.user.id);
     if request.method == 'GET':
         context['form'] = EditProfileForm(instance=instance)
-        context['userform'] = EditUser(instance = request.user)
+        context['userform'] = EditUser(instance=request.user)
         context['userinfo'] = instance
         return render(request, 'editprofile.html', context)
 
     form = EditProfileForm(request.POST, request.FILES, instance=instance)
-    userform = EditUser(request.POST, instance = request.user)
+    userform = EditUser(request.POST, instance=request.user)
     context['form'] = form
     context['userform'] = userform
     if not form.is_valid():
@@ -69,6 +78,7 @@ def edit_profile(request):
     form.save()
     userform.save()
     return redirect(reverse("edit_profile"))
+
 
 @login_required(login_url='login')
 def change_password(request):
@@ -136,13 +146,14 @@ def forget_password(request):
         Welcome to CMU Texas Hold'em. Please click the link below to reset your password:
 
         http://%s%s
-        """ % (request.get_host(), reverse("password_reset", args=(user.username,key,)))
+        """ % (request.get_host(), reverse("password_reset", args=(user.username, key,)))
     send_mail(subject="Change your password",
               message=email_body,
               from_email="admin <no-replay>@cmutexas.com",
               recipient_list=[form.cleaned_data['email']])
     # messages.error(request, 'A reset link was sent to your email')
     return redirect('/')
+
 
 @login_required(login_url='login')
 def add_friend(request, user_name):
@@ -154,6 +165,7 @@ def add_friend(request, user_name):
     else:
         return HttpResponseRedirect('/')
 
+
 @login_required(login_url='login')
 def delete_friend(request, user_name):
     user = request.user
@@ -162,7 +174,6 @@ def delete_friend(request, user_name):
         deletedfriend = User.objects.get(username=user_name)
         user.friends.remove(deletedfriend)
     return redirect('/profile/' + user_name)
-
 
 
 @login_required(login_url='login')
@@ -179,4 +190,3 @@ def about(request):
     user = request.user
     # edit here
     return render(request, 'about.html', context)
-
