@@ -14,14 +14,15 @@ log = logging.getLogger(__name__)
 # Start a new game round
 def start_new_round(game, channel_layer):
 
+    if not game.is_full():
+        log.debug("game room not full")
+        return
+
     # 1. Set minimum bet
     half_min = 1
     new_game_round = GameRound(game=game, min_bet=half_min)
 
     # 2. Save a new round into db
-    # TODO: if full
-    # game.init_fund_dict()
-    game.save()
     new_game_round.start()
     new_game_round.save()
 
@@ -239,23 +240,75 @@ def game_over_then_start_new_game(game, game_round, winner, channel_layer):
     start_new_round(game, channel_layer)
 
 
-def fold_action(game, game_round, user, min_bet, channel_layer):
-    # a. modify db
-    op = "folds"
-    game_round.set_player_inactive(user.id)
-    game_round.save()
-    # b. check if one active users
-    active_user = game_round.only_active_user()
-    if active_user:
-        # b1. set winner
-        winner_id = active_user
-        winner = User.objects.get(id=winner_id)
+def next_approach(game, game_round, user, channel_layer):
+    # 6. Find out next approach (in the same approach, or go back to the first user?):
+    # A. Is this the last one of the player order?
+    # If yes: go to the first one
+    # If no: go the the next one
+    player_order = eval(game_round.player_order)
+    if game_round.player_active_dict and game_round.player_active_dict != '':
+        player_active_dict = eval(game_round.player_active_dict)
+    else:
+        player_active_dict = {}
+    next_user_is_active = False
+    curt_user_id = user.id
+    # Loop until find the next active user
+    while not next_user_is_active:
+        if curt_user_id == int(player_order[-1]):
+            next_index = 0
+        else:
+            next_index = player_order.index(curt_user_id) + 1
+        next_user_id = player_order[next_index]
+        next_user_is_active = player_active_dict[next_user_id]
+        curt_user_id = next_user_id
 
-        # b2. Update the previous user's fund
-        # TODO [Handle] maybe don't return here, and if not return, don't send this websocket
-        fund_update(game, game_round, user, op, min_bet, channel_layer)
+    # B. Is this the first player with max bet?
+    # B1. If no, let next player bet (ws [PLAYER-ACTION])
+    # B2. If yes, check if we should go to next approach, add-dealer-card
+    if next_user_id != game_round.current_max_player:
+        # Send a new ws for [PLAYER-ACTION]
+        try:
+            next_user = User.objects.get(id=next_user_id)
+        except User.DoesNotExist:
+            log.debug('next player does not exist. player id=%s', next_user_id)
+            return
+        player_action(game, game_round, next_user, channel_layer)
+    else:
+        # This is the first player with max bet.
+        next_user_id = player_order[0]
 
-        # b3. Send a new WS for [SHOW-Result-CARD]
-        game_over_then_start_new_game(game, game_round, winner, channel_layer)
+        # Reset the max to the first user(in case everyone checks in the following game)
+        game_round.current_max_player = next_user_id
+        game_round.save()
 
-        return
+        # Is this the final approach?
+        # If yes, show result
+        # If no, send dealer card and let the small blind bet first.
+        if game_round.current_approach == 5:
+            # Send a new ws for [SHOW-Result-CARD]
+            showdown(game, game_round, channel_layer)
+            winner_id = game_round.get_winner()
+            winner = User.objects.get(id=winner_id)
+
+            # start a new round
+            #
+            game_over_then_start_new_game(game, game_round, winner, channel_layer)
+
+            return
+        else:
+            # end of current approach, add dealer card
+            game_round.increment_current_approach_by_1()
+            game_round.save()
+            # a new ws for [ADD-DEALER-CARD]
+            add_dealer_card(game, game_round, channel_layer)
+
+            # Send a new ws for [PLAYER-ACTION] to small blind
+            try:
+                next_user = User.objects.get(id=next_user_id)
+            except User.DoesNotExist:
+                log.debug('next player does not exist. player id=%s', next_user_id)
+                return
+            # If next one is not the max player, go to player-action
+            # Else go to next approach, add-dealer-card
+            player_action(game, game_round, next_user, channel_layer)
+
