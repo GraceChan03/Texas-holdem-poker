@@ -57,7 +57,7 @@ class Game(models.Model):
     # The least fund that a player should have to join the game
     entry_funds = models.IntegerField()
     players = models.ManyToManyField(User,related_name="players")
-    is_active = models.BooleanField(default=True)
+    is_ongoing = models.BooleanField(default=False)
     # sit order
     player_order = models.CharField(max_length=200, default='')
     # player fund
@@ -365,3 +365,30 @@ class FriendshipRequests(models.Model):
     is_accepted = models.BooleanField(default=False)
     is_declined = models.BooleanField(default=False)
     is_notified = models.BooleanField(default=False)
+
+
+class WinnerHistory(models.Model):
+
+    game_round = models.ForeignKey(GameRound)
+
+    user = models.ForeignKey(User)
+
+    # Cards are stored as string and parsed one by one
+    # Dealer
+    dealer_cards = models.CharField(max_length=200)
+
+    user_cards = models.CharField(max_length=200)
+
+    hand_rank = models.IntegerField(default=-1)
+
+    # Current Approach
+    current_approach = models.IntegerField(default=2)
+
+    # Pot
+    pot = models.IntegerField(default=0)
+
+    # Bet
+    bet = models.IntegerField(default=0)
+
+    # Time
+    time = models.DateTimeField(auto_now_add=True, null=True)
