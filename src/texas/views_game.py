@@ -64,7 +64,11 @@ def game_ongoing(request, game_no):
     context = {}
     context['searchForm'] = SearchUser()
     # Update the user's balance for entry funds
-    game = Game.objects.get(game_no=game_no)
+    try:
+        game = Game.objects.get(game_no=game_no)
+    except:
+        log.debug('ws room does not exist label=%s', game_no)
+        return HttpResponse('ws room does not exist label=' + game_no)
     if request.user.userinfo.balance < game.entry_funds:
         # TODO [Handle] no notification while fund efficient，need to change html or form
         log.debug('user %s fund insufficient', request.user.id)
