@@ -1,12 +1,11 @@
 {% extends "base_nav.html" %}
 {% load staticfiles %}
 {% block title %}New Game{% endblock %}
-{% block new-game %}
-    <li class="dropdown active">
-{% endblock %}
 {% block css %}
-    <link type="text/css" rel="stylesheet" href="{% static 'css/materialize.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/homepage.css' %}" type="text/css">
 {% endblock %}
+{% block nav-home %}
+    <li class="active"><a href="/">Home</a></li>{% endblock %}
 {% block content %}
     <div class="container">
         <!-- Content here -->

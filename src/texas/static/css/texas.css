@@ -770,3 +770,7 @@ body, html {
 .email-form {
     width: 200px;
 }
+
+.btn-middle {
+    vertical-align: middle;margin: 0 auto
+}
