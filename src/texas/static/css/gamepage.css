@@ -289,3 +289,8 @@
 .winner {
     display: inline-block;
 }
+
+.modal {
+    z-index: 9999;
+    text-align: center;
+}
