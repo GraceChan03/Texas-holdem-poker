@@ -1,3 +1,4 @@
+import json
 import logging
 
 from channels import Group
@@ -159,16 +160,24 @@ def ws_receive(message):
         # If yes: go to the first one
         # If no: go the the next one
         player_order = eval(game_round.player_order)
-        if userid == int(player_order[-1]):
-            next_index = 0
+        if game_round.player_active_dict and game_round.player_active_dict != '':
+            player_active_dict = eval(game_round.player_active_dict)
         else:
-            next_index = player_order.index(userid) + 1
-        next_user_id = player_order[next_index]
+            player_active_dict = {}
+        next_user_is_active = False
+        curt_user_id = userid
+        while not next_user_is_active:
+            if curt_user_id == int(player_order[-1]):
+                next_index = 0
+            else:
+                next_index = player_order.index(curt_user_id) + 1
+            next_user_id = player_order[next_index]
+            next_user_is_active = player_active_dict[next_user_id]
+            curt_user_id = next_user_id
 
         # B. Is this the first player with max bet?
         # B1. If no, let next player bet (ws [PLAYER-ACTION])
         # B2. If yes, check if we should go to next approach, add-dealer-card
-        # TODO [Function] skip inactive users
         if next_user_id != game_round.current_max_player:
             # Send a new ws for [PLAYER-ACTION]
             try:
@@ -194,7 +203,7 @@ def ws_receive(message):
                 winner_id = game_round.get_winner()
                 winner = User.objects.get(id=winner_id)
 
-                # TODO start a new round
+                # start a new round
                 #
                 consumers_round_update.game_over_then_start_new_game(game, game_round, winner, message.channel_layer)
 
@@ -238,7 +247,6 @@ def ws_disconnect(message):
 
     Group('bet-' + game_no, channel_layer=message.channel_layer).discard(message.reply_channel)
 
-    # TODO
     # A. Send a new ws for [PLAYER-ACTION] to all the other users----------
     player_remove_dict = {}
     player_remove_dict["message_type"] = "game-update"
