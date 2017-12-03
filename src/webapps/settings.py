@@ -46,7 +46,10 @@ INSTALLED_APPS = [
 LOGIN_URL = '/login'
 
 # Default url to use after the user has logged in
-LOGIN_REDIRECT_URL = '/'
+LOGIN_REDIRECT_URL = '/homepage'
+
+# Logout
+LOGOUT_URL = 'logout'
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -216,7 +219,3 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.user.user_details',
     'social_core.pipeline.social_auth.associate_by_email',
 )
-
-# LOGIN_URL = 'login'
-LOGOUT_URL = 'logout'
-# LOGIN_REDIRECT_URL = 'homepage'
