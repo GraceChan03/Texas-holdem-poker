@@ -15,7 +15,7 @@ from .forms import *
 from .models import *
 from .util import send_email
 from mimetypes import guess_type
-
+from datetime import datetime
 
 @login_required(login_url='login')
 # guess this should be dashboard?
@@ -160,21 +160,11 @@ def add_friend(request, user_name):
     user = request.user
     if User.objects.filter(username=user_name):
         friend = User.objects.get(username=user_name)
-        user.userinfo.friends.add(friend)
+        friend_request = FriendshipRequests(from_user=user, to_user=friend)
+        friend_request.save()
         return redirect('/profile/' + user_name)
     else:
         return HttpResponseRedirect('/')
-
-
-@login_required(login_url='login')
-def delete_friend(request, user_name):
-    user = request.user
-    # check if the user exists in follow table
-    if User.objects.filter(username=user_name):
-        deletedfriend = User.objects.get(username=user_name)
-        user.friends.remove(deletedfriend)
-    return redirect('/profile/' + user_name)
-
 
 @login_required(login_url='login')
 # url not written
@@ -182,11 +172,44 @@ def my_friend(request):
     # show all friends list
     return
 
-
-# @login_required(login_url='login')
-def about(request):
-    context = {}
+@login_required(login_url='login')
+def friend_requests(request):
+    context={}
     context['searchForm'] = SearchUser()
+    requests = FriendshipRequests.objects.filter(to_user=request.user).order_by('-sent_time')
+    context['requests'] = requests
+    return render(request, 'friend_requests.html', context)
+
+
+@login_required(login_url='login')
+def confirm_request(request,user_name):
+    context={}
     user = request.user
-    # edit here
-    return render(request, 'about.html', context)
+    if User.objects.get(username = user_name):
+        from_user = User.objects.get(username = user_name)
+        request = FriendshipRequests.objects.get(from_user=from_user)
+        user.userinfo.friends.add(from_user)
+        request.is_accepted = True
+        request.is_replied = True
+        request.replied_time = datetime.now()
+        request.save()
+    return redirect(reverse('friend_request'))
+
+
+@login_required(login_url='login')
+def decline_request(request,user_name):
+    context={}
+    if User.objects.get(username=user_name):
+        from_user = User.objects.get(username = user_name)
+        request = FriendshipRequests.objects.get(from_user=from_user)
+        request.is_declined = True
+        request.is_replied = True
+        request.replied_time = datetime.now()
+        request.save()
+    return redirect(reverse('friend_request'))
+
+
+
+
+
+
