@@ -263,22 +263,20 @@ def get_coupon(request):
     context['searchForm'] = SearchUser()
     if request.method == 'GET':
         return render(request, 'get_coupon.html', context)
-    form = SearchUser(request.POST)
+    form = GetCoupon(request.POST)
     context['form'] = form
     if not form.is_valid():
         # should be handled better
         context['warnning'] = "Please input valid coupon"
         return render(request, 'get_coupon.html', context)
-    try:
-        Coupon.objects.get(coupon_id=form.cleaned_data['coupon_id'])
-    except:
+    if not Coupon.objects.get(coupon_id=form.cleaned_data['coupon_id']):
         context['warnning'] = "Please input valid coupon"
         return render(request, 'get_coupon.html', context)
     coupon = Coupon.objects.get(coupon_id=form.cleaned_data['coupon_id'])
-    if coupon.expire_date < datetime.now():
+    if coupon.expire_date.replace(tzinfo=None) < datetime.now():
         context['warnning'] = "Your coupon was out of date"
         return render(request, 'get_coupon.html', context)
-    useInfo =UserInfo.objects.get(user=request.user)
+    useInfo = UserInfo.objects.get(user=request.user)
     currentBalance = useInfo.balance
     useInfo.balance = (currentBalance + int(coupon.amount))
     useInfo.save()
