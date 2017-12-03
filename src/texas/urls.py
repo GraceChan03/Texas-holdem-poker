@@ -1,5 +1,5 @@
 from django.conf.urls import url, include
-from . import views, views_account, views_game
+from . import views, views_account, views_game, view_scoreboard
 from django.contrib.auth import views as auth_views
 from .forms import *
 
@@ -35,7 +35,6 @@ urlpatterns = [
     url(r'^email_invite$', views.email_invite, name='email_invite'),
     url(r'^dashboard$', views_game.dashboard, name='dashboard'),
     url(r'^myfriends$', views_game.myfriends, name='myfriends'),
-    url(r'^scoreboard$', views_game.scoreboard, name='scoreboard'),
     # should with (?P<user_name>.+)$, but for static page testing I just move it
     url(r'^search_friend$', views_game.search_friend, name='search_friend'),
     # url(r'^get_coupon/(?P<user_name>.+)$', views.get_coupon, name='get_coupon'),
@@ -45,4 +44,5 @@ urlpatterns = [
     url(r'^exit_room/(?P<game_no>.+)/(?P<id>.+)$', views_game.exit_room, name='exit_room'),
     url(r'^game_result$', views_game.game_result, name='game_result'),
 
+    url(r'^scoreboard$', view_scoreboard.show_scoreboard, name='scoreboard'),
 ]

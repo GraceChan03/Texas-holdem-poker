@@ -3,6 +3,7 @@ from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth import authenticate
 from texas.models import *
+from texas.choices import *
 
 
 class RegistrationForm(forms.Form):
@@ -74,9 +75,6 @@ class ResetPasswordForm(forms.Form):
 
         # Generally return the cleaned data we got from our parent.
         return cleaned_data
-
-
-BIRTH_YEAR_CHOICES = tuple(x for x in range(2017, 1917, -1))
 
 
 class EditProfileForm(forms.ModelForm):
@@ -179,3 +177,11 @@ class SearchUser(forms.Form):
     keyword = forms.CharField(max_length=30,
                               widget=forms.TextInput(
                                   attrs={'type': 'text', 'class': 'form-control', 'placeholder': 'Search user..'}))
+
+
+class ScoreboardForm(forms.Form):
+    ranking_type = forms.CharField(
+        label="Select the ranking type:",
+        widget=forms.Select(choices=RANKING_TYPE_CHOICES),
+    )
+

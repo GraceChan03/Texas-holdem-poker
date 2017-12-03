@@ -40,6 +40,7 @@ class Chat(models.Model):
     to_user = models.ForeignKey(User,related_name="to_user")
     message = models.CharField(max_length=140)
     time = models.DateTimeField(auto_now_add=True)
+    is_notified = models.BooleanField(default=False)
 
 
 # Game
