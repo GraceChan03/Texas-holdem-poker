@@ -30,16 +30,18 @@
                                     <div class="clearfix"></div>
                                 </li>
                             {% endif %}
-                            {% for user in users %}
+                            {% for this_user in users %}
                                 <li class="list-group-item">
                                     <div class="col-xs-12 col-sm-3">
-                                        <img src="{% url 'get_profile_image' user.id %}" alt="{{ user.username }}"
+                                        <img src="{% url 'get_profile_image' this_user.id %}" alt="{{ this_user.username }}"
                                              class="img-responsive img-circle"/>
                                     </div>
                                     <div class="col-xs-12 col-sm-9"><br>
-                                        <span class="name">{{ user.username }}</span><br/><br/>
+                                        <span class="name">{{ this_user.username }}</span><br/><br/>
                                         {#                                    add friend link?#}
-                                        <a href="{% url 'profile' user.username %}" class="btn btn-info">Add Friend</a>
+                                        {% if this_user != user %}
+                                        <a href="{% url 'profile' this_user.username %}" class="btn btn-info">Add Friend</a>
+                                        {% endif %}
                                     </div>
                                     <div class="clearfix"></div>
                                 </li>

@@ -24,8 +24,8 @@
                                              class="img-responsive img-circle"/>
                                     </div>
                                     <div class="col-xs-12 col-sm-9"><br>
-                                        <span class="name">You have no friend requests</span><br/><br/>
-                                        <a href="#" class="btn btn-danger">No Search Result</a>
+                                        <br/><br/>
+                                        <a href="#" class="btn btn-danger">You have no friend requests</a>
                                     </div>
                                     <div class="clearfix"></div>
                                 </li>
@@ -38,9 +38,19 @@
                                              class="img-responsive img-circle"/>
                                     </div>
                                     <div class="col-xs-12 col-sm-9"><br>
-                                        <span class="name">{{ request.from_user.username }}</span><br/><br/>
+                                        <span class="name">{{ request.from_user.username }}</span><br/>
+                                        <span class="name">{{ request.sent_time }}</span><br/>
                                         {#                                    add friend link?#}
-                                        <a href="#" class="btn btn-info">Add</a>
+                                        {% if request.is_replied %}
+                                            {% if request.is_accepted %}
+                                                <a href="#" class="btn btn-success">Accepted</a>
+                                            {% else %}
+                                                <a href="#" class="btn btn-success">Declined</a>
+                                            {% endif %}
+                                        {% else %}
+                                        <a href="{% url 'confirm_request' request.from_user.username request.sent_time %}" class="btn btn-info">Accept</a>
+                                        <a href="{% url 'decline_request' request.from_user.username request.sent_time %}" class="btn btn-danger">Decline</a>
+                                        {% endif %}
                                     </div>
                                     <div class="clearfix"></div>
                                 </li>

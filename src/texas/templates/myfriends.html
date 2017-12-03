@@ -16,96 +16,38 @@
                     <div class="panel panel-default">
                         <div class="panel-heading c-list">
                             <h4 class="title pull-left">My friends</h4>
-                            <h5><a class="btn btn-info pull-right" href="add_friend">Add Friend</a></h5>
                             <br><br>
                         </div>
 
                         <ul class="list-group" id="contact-list">
-                            <li class="list-group-item">
-                                <div class="col-xs-12 col-sm-3">
-                                    <img src="http://api.randomuser.me/portraits/men/49.jpg" alt="Scott Stevens"
-                                         class="img-responsive img-circle"/>
-                                </div>
-                                <div class="col-xs-12 col-sm-9">
-                                    <span class="name">Scott Stevens</span><br/>
-                                    {#                                    <span class="glyphicon glyphicon-map-marker text-muted c-info" data-toggle="tooltip"#}
-                                    {#                                          title="5842 Hillcrest Rd"></span>#}
-                                    {#                                    <span class="visible-xs"> <span#}
-                                    {#                                            class="text-muted">5842 Hillcrest Rd</span><br/></span>#}
-                                    {#                                    <span class="glyphicon glyphicon-earphone text-muted c-info" data-toggle="tooltip"#}
-                                    {#                                          title="(870) 288-4149"></span>#}
-                                    {#                                    <span class="visible-xs"> <span class="text-muted">(870) 288-4149</span><br/></span>#}
-                                    {#                                    <span class="fa fa-comments text-muted c-info" data-toggle="tooltip"#}
-                                    {#                                          title="scott.stevens@example.com"></span>#}
-                                    {#                                    <span class="visible-xs"> <span#}
-                                    {#                                            class="text-muted">scott.stevens@example.com</span><br/></span>#}
-                                </div>
-                                <div class="clearfix"></div>
-                            </li>
-                            <li class="list-group-item">
-                                <div class="col-xs-12 col-sm-3">
-                                    <img src="http://api.randomuser.me/portraits/men/97.jpg" alt="Seth Frazier"
-                                         class="img-responsive img-circle"/>
-                                </div>
-                                <div class="col-xs-12 col-sm-9">
-                                    <span class="name">Seth Frazier</span><br/>
-                                </div>
-                                <div class="clearfix"></div>
-                            </li>
-                            <li class="list-group-item">
-                                <div class="col-xs-12 col-sm-3">
-                                    <img src="http://api.randomuser.me/portraits/women/90.jpg" alt="Jean Myers"
-                                         class="img-responsive img-circle"/>
-                                </div>
-                                <div class="col-xs-12 col-sm-9">
-                                    <span class="name">Jean Myers</span><br/>
-                                </div>
-                                <div class="clearfix"></div>
-                            </li>
-                            <li class="list-group-item">
-                                <div class="col-xs-12 col-sm-3">
-                                    <img src="http://api.randomuser.me/portraits/men/24.jpg" alt="Todd Shelton"
-                                         class="img-responsive img-circle"/>
-                                </div>
-                                <div class="col-xs-12 col-sm-9">
-                                    <span class="name">Todd Shelton</span><br/>
-                                </div>
-                                <div class="clearfix"></div>
-                            </li>
-                            <li class="list-group-item">
-                                <div class="col-xs-12 col-sm-3">
-                                    <img src="http://api.randomuser.me/portraits/women/34.jpg" alt="Rosemary Porter"
-                                         class="img-responsive img-circle"/>
-                                </div>
-                                <div class="col-xs-12 col-sm-9">
-                                    <span class="name">Rosemary Porter</span><br/>
-                                </div>
-                                <div class="clearfix"></div>
-                            </li>
-                            <li class="list-group-item">
-                                <div class="col-xs-12 col-sm-3">
-                                    <img src="http://api.randomuser.me/portraits/women/56.jpg" alt="Debbie Schmidt"
-                                         class="img-responsive img-circle"/>
-                                </div>
-                                <div class="col-xs-12 col-sm-9">
-                                    <span class="name">Debbie Schmidt</span><br/>
-                                </div>
-                                <div class="clearfix"></div>
-                            </li>
-                            <li class="list-group-item">
-                                <div class="col-xs-12 col-sm-3">
-                                    <img src="http://api.randomuser.me/portraits/women/76.jpg" alt="Glenda Patterson"
-                                         class="img-responsive img-circle"/>
-                                </div>
-                                <div class="col-xs-12 col-sm-9">
-                                    <span class="name">Glenda Patterson</span><br/>
-                                </div>
-                                <div class="clearfix"></div>
-                            </li>
+                            {% if not friends %}
+                                <li class="list-group-item">
+                                    <div class="col-xs-12 col-sm-3">
+                                        <img src="{% url 'get_profile_image' user.id %}" alt="{{ user.username }}"
+                                             class="img-responsive img-circle"/>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <h3 class="name">You have no friends now!</h3><br/>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </li>
+                            {% endif %}
+                            {% for friend in friends %}
+                                <li class="list-group-item">
+                                    <div class="col-xs-12 col-sm-3">
+                                        <img src="{% url 'get_profile_image' friend.id %}" alt="{{ friend.username }}"
+                                             class="img-responsive img-circle"/>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-9">
+                                        <h4 class="name"><a href="{% url 'profile' friend.username %}">{{ friend.username }}</a></h4><br/>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </li>
+                            {% endfor %}
                         </ul>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </div>{% block animation %}{% endblock %}
 {% endblock %}

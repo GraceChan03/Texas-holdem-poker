@@ -17,12 +17,13 @@ from .util import send_email
 from mimetypes import guess_type
 from datetime import datetime
 
+
 @login_required(login_url='login')
 # guess this should be dashboard?
 def home(request):
     # connect social network user with a profile
     try:
-        UserInfo.objects.get(user = request.user)
+        UserInfo.objects.get(user=request.user)
     except:
         user_info = UserInfo.objects.create(user=request.user, balance=1000, activation=True)
         user_info.save()
@@ -47,6 +48,8 @@ def profile(request, user_name):
         userinfo = UserInfo.objects.get(user=user)
         context['profile_user'] = user
         context['profile'] = userinfo
+        if UserInfo.objects.get(user = request.user).friends.get(username = user_name):
+            context['isfriend'] = True
     except ObjectDoesNotExist:
         # when there is not such id for retrieve
         # messages.error(request, 'The user id does not exist!')
@@ -166,15 +169,10 @@ def add_friend(request, user_name):
     else:
         return HttpResponseRedirect('/')
 
-@login_required(login_url='login')
-# url not written
-def my_friend(request):
-    # show all friends list
-    return
 
 @login_required(login_url='login')
 def friend_requests(request):
-    context={}
+    context = {}
     context['searchForm'] = SearchUser()
     requests = FriendshipRequests.objects.filter(to_user=request.user).order_by('-sent_time')
     context['requests'] = requests
@@ -182,34 +180,29 @@ def friend_requests(request):
 
 
 @login_required(login_url='login')
-def confirm_request(request,user_name):
-    context={}
+def confirm_request(request, user_name, sent_time):
     user = request.user
-    if User.objects.get(username = user_name):
-        from_user = User.objects.get(username = user_name)
-        request = FriendshipRequests.objects.get(from_user=from_user)
-        user.userinfo.friends.add(from_user)
-        request.is_accepted = True
-        request.is_replied = True
-        request.replied_time = datetime.now()
-        request.save()
-    return redirect(reverse('friend_request'))
+    if User.objects.get(username=user_name):
+        from_user = User.objects.get(username=user_name)
+        if FriendshipRequests.objects.get(from_user=from_user, sent_time=sent_time):
+            friendRequest = FriendshipRequests.objects.get(from_user=from_user,sent_time=sent_time)
+            UserInfo.objects.get(user=user).friends.add(from_user)
+            UserInfo.objects.get(user=from_user).friends.add(user)
+            friendRequest.is_accepted = True
+            friendRequest.is_replied = True
+            friendRequest.replied_time = datetime.now()
+            friendRequest.save()
+    return redirect(reverse('friend_requests'))
 
 
 @login_required(login_url='login')
-def decline_request(request,user_name):
-    context={}
+def decline_request(request, user_name, sent_time):
     if User.objects.get(username=user_name):
-        from_user = User.objects.get(username = user_name)
-        request = FriendshipRequests.objects.get(from_user=from_user)
-        request.is_declined = True
-        request.is_replied = True
-        request.replied_time = datetime.now()
-        request.save()
-    return redirect(reverse('friend_request'))
-
-
-
-
-
-
+        from_user = User.objects.get(username=user_name)
+        if FriendshipRequests.objects.get(from_user=from_user,sent_time=sent_time):
+            friendRequest = FriendshipRequests.objects.get(from_user=from_user,sent_time=sent_time)
+            friendRequest.is_declined = True
+            friendRequest.is_replied = True
+            friendRequest.replied_time = datetime.now()
+            friendRequest.save()
+    return redirect(reverse('friend_requests'))

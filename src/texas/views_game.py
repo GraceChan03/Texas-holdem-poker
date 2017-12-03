@@ -90,10 +90,11 @@ def dashboard(request):
     return render(request, 'dashboard.html', context)
 # @login_required(login_url='login')
 def myfriends(request):
+    # show all friends list
     context = {}
     context['searchForm'] = SearchUser()
-    user = request.user
-    # edit here
+    userInfo = UserInfo.objects.get(user=request.user)
+    context['friends'] = userInfo.friends.all()
     return render(request, 'myfriends.html', context)
 
 # @login_required(login_url='login')
