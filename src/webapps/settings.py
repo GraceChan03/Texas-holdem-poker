@@ -24,7 +24,7 @@ SECRET_KEY = '#wtk+=yv*avx7mju7i*#=hh(=uqof$g8a^w=e2wa=l2il^jlk!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = ['54.208.15.77', 'cmu-texas.ml', '127.0.0.1']
 
 # Application definition
 
@@ -38,15 +38,13 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'channels',
     'social_django'
-    # 'channels_panel',
-    # 'debug_toolbar'
 ]
 
 # Config the url to use if the system requires the user to log in
 LOGIN_URL = '/login'
 
 # Default url to use after the user has logged in
-LOGIN_REDIRECT_URL = '/homepage'
+LOGIN_REDIRECT_URL = '/'
 
 # Logout
 LOGOUT_URL = 'logout'
@@ -91,13 +89,6 @@ WSGI_APPLICATION = 'webapps.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/1.11/ref/settings/#databases
 
-# DATABASES = {
-#     'default': {
-#         'ENGINE': 'django.db.backends.sqlite3',
-#         'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-#     }
-# }
-
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
@@ -106,7 +97,6 @@ DATABASES = {
         'USER': 'postgres',
         'PASSWORD': '',
         'HOST': '54.208.15.77',    # Empty for localhost through domain sockets or           '127.0.0.1' for localhost through TCP.
-        # 'HOST': '127.0.0.1',    # Empty for localhost through domain sockets or           '127.0.0.1' for localhost through TCP.
         'PORT': '5432',             # Set to empty string for default.
     }
 }
@@ -151,6 +141,12 @@ MEDIA_URL = '/texas/'
 # Configure django to print emails rather than sending them
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+# EMAIL_USE_TLS = True
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+# EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+# EMAIL_PORT = 587
+
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
 
@@ -191,12 +187,6 @@ LOGGING = {
         },
     },
 }
-# DEBUG_TOOLBAR_PANELS = [
-#     'channels_panel.panel.ChannelsDebugPanel',
-# ]
-# INTERNAL_IPS=[
-#     # '127.0.0.1'
-# ]
 
 # facebook login
 SOCIAL_AUTH_FACEBOOK_KEY = '1278381142264340'  # App ID
