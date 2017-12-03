@@ -152,7 +152,7 @@ Texas = {
                 Texas.GameRound.dealerCardTurn += 1;
             }
             // new circle
-            Texas.GameRound.setOperationInvisible();
+            // Texas.GameRound.setOperationInvisible();
         },
 
         setPlayerFunds: function (player_funds) {
@@ -169,9 +169,9 @@ Texas = {
         },
 
         gameOver: function (data) {
+            Texas.GameRound.start = true;
             Texas.Player.disableTimer();
             Texas.Player.disableBetMode();
-            Texas.GameRound.setOperationInvisible();
             Texas.GameRound.setChipsInvisible();
             // new form of showing winner!!!!!!!!!!!!!!!!!!!!!!!!!!!
             $('.font-win').text(data.winner + " wins!");
@@ -277,6 +277,7 @@ Texas = {
                 $('.game-result').css('visibility', 'hidden');
                 Texas.GameRound.setDealerCardsInvisible();
                 Texas.GameRound.hidePlayerCards();
+                Texas.GameRound.setOperationInvisible();
                 // $('.wrapper').css('visibility', 'hidden');
                 // get cards info
                 var my_player_cards = data.player_cards;
