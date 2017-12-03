@@ -179,6 +179,30 @@ def friend_requests(request):
 
 
 @login_required(login_url='login')
+def check_friend_requests(request):
+    frequest = FriendshipRequests.objects.filter(to_user=request.user, is_notified=False)
+    if frequest:
+        notification = frequest.count()
+    else:
+        notification = 0
+    return HttpResponse(notification)
+
+
+@login_required(login_url='login')
+def disable_notification(request):
+    timestamp = int(request.POST['timestamp'])
+    frequest = FriendshipRequests.objects.filter(to_user=request.user, is_notified=False)
+    if frequest:
+        for f in frequest:
+            sent_time = int(f.sent_time.strftime('%s'))
+            if sent_time < timestamp:
+                fr = FriendshipRequests.objects.get(id=f.id)
+                fr.is_notified = True
+                fr.save()
+        return HttpResponse("notified")
+    return HttpResponse("no requests")
+
+@login_required(login_url='login')
 def confirm_request(request, user_name, sent_time):
     user = request.user
     if User.objects.get(username=user_name):
@@ -232,4 +256,4 @@ def email_invite(request):
               recipient_list=[form.cleaned_data['email']])
     context['email_sent'] = True
     # messages.error(request, 'A reset link was sent to your email')
-    return render(request, 'game_init_success.html',context)
+    return render(request, 'game_init_success.html', context)
