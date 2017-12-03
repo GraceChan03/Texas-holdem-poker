@@ -50,6 +50,7 @@ function disableNotification() {
         data: {"timestamp" : $.now()},
         success: function () {
             $('.friend-request').remove();
+            $('.notification').attr('notify', 'false');
         }
     })
 }
