@@ -2,41 +2,46 @@
 {% load staticfiles %}
 {% block title %}New Game{% endblock %}
 {% block new-game %}
-    <li class="dropdown active">{% endblock %}
+    <li class="dropdown active">
+{% endblock %}
+{% block css %}
+    <link type="text/css" rel="stylesheet" href="{% static 'css/materialize.min.css' %}">
+{% endblock %}
 {% block content %}
     <div class="container">
         <!-- Content here -->
-        <div class="login-container">
+        <div class="login-container" style="width: 600px">
             <div class="login-title-div">
-                <h3 class="login-title">Congratulation!</h3>
+                <h3 class="login-title">Room opened!</h3>
             </div>
             <div class="login-outer">
-                <div class="login-inner">
-                    <h4>A game with
-                        {{ players }}
-                        players and
-                        ${{ entry_funds }}
-                        for entry is initialized. The room number is
-                        {{ game_no }}
-                        . Tell your friend the room number and start enjoying the game!</h4><br>
+                <div class="login-inner" style="margin: 20px;display: inline-block;width: 500px">
+                    <p style="font-size: 20px;text-align: center">Room number: {{ game_no }}</p><br>
                     <a class="btn btn-success" href="{% url 'game_ongoing' game_no %}">
-                        Enter the room!
+                        Enter the room
                     </a><br>
-                    <h3 class="login-title">Send Email to invite your friends!</h3>
+                    <h3 class="login-title">Invite your friends!</h3>
+                    <form>
+                        <div class="chips chips-autocomplete" style="padding-left: 0;text-align: left"></div>
+                        <input type="submit" class="btn-red" id="invitor"
+                               onclick="sendFriendInvitation()" value="Send Invitation" style="width: 200px">
+                        <p style="color: red; text-align: center" class="invite-warning"></p>
+                    </form>
+                    <h3 class="login-title">Or send emails</h3>
                     {% if email_sent %}
                         <h4>You have sent an invitation email!</h4>
                     {% endif %}
                     <form class="form-signin" action="{% url 'email_invite' %}" method="post">
-                        <input hidden="true" name="players" value="{{ players }}">
+                        <input hidden="true" name="players" value="{{ players }}" id="player_no">
                         <input hidden="true" name="entry_funds" value="{{ entry_funds }}">
-                        <input hidden="true" name="game_no" value="{{ game_no }}">
+                        <input hidden="true" name="game_no" value="{{ game_no }}" id="game_no">
                         {% for field in email_form.visible_fields %}
                             <tr>
                                 <td>{{ field }}</td>
                             </tr>
                             <br><br>
                         {% endfor %}
-                        <input type="submit" class="btn-red" value="Send Invitation"><br>
+                        <input type="submit" class="btn-red" value="Send Email" style="width: 200px"><br>
                         {% for error in email_form.non_field_errors %}
                             <a>{{ error }}</a>
                         {% endfor %}
@@ -49,4 +54,8 @@
             </div>
         </div>
     </div>
+{% endblock %}
+{% block js %}
+    <script src="{% static 'js/materialize.min.js' %}"></script>
+    <script src="{% static 'js/invitation.js' %}"></script>
 {% endblock %}

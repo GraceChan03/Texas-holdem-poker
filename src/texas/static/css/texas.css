@@ -756,3 +756,17 @@ body, html {
 .texas-tooltip:hover .texas-tooltiptext {
     visibility: visible;
 }
+
+.notify {
+    width: 60px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.notify-icon {
+    width: 20px
+}
+
+.email-form {
+    width: 200px;
+}

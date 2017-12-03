@@ -25,19 +25,23 @@ urlpatterns = [
 
     url(r'^add_friend/(?P<user_name>.+)$', views.add_friend, name='add_friend'),
     url(r'^friend_requests$', views.friend_requests, name='friend_requests'),
+    url(r'^game_inivitation$', views.game_inivitation, name='game_inivitation'),
     url(r'^check_friend_requests$', views.check_friend_requests, name='check_friend_requests'),
+    url(r'^check_invitation_requests$', views.check_invitation_requests, name='check_invitation_requests'),
     url(r'^disable_notification$', views.disable_notification, name='disable_notification'),
+    url(r'^disable_game_notify$', views.disable_game_notify, name='disable_game_notify'),
     url(r'^confirm_request/(?P<user_name>.+)/(?P<sent_time>.+)$', views.confirm_request, name='confirm_request'),
     url(r'^decline_request/(?P<user_name>.+)/(?P<sent_time>.+)$', views.decline_request, name='decline_request'),
     # url(r'^delete_friend/(?P<user_name>.+)$', views.delete_friend, name='delete_friend'),
 
     url(r'^new_game$', views_game.new_game, name='new_game'),
     url(r'^email_invite$', views.email_invite, name='email_invite'),
+    url(r'^station_invite$', views.station_invite, name='station_invite'),
     url(r'^dashboard$', views_game.dashboard, name='dashboard'),
     url(r'^myfriends$', views_game.myfriends, name='myfriends'),
     # should with (?P<user_name>.+)$, but for static page testing I just move it
     url(r'^search_friend$', views_game.search_friend, name='search_friend'),
-    # url(r'^get_coupon/(?P<user_name>.+)$', views.get_coupon, name='get_coupon'),
+    url(r'^get_coupon$', views.get_coupon, name='get_coupon'),
     # should with game id
     url(r'^game_join$', views_game.game_join, name='game_join'),
     url(r'^game_ongoing/(?P<game_no>.+)$', views_game.game_ongoing, name='game_ongoing'),

@@ -42,7 +42,6 @@ class Chat(models.Model):
     time = models.DateTimeField(auto_now_add=True)
     is_notified = models.BooleanField(default=False)
 
-
 # Game
 class Game(models.Model):
     # Game Start Time

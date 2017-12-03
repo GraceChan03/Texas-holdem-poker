@@ -1,0 +1,47 @@
+{% extends "base_nav.html" %}
+{% load staticfiles %}
+{% block title %}Friend invitation{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="row text-center">
+            <div class="col-md-12">
+                <br><br><br><br><br>
+            </div>
+            <div class="row">
+                {#               this part should be modified a litte after function finished, for now just display all the friend, name should have a link  #}
+                <div class="col-xs-12 col-sm-offset-3 col-sm-6">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h4 class="title pull-left">Friend Invitations</h4>
+                            <br><br>
+                        </div>
+
+                        <ul class="list-group" id="contact-list">
+                            {% if not requests %}
+                                <p>No invitations</p>
+                            {% endif %}
+                            {% for request in requests %}
+                                <li class="list-group-item">
+                                    <div class="col-xs-12 col-sm-3">
+                                        <img src="{% url 'get_profile_image' request.from_user.id %}"
+                                             alt="{{ request.from_user.username }}"
+                                             class="img-responsive img-circle"/>
+                                    </div>
+                                    <div class="col-xs-12 col-sm-9"><br>
+                                        <span class="name">
+                                            {{ request.from_user.username }} invites you to room {{ request.message }}
+                                        </span><br/>
+                                        {#                                    add friend link?#}
+                                    <a href="{% url 'game_ongoing' request.message %}" class="btn btn-info">Enter the room</a>
+                                    </div>
+                                    <div class="clearfix"></div>
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% block animation %}{% endblock %}
+{% endblock %}
