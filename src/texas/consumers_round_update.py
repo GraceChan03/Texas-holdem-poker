@@ -2,6 +2,8 @@ import json
 import logging
 from channels import Group, Channel
 from channels.sessions import channel_session
+
+from texas import game_operations
 from texas.models import *
 from django.contrib.auth.models import User
 from django.core import serializers
@@ -222,6 +224,8 @@ def game_over(game, game_round, winner, channel_layer):
 
 
 def game_over_then_start_new_game(game, game_round, winner, channel_layer):
+    # Log winner information
+    game_operations.winner_history_save(game_round, winner)
     # Update winner's round balance
     # ---------------get fund-------------
     if game_round.player_fund_dict and game_round.player_fund_dict != '':
@@ -232,7 +236,7 @@ def game_over_then_start_new_game(game, game_round, winner, channel_layer):
     game_round.player_fund_dict = str(round_funds)
     game_round.save()
 
-        # Update all user's game balance
+    # Update all user's game balance
     game.player_fund_dict = game_round.player_fund_dict
     game.save()
     game_over(game, game_round, winner.username, channel_layer)
