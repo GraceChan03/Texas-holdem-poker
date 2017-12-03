@@ -15,13 +15,36 @@
                     <h4>A game with
                         {{ players }}
                         players and
-                        ${{entry_funds}}
+                        ${{ entry_funds }}
                         for entry is initialized. The room number is
                         {{ game_no }}
-                    . Tell your friend the room number and start enjoying the game!</h4><br><br><br>
-                        <a class="btn btn-success" href="{% url 'game_ongoing' game_no %}">
-                            Enter the room!
-                        </a>
+                        . Tell your friend the room number and start enjoying the game!</h4><br>
+                    <a class="btn btn-success" href="{% url 'game_ongoing' game_no %}">
+                        Enter the room!
+                    </a><br>
+                    <h3 class="login-title">Send Email to invite your friends!</h3>
+                    {% if email_sent %}
+                        <h4>You have sent an invitation email!</h4>
+                    {% endif %}
+                    <form class="form-signin" action="{% url 'email_invite' %}" method="post">
+                        <input hidden="true" name="players" value="{{ players }}">
+                        <input hidden="true" name="entry_funds" value="{{ entry_funds }}">
+                        <input hidden="true" name="game_no" value="{{ game_no }}">
+                        {% for field in email_form.visible_fields %}
+                            <tr>
+                                <td>{{ field }}</td>
+                            </tr>
+                            <br><br>
+                        {% endfor %}
+                        <input type="submit" class="btn-red" value="Send Invitation"><br>
+                        {% for error in email_form.non_field_errors %}
+                            <a>{{ error }}</a>
+                        {% endfor %}
+                        {% for field in email_form.visible_fields %}
+                            <a>{{ field.errors }}</a>
+                        {% endfor %}
+                        {% csrf_token %}
+                    </form>
                 </div>
             </div>
         </div>

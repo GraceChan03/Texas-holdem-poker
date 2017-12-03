@@ -69,7 +69,6 @@ def player_add(game, user, channel_layer):
 
 
 def player_remove(game, user, channel_layer):
-    # TODO
     # A. If this person is in a game_round, (i.e. active gameround exists)
     try:
         game_round = GameRound.objects.get(game=game, is_active=True)

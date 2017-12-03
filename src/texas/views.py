@@ -18,7 +18,7 @@ from mimetypes import guess_type
 from datetime import datetime
 
 
-@login_required
+@login_required(login_url='login')
 # guess this should be dashboard?
 def home(request):
     # connect social network user with a profile
@@ -39,7 +39,7 @@ def get_profile_image(request, id):
     return HttpResponse(image, guess_type(image.name))
 
 
-@login_required
+@login_required(login_url='login')
 def profile(request, user_name):
     if User.objects.get(username=user_name):
         context = {}
@@ -48,16 +48,15 @@ def profile(request, user_name):
         userinfo = UserInfo.objects.get(user=user)
         context['profile_user'] = user
         context['profile'] = userinfo
-        if user_name!= request.user.username:
-            if user in UserInfo.objects.get(user = request.user).friends.all():
+        if user_name != request.user.username:
+            if user in UserInfo.objects.get(user=request.user).friends.all():
                 context['isfriend'] = True
         return render(request, 'profile.html', context)
     else:
         return redirect("/")
 
 
-
-@login_required
+@login_required(login_url='login')
 def edit_profile(request):
     # display form if this is a GET request
     context = {}
@@ -185,7 +184,7 @@ def confirm_request(request, user_name, sent_time):
     if User.objects.get(username=user_name):
         from_user = User.objects.get(username=user_name)
         if FriendshipRequests.objects.get(from_user=from_user, sent_time=sent_time):
-            friendRequest = FriendshipRequests.objects.get(from_user=from_user,sent_time=sent_time)
+            friendRequest = FriendshipRequests.objects.get(from_user=from_user, sent_time=sent_time)
             UserInfo.objects.get(user=user).friends.add(from_user)
             UserInfo.objects.get(user=from_user).friends.add(user)
             friendRequest.is_accepted = True
@@ -199,10 +198,38 @@ def confirm_request(request, user_name, sent_time):
 def decline_request(request, user_name, sent_time):
     if User.objects.get(username=user_name):
         from_user = User.objects.get(username=user_name)
-        if FriendshipRequests.objects.get(from_user=from_user,sent_time=sent_time):
-            friendRequest = FriendshipRequests.objects.get(from_user=from_user,sent_time=sent_time)
+        if FriendshipRequests.objects.get(from_user=from_user, sent_time=sent_time):
+            friendRequest = FriendshipRequests.objects.get(from_user=from_user, sent_time=sent_time)
             friendRequest.is_declined = True
             friendRequest.is_replied = True
             friendRequest.replied_time = datetime.now()
             friendRequest.save()
     return redirect(reverse('friend_requests'))
+
+
+def email_invite(request):
+    context = {}
+    context['searchForm'] = SearchUser()
+    if request.method == 'GET':
+        return redirect("/")
+    form = EmailPassword(request.POST)
+    context['form'] = form
+    context['email_form'] = EmailPassword()
+    context['game_no'] = request.POST['game_no']
+    context['entry_funds'] = request.POST['entry_funds']
+    context['players'] = request.POST['players']
+    if not form.is_valid():
+        # should be handled better
+        return redirect("/")
+    # send email to invite
+    email_body = """
+        You are invited a opened Texas Hold'em game! Click to join the room!
+        http://%s%s
+        """ % (request.get_host(), reverse("game_ongoing", args=(request.POST['game_no'],)))
+    send_mail(subject="CMU-Texas game invitation",
+              message=email_body,
+              from_email="admin <no-replay>@cmutexas.com",
+              recipient_list=[form.cleaned_data['email']])
+    context['email_sent'] = True
+    # messages.error(request, 'A reset link was sent to your email')
+    return render(request, 'game_init_success.html',context)

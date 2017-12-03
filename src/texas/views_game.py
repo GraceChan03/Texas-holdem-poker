@@ -18,6 +18,7 @@ import logging
 
 log = logging.getLogger(__name__)
 
+
 @login_required(login_url='login')
 def new_game(request):
     context = {}
@@ -37,7 +38,10 @@ def new_game(request):
         new_game = Game(creator=request.user, player_num=no_players, entry_funds=entry_funds, game_no=game_no)
         new_game.save()
         # new socket here?
-        return render(request, 'game_init_success.html',{"game_no": game_no, "entry_funds": entry_funds, "players": no_players})
+        return render(request, 'game_init_success.html',
+                      {"game_no": game_no, "entry_funds": entry_funds, "players": no_players,
+                       "email_form": EmailPassword(), "searchForm": SearchUser()})
+
 
 @login_required(login_url='login')
 def game_join(request):
@@ -53,6 +57,7 @@ def game_join(request):
         return render(request, 'game_join.html', context)
     game_no = form.cleaned_data['room_number']
     return redirect("/game_ongoing/" + game_no)
+
 
 @login_required(login_url='login')
 def game_ongoing(request, game_no):
@@ -72,20 +77,24 @@ def game_ongoing(request, game_no):
     context['players'] = players
     return render(request, 'game_ongoing.html', context)
 
+
 @login_required(login_url='login')
 def exit_room(request, game_no, id):
     player = get_object_or_404(User, id=id)
     game = get_object_or_404(Game, game_no=game_no)
     game.players.remove(player)
 
-# @login_required(login_url='login')
+
+@login_required(login_url='login')
 def dashboard(request):
     context = {}
     context['searchForm'] = SearchUser()
     user = request.user
     # edit here
     return render(request, 'dashboard.html', context)
-# @login_required(login_url='login')
+
+
+@login_required(login_url='login')
 def myfriends(request):
     # show all friends list
     context = {}
@@ -94,7 +103,8 @@ def myfriends(request):
     context['friends'] = userInfo.friends.all()
     return render(request, 'myfriends.html', context)
 
-# @login_required(login_url='login')
+
+@login_required(login_url='login')
 def scoreboard(request):
     context = {}
     context['searchForm'] = SearchUser()
@@ -102,7 +112,8 @@ def scoreboard(request):
     # edit here
     return render(request, 'scoreboard.html', context)
 
-# @login_required(login_url='login')
+
+@login_required(login_url='login')
 def search_friend(request):
     context = {}
     if request.method == 'GET':
@@ -124,7 +135,8 @@ def search_friend(request):
     # edit here
     return render(request, 'search_friend.html', context)
 
-# @login_required(login_url='login')
+
+@login_required(login_url='login')
 def game_result(request):
     context = {}
     context['searchForm'] = SearchUser()

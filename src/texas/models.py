@@ -5,7 +5,6 @@ from __future__ import unicode_literals
 from django.contrib.auth.models import User
 from django.core.validators import validate_comma_separated_integer_list
 from django.db import models
-import json
 import deuces
 
 import uuid
@@ -71,14 +70,6 @@ class Game(models.Model):
             return True
         else:
             return False
-
-    # When the fund_dict is empty, add the entry fund to everyone
-    # def init_fund_dict(self):
-    #     if self.player_fund_dict == '':
-    #         player_fund_dict = {}
-    #         for player in self.players.all():
-    #             player_fund_dict[player.id] = self.entry_funds
-    #         self.player_fund_dict = json.dumps(player_fund_dict)
 
 
 class GameRound(models.Model):
@@ -178,7 +169,10 @@ class GameRound(models.Model):
         # create an evaluator
         evaluator = deuces.Evaluator()
 
-        player_cards_dict = json.loads(self.player_cards)
+        if self.player_cards and self.player_cards != '':
+            player_cards_dict = eval(self.player_cards)
+        else:
+            player_cards_dict = {}
         if self.player_active_dict and self.player_active_dict != '':
             player_active_dict = eval(self.player_active_dict)
         else:
@@ -303,7 +297,7 @@ class GameRound(models.Model):
 
         for player in self.game.players.all():
             player_hands_dict[player.id] = new_deck.draw(2)
-        self.player_cards = json.dumps(player_hands_dict)
+        self.player_cards = str(player_hands_dict)
 
         self.player_fund_dict = self.game.player_fund_dict
 

@@ -75,7 +75,10 @@ def new_game(game, game_round):
     new_game_dict['player_funds'] = json.dumps(player_funds)
 
     # --------new/send cards separately--------
-    player_dict = json.loads(game_round.player_cards)
+    if game_round.player_cards and game_round.player_cards != '':
+        player_dict = eval(game_round.player_cards)
+    else:
+        player_dict = {}
     for player in player_dict:
         cards = []
         for card in player_dict[player]:
@@ -84,7 +87,7 @@ def new_game(game, game_round):
 
     for i in xrange(len(members)):
         ch = members[i]
-        user = str(player_order_list_round[i])
+        user = player_order_list_round[i]
         player_cards = player_dict[user]
         new_game_dict['player_cards'] = player_cards
 
@@ -179,7 +182,10 @@ def showdown(game, game_round, channel_layer):
         player_active_dict = eval(game_round.player_active_dict)
     else:
         player_active_dict = {}
-    player_cards = json.loads(game_round.player_cards)
+    if game_round.player_cards and game_round.player_cards != '':
+        player_cards = eval(game_round.player_cards)
+    else:
+        player_cards = {}
 
     for player in player_active_dict:
         # If active, add the user and the card to the result
