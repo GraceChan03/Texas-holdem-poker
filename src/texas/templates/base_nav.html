@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load static %}
 {% block navbar %}
     <!-- Fixed navbar -->
     <nav class="navbar navbar-default navbar-fixed-top">
@@ -38,6 +39,11 @@
                     </form>
                 </ul>
                 <ul class="nav navbar-nav navbar-right pull-right">
+                    <li>
+                        <a href="{% url 'friend_requests' %}">
+                            <img src="{% static 'media/default/svg/people.svg' %}" alt="icon name" style="width: 20px">
+                        </a>
+                    </li>
                     {% block account %}
                         <li class="dropdown">
                     {% endblock %}
