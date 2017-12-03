@@ -74,3 +74,5 @@ pip install pypiwin32
 9. [How to log in supervisor](http://supervisord.org/logging.html)
 
 10. [How to deploy channels with nginx](http://masnun.rocks/2016/11/02/deploying-django-channels-using-daphne/)
+
+11. [Duplicate key in python](https://stackoverflow.com/questions/14902299/json-loads-allows-duplicate-keys-in-a-dictionary-overwriting-the-first-value)
