@@ -73,12 +73,12 @@ class Game(models.Model):
             return False
 
     # When the fund_dict is empty, add the entry fund to everyone
-    def init_fund_dict(self):
-        if self.player_fund_dict == '':
-            player_fund_dict = {}
-            for player in self.players.all():
-                player_fund_dict[player.id] = self.entry_funds
-            self.player_fund_dict = json.dumps(player_fund_dict)
+    # def init_fund_dict(self):
+    #     if self.player_fund_dict == '':
+    #         player_fund_dict = {}
+    #         for player in self.players.all():
+    #             player_fund_dict[player.id] = self.entry_funds
+    #         self.player_fund_dict = json.dumps(player_fund_dict)
 
 
 class GameRound(models.Model):
@@ -126,29 +126,37 @@ class GameRound(models.Model):
     pot = models.IntegerField(default=0)
 
     def get_player_prev_bet(self, player_id):
-        dict = json.loads(self.player_bet_dict)
+        if self.player_bet_dict and self.player_bet_dict != '':
+            dict = eval(self.player_bet_dict)
+        else:
+            dict = {}
         return dict[player_id]
 
     def set_player_prev_bet(self, player_id, curt_bet):
-        dict = json.loads(self.player_bet_dict)
-        player_id = str(player_id)
+        if self.player_bet_dict and self.player_bet_dict != '':
+            dict = eval(self.player_bet_dict)
+        else:
+            dict = {}
         self.pot = self.pot + int(curt_bet) - int(dict[player_id])
         self.min_bet = curt_bet
         self.less_player_fund(player_id, curt_bet - dict[player_id])
         dict[player_id] = curt_bet
-        self.player_bet_dict = json.dumps(dict)
+        self.player_bet_dict = str(dict)
 
     def set_player_prev_bet_dict(self):
         dict = {}
         for player in self.game.players.all():
             dict[player.id] = 0
-        self.player_bet_dict = json.dumps(dict)
+        self.player_bet_dict = str(dict)
 
     def increment_current_approach_by_1(self):
         self.current_approach += 1
 
     def only_active_user(self):
-        player_active_dict = json.loads(self.player_active_dict)
+        if self.player_active_dict and self.player_active_dict != '':
+            player_active_dict = eval(self.player_active_dict)
+        else:
+            player_active_dict = {}
         active_cnt = 0
         for player in player_active_dict:
             if player_active_dict[player]:
@@ -157,7 +165,10 @@ class GameRound(models.Model):
 
             if active_cnt > 1:
                 return None
-        return active_user
+        if active_cnt == 1:
+            return active_user
+        else:
+            return None
 
     # Get the rank of all the users' hand, return a dict for indexing
     def process_user_class(self):
@@ -168,7 +179,10 @@ class GameRound(models.Model):
         evaluator = deuces.Evaluator()
 
         player_cards_dict = json.loads(self.player_cards)
-        player_active_dict = json.loads(self.player_active_dict)
+        if self.player_active_dict and self.player_active_dict != '':
+            player_active_dict = eval(self.player_active_dict)
+        else:
+            player_active_dict = {}
 
         for player in player_cards_dict:
             if player_active_dict[player]:
@@ -212,30 +226,49 @@ class GameRound(models.Model):
         return self.process_user_rank()[1][0]
 
     def set_player_fund(self, player_id, fund):
-        dict = json.loads(self.player_fund_dict)
+        if self.player_fund_dict and self.player_fund_dict != '':
+            dict = eval(self.player_fund_dict)
+        else:
+            dict = {}
         dict[player_id] = fund
-        self.player_fund_dict = json.dumps(dict)
+        self.player_fund_dict = str(dict)
+
+    def get_player_fund(self, player_id):
+        if self.player_fund_dict and self.player_fund_dict != '':
+            dict = eval(self.player_fund_dict)
+        else:
+            dict = {}
+        return dict[player_id]
 
     def less_player_fund(self, player_id, lessfund):
-        dict = json.loads(self.player_fund_dict)
+        if self.player_fund_dict and self.player_fund_dict != '':
+            dict = eval(self.player_fund_dict)
+        else:
+            dict = {}
         dict[player_id] = dict[player_id] - lessfund
-        self.player_fund_dict = json.dumps(dict)
+        self.player_fund_dict = str(dict)
 
     def add_player_fund(self, player_id, addfund):
-        dict = json.loads(self.player_fund_dict)
+        if self.player_fund_dict and self.player_fund_dict != '':
+            dict = eval(self.player_fund_dict)
+        else:
+            dict = {}
         dict[player_id] = dict[player_id] + addfund
-        self.player_fund_dict = json.dumps(dict)
+        self.player_fund_dict = str(dict)
 
     def set_player_inactive(self, player_id):
-        dict = json.loads(self.player_active_dict)
+        if self.player_active_dict and self.player_active_dict != '':
+            dict = eval(self.player_active_dict)
+        else:
+            dict = {}
         dict[player_id] = False
-        self.player_active_dict = json.dumps(dict)
+        self.player_active_dict = str(dict)
 
     def set_player_active_dict(self):
         dict = {}
         for player in self.game.players.all():
             dict[player.id] = True
-        self.player_active_dict = json.dumps(dict)
+        self.player_active_dict = str(dict)
 
     def set_player_order(self, prev=0, **kwarg):
         ord = self.game.player_order.split(",")
