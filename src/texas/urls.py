@@ -38,7 +38,7 @@ urlpatterns = [
     url(r'^scoreboard$', views_game.scoreboard, name='scoreboard'),
     # should with (?P<user_name>.+)$, but for static page testing I just move it
     url(r'^search_friend$', views_game.search_friend, name='search_friend'),
-    # url(r'^get_coupon/(?P<user_name>.+)$', views.get_coupon, name='get_coupon'),
+    url(r'^get_coupon$', views.get_coupon, name='get_coupon'),
     # should with game id
     url(r'^game_join$', views_game.game_join, name='game_join'),
     url(r'^game_ongoing/(?P<game_no>.+)$', views_game.game_ongoing, name='game_ongoing'),

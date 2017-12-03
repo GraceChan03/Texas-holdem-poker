@@ -24,7 +24,7 @@ SECRET_KEY = '#wtk+=yv*avx7mju7i*#=hh(=uqof$g8a^w=e2wa=l2il^jlk!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['54.208.15.77', 'cmu-texas.ml', '127.0.0.1']
+ALLOWED_HOSTS = ['54.208.15.77', 'cmu-texas.ml', '127.0.0.1','localhost']
 
 # Application definition
 
@@ -37,7 +37,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'channels',
-    'social_django'
+    'social_django',
+    # 'paypal.standard.ipn',
+    # 'payment'
 ]
 
 # Config the url to use if the system requires the user to log in
@@ -159,7 +161,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "asgi_redis.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [os.environ.get('REDIS_URL', 'redis://54.208.15.77:6379')],
+            "hosts": [os.environ.get('REDIS_URL', 'redis://54.208.15.77:32768')],
         },
         "ROUTING": "webapps.routing.channel_routing",
     },
