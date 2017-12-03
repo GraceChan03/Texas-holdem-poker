@@ -32,7 +32,7 @@
                     <form class="navbar-form navbar-right" method="post" action="/search_friend">
                         {% csrf_token %}
                         {% for field in searchForm.visible_fields %}
-                                {{ field }}
+                            {{ field }}
                         {% endfor %}
                         {#                        <input type="text" class="form-control" placeholder="Search user..">#}
                         <button type="submit" class="btn btn-danger"> Search</button>
@@ -40,10 +40,17 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right pull-right">
                     <li>
-                        <a href="{% url 'friend_requests' %}" class="texas-tooltip friend-notify"
+                        <a href="{% url 'friend_requests' %}" class="texas-tooltip notify friend-notify"
                            notify="false" style="padding-left: 0;padding-right: 0">
                             <img src="{% static 'media/default/svg/people.svg' %}" alt="icon name" class="notify-icon">
                             <span class="texas-tooltiptext">Friend requests</span>
+                        </a>
+                    </li>
+                    <li>
+                        <a href="{% url 'game_inivitation' %}" class="texas-tooltip notify game-notify"
+                           notify="false" style="padding-left: 0;padding-right: 0">
+                            <img src="{% static 'media/default/svg/globe.svg' %}" alt="icon name" class="notify-icon">
+                            <span class="texas-tooltiptext">Game invitations</span>
                         </a>
                     </li>
                     {% block account %}

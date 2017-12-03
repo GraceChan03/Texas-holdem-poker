@@ -757,7 +757,7 @@ body, html {
     visibility: visible;
 }
 
-.friend-notify {
+.notify {
     width: 60px;
     padding-left: 0;
     padding-right: 0;
@@ -765,4 +765,8 @@ body, html {
 
 .notify-icon {
     width: 20px
+}
+
+.email-form {
+    width: 200px;
 }

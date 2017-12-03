@@ -40,7 +40,7 @@ class Chat(models.Model):
     to_user = models.ForeignKey(User,related_name="to_user")
     message = models.CharField(max_length=140)
     time = models.DateTimeField(auto_now_add=True)
-
+    is_notified = models.BooleanField(default=False)
 
 # Game
 class Game(models.Model):
@@ -57,7 +57,7 @@ class Game(models.Model):
     # The least fund that a player should have to join the game
     entry_funds = models.IntegerField()
     players = models.ManyToManyField(User,related_name="players")
-    is_active = models.BooleanField(default=True)
+    is_ongoing = models.BooleanField(default=False)
     # sit order
     player_order = models.CharField(max_length=200, default='')
     # player fund

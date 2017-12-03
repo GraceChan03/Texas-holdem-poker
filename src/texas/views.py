@@ -187,6 +187,22 @@ def check_friend_requests(request):
         notification = 0
     return HttpResponse(notification)
 
+@login_required(login_url='login')
+def game_inivitation(request):
+    context = {}
+    context['searchForm'] = SearchUser()
+    requests = Chat.objects.filter(to_user=request.user).order_by('-time')
+    context['requests'] = requests
+    return render(request, 'friend_invite.html', context)
+
+@login_required(login_url='login')
+def check_invitation_requests(request):
+    invitations = Chat.objects.filter(to_user=request.user, is_notified=False)
+    if invitations:
+        invitations = invitations.count()
+    else:
+        invitations = 0
+    return HttpResponse(invitations)
 
 @login_required(login_url='login')
 def disable_notification(request):
@@ -199,6 +215,20 @@ def disable_notification(request):
                 fr = FriendshipRequests.objects.get(id=f.id)
                 fr.is_notified = True
                 fr.save()
+        return HttpResponse("notified")
+    return HttpResponse("no requests")
+
+@login_required(login_url='login')
+def disable_game_notify(request):
+    timestamp = int(request.POST['timestamp'])
+    invitations = Chat.objects.filter(to_user=request.user, is_notified=False)
+    if invitations:
+        for f in invitations:
+            sent_time = int(f.time.strftime('%s'))
+            if sent_time < timestamp:
+                fi = Chat.objects.get(id=f.id)
+                fi.is_notified = True
+                fi.save()
         return HttpResponse("notified")
     return HttpResponse("no requests")
 
@@ -257,3 +287,20 @@ def email_invite(request):
     context['email_sent'] = True
     # messages.error(request, 'A reset link was sent to your email')
     return render(request, 'game_init_success.html', context)
+
+@login_required(login_url='login')
+def station_invite(request):
+    if request.method == 'GET':
+        # return to room opened page?
+        return redirect("/")
+    friends = request.POST['friends']
+    friends = str(friends).split("|")
+    for f in friends:
+        if User.objects.filter(username=f):
+            touser = User.objects.get(username=f)
+            newchat = Chat(from_user=request.user,
+                           to_user=touser,
+                           message=request.POST['game_no'])
+            newchat.save()
+        return HttpResponse("success")
+    return HttpResponse("no user invited")

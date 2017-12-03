@@ -138,7 +138,8 @@ class ChangePasswordForm(forms.Form):
 class EmailPassword(forms.Form):
     email = forms.EmailField(max_length=50, label='Email Address',
                              widget=forms.TextInput(
-                                 attrs={'type': 'email', 'class': 'form-control', 'placeholder': 'Email Address',
+                                 attrs={'type': 'email', 'class': 'form-control email-form',
+                                        'placeholder': 'Email Address',
                                         'required': 'true'}))
 
     def clean(self):
