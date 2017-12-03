@@ -31,22 +31,22 @@
                             <div class="grumblr-dropdown-content">
                                 <ul class="list-group">
                                     <li class="list-group-item">
-                                        <a href="/profile/{{login_user.username}}">
+                                        <a href="{% url 'profile' login_user.username %}">
                                             <span class="namecard-username">{{login_user.username}}</span><br>
                                             <span class="home-profile-usern">@{{login_user.first_name}}{{login_user.last_name}}</span>
                                         </a>
                                     </li>
                                     <li class="list-group-item">
-                                        <a href="/account_setting">Account settings</a>
+                                        <a href="{% url 'account_setting'%}">Account settings</a>
                                     </li>
                                     <li class="list-group-item">
-                                        <a href="/logout">Log out</a>
+                                        <a href="{% url 'logout' %}">Log out</a>
                                     </li>
                                 </ul>
                             </div>
                         </div>
                 <!--<button id="global-new-post-button" class="btn-red btn-global-post">Post</button>-->
-                        <form action="/logout">
+                        <form action="{% url 'logout' %}">
                             <button id="logout" class="btn-red btn-logout">Logout</button>
                         </form>
                         {% endblock %}

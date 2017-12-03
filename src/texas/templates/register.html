@@ -11,7 +11,7 @@
 
       <div class="login-outer">
         <div class="login-inner">
-          <form method="POST" action="register">
+          <form method="POST" action="{% url 'register' %}">
             {% csrf_token %}
             {% for field in register_form.visible_fields %}
               <fieldset>
@@ -33,7 +33,7 @@
               <!--<a href="" class="alert-link">Privacy Policy</a></span>-->
             <hr class="login-alert">
             <span class="login-link">Already a member?</span>
-            <a href="login" class="alert-link login-link">Log in</a>
+            <a href="{% url 'login' %}" class="alert-link login-link">Log in</a>
           </div>
         </div>
       </div>   

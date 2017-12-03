@@ -13,7 +13,7 @@
 
             <div class="login-outer">
                 <div class="login-inner">
-                    <form method="POST" action="/game_join">
+                    <form method="POST" action="{% url 'game_join' %}">
                         {% csrf_token %}
                         {% if join_room_form %}
                             {% for field in join_room_form.visible_fields %}
@@ -35,7 +35,7 @@
                     <div class="alert alert-light login-alert-div" role="alert">
                         <hr class="login-alert">
                         <span class="login-link">Haven't got a room number?</span>
-                        <a href="/new_game" class="alert-link login-link">New Room</a>
+                        <a href="{% url 'new_game' %}" class="alert-link login-link">New Room</a>
                     </div>
                 </div>
             </div>

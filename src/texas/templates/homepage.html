@@ -31,19 +31,19 @@
     <br><br>
         <ul>
             <li>
-                <a href="/new_game" class="btn  btn-lg btn-success">
+                <a href="{% url 'new_game' %}" class="btn  btn-lg btn-success">
                     Open a room
                 </a>
                 <br><br><span class="hometext">Click to start a new game</span><br><br>
             </li>
             <li>
-                <a href="/game_join" class="btn  btn-lg btn-danger">
+                <a href="{% url 'game_join' %}" class="btn  btn-lg btn-danger">
                     Join a room
                 </a>
                 <br><br><span class="hometext">Click to join an opened game</span><br><br>
             </li>
             <li>
-                <a href="/scoreboard" class="btn  btn-lg btn-info">
+                <a href="{% url 'scoreboard' %}" class="btn  btn-lg btn-info">
                     Scoreboard
                 </a>
                 <br><br><span class="hometext">Click to see the score board</span><br><br>
