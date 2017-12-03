@@ -49,7 +49,7 @@ def profile(request, user_name):
         context['profile_user'] = user
         context['profile'] = userinfo
         if user_name!= request.user.username:
-            if UserInfo.objects.get(user = request.user).friends.get(username = user_name):
+            if user in UserInfo.objects.get(user = request.user).friends.all():
                 context['isfriend'] = True
         return render(request, 'profile.html', context)
     else:
