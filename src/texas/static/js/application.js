@@ -8,6 +8,7 @@ Texas = {
         dealerCardTurn: null,
         smallBlindBetFund: 1,
         bigBlindBetFund: 2,
+        start: true,
 
         setCard: function (card, $card, size) {
             if (size == "large") {
@@ -126,6 +127,18 @@ Texas = {
             $stack.css('visibility', 'hidden');
         },
 
+        setDealerCardsInvisible: function () {
+            for (i = 0; i < 5; i++) {
+                $('#dealer_card' + i).css('visibility', 'hidden');
+            }
+        },
+
+        hidePlayerCards: function () {
+            for (i in Texas.Game.players) {
+                $('.seat[seated-player-id=' + Texas.Game.players[i] + '] .card-show').remove();
+            }
+        },
+
         turnoverCard: function (data) {
             var dealer_cards = data.dealer_cards;
             if (dealer_cards.length === 3) {
@@ -139,7 +152,7 @@ Texas = {
                 Texas.GameRound.dealerCardTurn += 1;
             }
             // new circle
-            Texas.GameRound.setOperationInvisible();
+            // Texas.GameRound.setOperationInvisible();
         },
 
         setPlayerFunds: function (player_funds) {
@@ -156,14 +169,13 @@ Texas = {
         },
 
         gameOver: function (data) {
+            Texas.GameRound.start = true;
             Texas.Player.disableTimer();
             Texas.Player.disableBetMode();
-            Texas.GameRound.setOperationInvisible();
             Texas.GameRound.setChipsInvisible();
-            // $('#pot').text("Pot: " + 0);
-            // show users' cards
             // new form of showing winner!!!!!!!!!!!!!!!!!!!!!!!!!!!
-            $('#page_title').text(data.winner + " wins! Congratulations!");
+            $('.font-win').text(data.winner + " wins!");
+            $('.game-result').css('visibility', 'visible');
         },
 
         smallBlindBet: function (data) {
@@ -256,15 +268,25 @@ Texas = {
 
         newRound: function (data) {
             Texas.GameRound.roundId = data.round_id;
-
-            // get cards info
-            var my_player_cards = data.player_cards;
-            // set cards
-            Texas.GameRound.setPlayerCards(my_player_cards);
-            // set funds
-            Texas.GameRound.setPlayerFunds(data.player_funds);
-            $('#pot').css('visibility', 'visible');
-
+            // var countdown = $('.wrapper');
+            // var newone = countdown.clone(true);
+            // countdown.replaceWith(newone);
+            // newone.css('visibility', 'visible');
+            // start game in 5 seconds
+            setTimeout(function () {
+                $('.game-result').css('visibility', 'hidden');
+                Texas.GameRound.setDealerCardsInvisible();
+                Texas.GameRound.hidePlayerCards();
+                Texas.GameRound.setOperationInvisible();
+                // $('.wrapper').css('visibility', 'hidden');
+                // get cards info
+                var my_player_cards = data.player_cards;
+                // set cards
+                Texas.GameRound.setPlayerCards(my_player_cards);
+                // set funds
+                Texas.GameRound.setPlayerFunds(data.player_funds);
+                $('#pot').css('visibility', 'visible');
+            }, 5000);
         },
 
         onRoundUpdate: function (data) {
@@ -423,7 +445,7 @@ Texas = {
             Texas.Player.disableTimer();
         },
 
-        onPlayerAction: function (data) {
+        enableAction: function (data) {
             currentPlayerId = $('#current-player-id').val();
             isCurrentPlayer = data.player.userid.toString() === currentPlayerId;
 
@@ -439,6 +461,17 @@ Texas = {
             } else {
                 // only set timers
                 Texas.Player.enableTimer($('#timer' + currplayer));
+            }
+        },
+
+        onPlayerAction: function (data) {
+            if (Texas.GameRound.start) {
+                setTimeout(function () {
+                    Texas.Player.enableAction(data);
+                }, 5000);
+                Texas.GameRound.start = false;
+            } else {
+                Texas.Player.enableAction(data);
             }
         },
 

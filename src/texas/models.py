@@ -45,6 +45,10 @@ class Chat(models.Model):
 
 # Game
 class Game(models.Model):
+    # Game Start Time
+    create_time = models.DateTimeField(auto_now_add=True, null=True)
+    # Game Modified Time
+    modified_time = models.DateTimeField(auto_now=True, null=True)
     # The user who creates the game room
     creator = models.ForeignKey(User,related_name="creator")
     # The code for the others to enter
@@ -58,7 +62,7 @@ class Game(models.Model):
     # sit order
     player_order = models.CharField(max_length=200, default='')
     # player fund
-    # player_fund_dict = models.CharField(max_length=200, default='')
+    player_fund_dict = models.CharField(max_length=200, default='')
 
     # when the players' number match the set player num,
     # the game is full
@@ -68,10 +72,27 @@ class Game(models.Model):
         else:
             return False
 
+    # When the fund_dict is empty, add the entry fund to everyone
+    def init_fund_dict(self):
+        if self.player_fund_dict == '':
+            player_fund_dict = {}
+            for player in self.players.all():
+                player_fund_dict[player.id] = self.entry_funds
+            self.player_fund_dict = json.dumps(player_fund_dict)
+
 
 class GameRound(models.Model):
     # Game Round info
     game = models.ForeignKey(Game)
+
+    # Game Round ended or not
+    is_active = models.BooleanField(default=True)
+
+    # Game Start Time
+    create_time = models.DateTimeField(auto_now_add=True, null=True)
+
+    # Game Modified Time
+    modified_time = models.DateTimeField(auto_now=True, null=True)
 
     # Cards are stored as string and parsed one by one
     # Dealer
@@ -162,6 +183,7 @@ class GameRound(models.Model):
         return rank_dict
 
     # Return a dict with user rank {1:["id", "id"], 2:["id"]}
+    # Does not return folded user
     def process_user_rank(self):
         class_dict = self.process_user_class()
         sorted_class_dict = sorted(class_dict.items(), lambda x, y: cmp(x[1], y[1]), reverse=True)
@@ -176,7 +198,9 @@ class GameRound(models.Model):
         for item in sorted_class_dict:
             curt_user_id = item[0]
             curt_class = item[1]
-            if curt_class < prev_class:
+            if curt_class == -1:
+                return rank_dict
+            elif curt_class < prev_class:
                 rank += 1
                 rank_dict[rank] = [curt_user_id]
             else:
@@ -186,12 +210,6 @@ class GameRound(models.Model):
     # TODO [Function] wrong function just set a position
     def get_winner(self):
         return self.process_user_rank()[1][0]
-
-    def set_player_entry_funds_dict(self):
-        dict = {}
-        for player in self.game.players.all():
-            dict[player.id] = self.game.entry_funds
-        self.player_fund_dict = json.dumps(dict)
 
     def set_player_fund(self, player_id, fund):
         dict = json.loads(self.player_fund_dict)
@@ -230,10 +248,6 @@ class GameRound(models.Model):
             order_str += (',' + str(ord[i]) for i in xrange(0, prev))
         self.player_order = order_str[1:]
 
-    def remove_user(self, userid):
-        # TODO [Function] remove user from database
-        pass
-
     def start(self, **kwargs):
         if self.player_order == "" or not self.player_order:
             prev = 0
@@ -253,17 +267,12 @@ class GameRound(models.Model):
 
         player_hands_dict = {}
         num = self.game.player_num
-        # for i in xrange(num):
-        #     player_hands_dict[i] = new_deck.draw(2)
+
         for player in self.game.players.all():
             player_hands_dict[player.id] = new_deck.draw(2)
         self.player_cards = json.dumps(player_hands_dict)
 
-        # Count round
-        prev_round_cnt = GameRound.objects.filter(game=self.game).count()
-        # Set entry fund if no round in this room before
-        if prev_round_cnt == 0:
-            self.set_player_entry_funds_dict()
+        self.player_fund_dict = self.game.player_fund_dict
 
         # ------------Send small blind and big blind -------------
         player_order = self.player_order
