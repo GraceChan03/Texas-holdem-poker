@@ -20,7 +20,7 @@ def start_new_round(game, channel_layer):
 
     # 2. Save a new round into db
     # TODO: if full
-    game.init_fund_dict()
+    # game.init_fund_dict()
     game.save()
     new_game_round.start()
     new_game_round.save()
@@ -71,7 +71,8 @@ def new_game(game, game_round):
     dealer = player_order_list_round[-1]
     new_game_dict['dealer_id'] = dealer
     new_game_dict['player_order'] = player_order
-    new_game_dict['player_funds'] = game_round.player_fund_dict
+    player_funds = eval(game_round.player_fund_dict)
+    new_game_dict['player_funds'] = json.dumps(player_funds)
 
     # --------new/send cards separately--------
     player_dict = json.loads(game_round.player_cards)
@@ -81,7 +82,7 @@ def new_game(game, game_round):
             cards.append(deuces.Card.int_to_str(int(card)))
         player_dict[player] = cards
 
-    for i in xrange(game.player_num):
+    for i in xrange(len(members)):
         ch = members[i]
         user = str(player_order_list_round[i])
         player_cards = player_dict[user]
@@ -94,11 +95,18 @@ def player_action(game, game_round, next_user, channel_layer):
     player = {}
     player['userid'] = next_user.id
     player['username'] = next_user.username
-    player_funds_dict = json.loads(game_round.player_fund_dict)
-    player_money = player_funds_dict[str(next_user.id)]
+    if game_round.player_fund_dict and game_round.player_fund_dict != '':
+        player_funds_dict = eval(game_round.player_fund_dict)
+    else:
+        player_funds_dict = {}
+    player_money = player_funds_dict[next_user.id]
     player['money'] = player_money
-    prev_bet_dict = json.loads(game_round.player_bet_dict)
-    prev_bet = prev_bet_dict[str(next_user.id)]
+    if game_round.player_bet_dict and game_round.player_bet_dict != '':
+        prev_bet_dict = eval(game_round.player_bet_dict)
+    else:
+        prev_bet_dict = {}
+
+    prev_bet = prev_bet_dict[next_user.id]
 
     player_action_dict = {}
     player_action_dict['message_type'] = "round-update"
@@ -116,7 +124,10 @@ def player_action(game, game_round, next_user, channel_layer):
 
 def fund_update(game, game_round, user, op, bet, channel_layer):
     # ---------------get fund-------------
-    funds = json.loads(game_round.player_fund_dict)
+    if game_round.player_fund_dict and game_round.player_fund_dict != '':
+        funds = eval(game_round.player_fund_dict)
+    else:
+        funds = {}
 
     # ----------------Update the previous user's fund
     prev_player_update_dict = {
@@ -126,7 +137,7 @@ def fund_update(game, game_round, user, op, bet, channel_layer):
         "prev_player":
             {
                 "userid": user.id,
-                "fund": funds[str(user.id)],
+                "fund": funds[user.id],
                 "op": op,
                 "bet": bet
             }
@@ -164,7 +175,10 @@ def showdown(game, game_round, channel_layer):
     showdown_message['message_type'] = "round-update"
     showdown_message['event'] = "showdown"
     cards = []
-    player_active_dict = json.loads(game_round.player_active_dict)
+    if game_round.player_active_dict and game_round.player_active_dict != '':
+        player_active_dict = eval(game_round.player_active_dict)
+    else:
+        player_active_dict = {}
     player_cards = json.loads(game_round.player_cards)
 
     for player in player_active_dict:
@@ -195,7 +209,6 @@ def game_over(game, game_round, winner, channel_layer):
     Group('bet-' + game.game_no, channel_layer=channel_layer).send(
         {"text": json.dumps(end_round_message)})
 
-    # TODO
     # Make the game_round inactive
     game_round.is_active = False
     game_round.save()
@@ -204,14 +217,39 @@ def game_over(game, game_round, winner, channel_layer):
 def game_over_then_start_new_game(game, game_round, winner, channel_layer):
     # Update winner's round balance
     # ---------------get fund-------------
-    round_funds = json.loads(game_round.player_fund_dict)
-    round_funds[str(winner.id)] += game_round.pot
-    game_round.player_fund_dict = json.dumps(round_funds)
+    if game_round.player_fund_dict and game_round.player_fund_dict != '':
+        round_funds = eval(game_round.player_fund_dict)
+    else:
+        round_funds = {}
+    round_funds[winner.id] += game_round.pot
+    game_round.player_fund_dict = str(round_funds)
     game_round.save()
 
-    # Update all user's game balance
+        # Update all user's game balance
     game.player_fund_dict = game_round.player_fund_dict
     game.save()
     game_over(game, game_round, winner.username, channel_layer)
 
     start_new_round(game, channel_layer)
+
+
+def fold_action(game, game_round, user, min_bet, channel_layer):
+    # a. modify db
+    op = "folds"
+    game_round.set_player_inactive(user.id)
+    game_round.save()
+    # b. check if one active users
+    active_user = game_round.only_active_user()
+    if active_user:
+        # b1. set winner
+        winner_id = active_user
+        winner = User.objects.get(id=winner_id)
+
+        # b2. Update the previous user's fund
+        # TODO [Handle] maybe don't return here, and if not return, don't send this websocket
+        fund_update(game, game_round, user, op, min_bet, channel_layer)
+
+        # b3. Send a new WS for [SHOW-Result-CARD]
+        game_over_then_start_new_game(game, game_round, winner, channel_layer)
+
+        return
