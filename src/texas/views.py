@@ -18,7 +18,7 @@ from mimetypes import guess_type
 from datetime import datetime
 
 
-@login_required(login_url='login')
+@login_required
 # guess this should be dashboard?
 def home(request):
     # connect social network user with a profile
@@ -41,20 +41,20 @@ def get_profile_image(request, id):
 
 @login_required
 def profile(request, user_name):
-    try:
+    if User.objects.get(username=user_name):
         context = {}
         context['searchForm'] = SearchUser()
         user = User.objects.get(username=user_name)
         userinfo = UserInfo.objects.get(user=user)
         context['profile_user'] = user
         context['profile'] = userinfo
-        if UserInfo.objects.get(user = request.user).friends.get(username = user_name):
-            context['isfriend'] = True
-    except ObjectDoesNotExist:
-        # when there is not such id for retrieve
-        # messages.error(request, 'The user id does not exist!')
+        if user_name!= request.user.username:
+            if UserInfo.objects.get(user = request.user).friends.get(username = user_name):
+                context['isfriend'] = True
+        return render(request, 'profile.html', context)
+    else:
         return redirect("/")
-    return render(request, 'profile.html', context)
+
 
 
 @login_required
