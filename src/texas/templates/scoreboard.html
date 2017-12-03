@@ -38,26 +38,81 @@
                                 </form>
                             </div>
                         </div>
+                        {% if ranking_type == "rich" %}
                         <div class="controle-header panel-heading panel-heading-landing">
                             <h1 class="panel-title panel-title-landing">
                                 Top 5 Rich Players
                             </h1>
                         </div>
                         <div class="controle-panel-heading panel-heading panel-heading-landing-box">
-                            Your ranking :
+                            Ranking :
                         </div>
                         <div class="panel-body panel-body-landing">
                             <table class="table">
+                                <tr>
+                                    <td>Username</td>
+                                    <td>Balance</td>
+                                </tr>
                                 {% for row in rankings %}
                                 <tr>
-                                    <td width="50px">{{ row.id }}</td>
-                                    <td>{{ row.user.username }}</td>
+                                    <td>{{ row.user }}</td>
                                     <td>{{ row.balance }}</td>
                                 </tr>
                                 {% endfor %}
 
                             </table>
                         </div>
+                        {% endif %}
+                        {% if ranking_type == "win" %}
+                            <div class="controle-header panel-heading panel-heading-landing">
+                                <h1 class="panel-title panel-title-landing">
+                                    Top 5 Round Winners
+                                </h1>
+                            </div>
+                            <div class="controle-panel-heading panel-heading panel-heading-landing-box">
+                                Ranking :
+                            </div>
+                            <div class="panel-body panel-body-landing">
+                                <table class="table">
+                                    <tr>
+                                        <td>Userid</td>
+                                        <td>Round Num</td>
+                                    </tr>
+                                    {% for row in rankings %}
+                                    <tr>
+                                        <td>{{ row.user }}</td>
+                                        <td>{{ row.result }}</td>
+                                    </tr>
+                                    {% endfor %}
+
+                                </table>
+                            </div>
+                            {% endif %}
+                        {% if ranking_type == "pot" %}
+                                <div class="controle-header panel-heading panel-heading-landing">
+                                    <h1 class="panel-title panel-title-landing">
+                                        Top 5 Pot Winners
+                                    </h1>
+                                </div>
+                                <div class="controle-panel-heading panel-heading panel-heading-landing-box">
+                                    Ranking :
+                                </div>
+                                <div class="panel-body panel-body-landing">
+                                    <table class="table">
+                                        <tr>
+                                            <td>Username</td>
+                                            <td>Pot Ammount</td>
+                                        </tr>
+                                        {% for row in rankings %}
+                                        <tr>
+                                            <td>{{ row.user }}</td>
+                                            <td>{{ row.pot }}</td>
+                                        </tr>
+                                        {% endfor %}
+
+                                    </table>
+                                </div>
+                                {% endif %}
                         <div class="panel-footer panel-footer-landing">
                         </div>
                     </div>

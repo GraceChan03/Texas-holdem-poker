@@ -31,6 +31,7 @@ def show_scoreboard(request):
     context['rankings'] = find_ranking(ranking_type)
     context['scoreboard_form'] = form
     context['ranking_type'] = ranking_type
+    context['choices'] = RANKING_TYPE_CHOICES
     if not form.is_valid():
         return render(request, 'scoreboard.html', context)
     return render(request, 'scoreboard.html', context)
