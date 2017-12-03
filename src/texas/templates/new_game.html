@@ -13,7 +13,7 @@
 
             <div class="login-outer">
                 <div class="login-inner">
-                    <form method="POST" action="/new_game">
+                    <form method="POST" action="{% url 'new_game' %}">
                         {% csrf_token %}
                         <label for="">The amount of entry funds</label>
                         <br/>
@@ -45,7 +45,7 @@
                     <div class="alert alert-light login-alert-div" role="alert">
                         <hr class="login-alert">
                         <span class="login-link">Already have a room number?</span>
-                        <a href="/game_join" class="alert-link login-link">Join Room</a>
+                        <a href="{% url 'game_join' %}" class="alert-link login-link">Join Room</a>
                     </div>
                 </div>
             </div>

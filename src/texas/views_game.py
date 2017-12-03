@@ -105,15 +105,6 @@ def myfriends(request):
 
 
 @login_required(login_url='login')
-def scoreboard(request):
-    context = {}
-    context['searchForm'] = SearchUser()
-    user = request.user
-    # edit here
-    return render(request, 'scoreboard.html', context)
-
-
-@login_required(login_url='login')
 def search_friend(request):
     context = {}
     if request.method == 'GET':

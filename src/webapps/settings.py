@@ -19,12 +19,14 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/1.11/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = '#wtk+=yv*avx7mju7i*#=hh(=uqof$g8a^w=e2wa=l2il^jlk!'
+SECRET_KEY = os.environ.get('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['54.208.15.77', 'cmu-texas.ml', '127.0.0.1','localhost']
+ALLOWED_HOSTS = [
+    os.environ.get('ALLOWED_HOST')
+]
 
 # Application definition
 
@@ -37,9 +39,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'channels',
-    'social_django',
-    # 'paypal.standard.ipn',
-    # 'payment'
+    'social_django'
 ]
 
 # Config the url to use if the system requires the user to log in
@@ -94,12 +94,12 @@ WSGI_APPLICATION = 'webapps.wsgi.application'
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2', # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': 'postgres',                      # Or path to database file if using sqlite3.
+        'NAME': os.environ.get('DATABASE_NAME'),                      # Or path to database file if using sqlite3.
         # The following settings are not used with sqlite3:
-        'USER': 'postgres',
-        'PASSWORD': '',
-        'HOST': '54.208.15.77',    # Empty for localhost through domain sockets or           '127.0.0.1' for localhost through TCP.
-        'PORT': '5432',             # Set to empty string for default.
+        'USER': os.environ.get('DATABASE_USERNAME'),
+        'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
+        'HOST': os.environ.get('DATABASE_HOST'),    # Empty for localhost through domain sockets or           '127.0.0.1' for localhost through TCP.
+        'PORT': os.environ.get('DATABASE_PORT'),             # Set to empty string for default.
     }
 }
 
@@ -141,13 +141,13 @@ MEDIA_ROOT = BASE_DIR + '/texas/'
 MEDIA_URL = '/texas/'
 
 # Configure django to print emails rather than sending them
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+# EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
-# EMAIL_USE_TLS = True
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
-# EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
-# EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = os.environ.get('EMAIL_HOST_USER')
+EMAIL_HOST_PASSWORD = os.environ.get('EMAIL_HOST_PASSWORD')
+EMAIL_PORT = 587
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.11/howto/static-files/
@@ -161,7 +161,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "asgi_redis.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [os.environ.get('REDIS_URL', 'redis://54.208.15.77:6379')],
+            "hosts": [os.environ.get('REDIS_URL', os.environ.get('REDIS_HOST'))],
         },
         "ROUTING": "webapps.routing.channel_routing",
     },
@@ -191,8 +191,8 @@ LOGGING = {
 }
 
 # facebook login
-SOCIAL_AUTH_FACEBOOK_KEY = '1278381142264340'  # App ID
-SOCIAL_AUTH_FACEBOOK_SECRET = '0db7d457617a542e7d53fae8d7b707d4'  # App Secret
+SOCIAL_AUTH_FACEBOOK_KEY = os.environ.get('FB_KEY')  # App ID
+SOCIAL_AUTH_FACEBOOK_SECRET = os.environ.get('FB_PW')  # App Secret
 
 AUTHENTICATION_BACKENDS = (
     'social_core.backends.facebook.FacebookOAuth2',

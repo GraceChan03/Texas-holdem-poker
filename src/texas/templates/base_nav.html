@@ -27,24 +27,14 @@
                         <li><a href="/game_join">Join a room</a></li>
                     </ul>
                     </li>
-                    {#                    {% block scoreboard %}<li><a href="/scoreboard">Scoreboard</a></li>{% endblock %}#}
-                    {#                    {% block about %}<li><a href="/about">About</a></li>{% endblock %}#}
-                    <a href="/get_coupon" class="btn btn-success navbar-btn"
-                       style="vertical-align: middle;margin: 0 auto"> Coupon</a>
-                    <li>
-                        <form class="navbar-form navbar-right form-inline nav-btn"
-                              style="vertical-align: middle;margin: 0 auto" method="post" action="/search_friend">
-                            <div class="form-group">
-                                {% csrf_token %}
-                                {% for field in searchForm.visible_fields %}
-                                    {{ field }}
-                                {% endfor %}
-                            </div>
-                            <button type="submit" class="btn btn-danger">Search</button>
-                        </form>
-                    </li>
-
-
+                    <form class="navbar-form navbar-right" method="post" action="/search_friend">
+                        {% csrf_token %}
+                        {% for field in searchForm.visible_fields %}
+                            {{ field }}
+                        {% endfor %}
+                        <button type="submit" class="btn btn-danger"> Search</button>
+                    </form>
+                     <a href="{% url 'get_coupon' %}" class="btn btn-success navbar-btn"> Coupon</a>
                 </ul>
                 <ul class="nav navbar-nav navbar-right pull-right">
                     <li>
