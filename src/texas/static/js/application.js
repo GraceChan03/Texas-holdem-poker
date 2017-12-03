@@ -642,15 +642,10 @@ Texas = {
                     $seat = $('.seat[seated-player-id=' + data.player_id + ']');
                     $seat.empty();
                     $seat.attr('seated-player-id', null);
+                    $stack = $('.stack[seated-player-id=' + data.player_id + ']');
+                    $stack.empty();
+                    $stack.attr('seated-player-id', null);
                     Texas.Game.players.splice($.inArray(playerId, Texas.Game.players), 1);
-                    // for (i = 0; i < Texas.Game.seats; i++) {
-                    //     $seat = $('#player-' + i);
-                    //     var id = $seat.attr('seated-player-id');
-                    //     if (id == playerId) {
-                    //         $seat.empty();
-                    //         $seat.attr('seated-player-id', null);
-                    //     }
-                    // }
                     break;
             }
         },
