@@ -40,8 +40,9 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right pull-right">
                     <li>
-                        <a href="{% url 'friend_requests' %}">
+                        <a href="{% url 'friend_requests' %}" class="notification texas-tooltip" notify="false" style="width: 60px; padding-left: 0;padding-right: 0">
                             <img src="{% static 'media/default/svg/people.svg' %}" alt="icon name" style="width: 20px">
+                            <span class="texas-tooltiptext">Friend requests</span>
                         </a>
                     </li>
                     {% block account %}
@@ -57,7 +58,6 @@
                         <li><a href="/edit_profile">Account Settings</a></li>
                         <li><a href="/change_password">Change Password</a></li>
                         <li><a href="/myfriends">My Friends</a></li>
-                        <li><a href="/friend_requests">Friend Requests</a></li>
                         <li><a href="{% url 'profile' user.username %}">Profile</a></li>
                         <li><a href="/logout">Logout</a></li>
                     </ul>

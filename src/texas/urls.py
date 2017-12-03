@@ -25,6 +25,8 @@ urlpatterns = [
 
     url(r'^add_friend/(?P<user_name>.+)$', views.add_friend, name='add_friend'),
     url(r'^friend_requests$', views.friend_requests, name='friend_requests'),
+    url(r'^check_friend_requests$', views.check_friend_requests, name='check_friend_requests'),
+    url(r'^disable_notification$', views.disable_notification, name='disable_notification'),
     url(r'^confirm_request/(?P<user_name>.+)/(?P<sent_time>.+)$', views.confirm_request, name='confirm_request'),
     url(r'^decline_request/(?P<user_name>.+)/(?P<sent_time>.+)$', views.decline_request, name='decline_request'),
     # url(r'^delete_friend/(?P<user_name>.+)$', views.delete_friend, name='delete_friend'),
