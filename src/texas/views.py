@@ -276,10 +276,14 @@ def get_coupon(request):
     if coupon.expire_date.replace(tzinfo=None) < datetime.now():
         context['warnning'] = "Your coupon was out of date"
         return render(request, 'get_coupon.html', context)
+    if not coupon.is_active:
+        context['warnning'] = "Your coupon was already consumed"
+        return render(request, 'get_coupon.html', context)
     useInfo = UserInfo.objects.get(user=request.user)
     currentBalance = useInfo.balance
     useInfo.balance = (currentBalance + int(coupon.amount))
     useInfo.save()
-    #coupon.is_active = False
+    coupon.is_active = False
+    coupon.save()
     context['warnning'] = "You successfully consume your coupon"
     return render(request, 'get_coupon.html', context)
