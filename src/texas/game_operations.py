@@ -6,7 +6,6 @@ log = logging.getLogger(__name__)
 
 
 def remove_user_from_gameround(game, game_round, user):
-    # TODO [Function] remove user from database
     # 1. update his game fund from round fund as he is to exit
     if game_round.player_fund_dict and game.player_fund_dict != '':
         round_funds = eval(game_round.player_fund_dict)
@@ -28,7 +27,6 @@ def remove_user_from_gameround(game, game_round, user):
 
 
 def remove_user_from_game(game, user):
-    # TODO [Function] remove user from database
     # 1. Modify player order
     player_order = game.player_order.split(",")
     game.player_order = str(player_order.remove(str(user.id)))
