@@ -72,3 +72,7 @@ svg {
     font-family: Arial;
 
 }
+
+.homepage-container li {
+    list-style-type: none;
+}
