@@ -117,8 +117,7 @@ Texas = {
         },
 
         setChipsInvisible: function () {
-            var seats = Texas.Game.seats;
-            for (i = 0; i < seats; i++) {
+            for (i = 0; i < 7; i++) {
                 $('#stack-' + i).css('visibility', 'hidden');
             }
         },
@@ -151,8 +150,6 @@ Texas = {
                 $card.css('visibility', 'visible');
                 Texas.GameRound.dealerCardTurn += 1;
             }
-            // new circle
-            // Texas.GameRound.setOperationInvisible();
         },
 
         setPlayerFunds: function (player_funds) {
@@ -238,27 +235,11 @@ Texas = {
                 $('#txt_fund_' + userid).text("Stake: " + prev_player.fund);
                 Texas.Player.setPlayerOperation($('#op' + userid), prev_player.op);
                 if (prev_player.op === 'bets') {
-                    // var seats = Texas.Game.seats;
-                    // for (s = 0; s < seats; s++) {
-                    //     $stack = $('#stack-' + s);
-                    //     if ($stack.attr('seated-player-id') == userid) {
-                    //         $('#bet' + userid).text("$" + prev_player.bet);
-                    //         $stack.css('visibility', 'visible');
-                    //     }
-                    // }
                     $('#bet' + userid).text("$" + prev_player.bet);
                     $('.stack[seated-player-id=' + userid + ']').css('visibility', 'visible');
                 } else if (prev_player.op === 'folds') {
-                    // var seats = Texas.Game.seats;
-                    // for (s = 0; s < seats; s++) {
-                    //     $seat = $('#player-' + s);
-                    //     if ($seat.attr('seated-player-id') == userid) {
-                    //         $seat.css('opacity', '0.8');
-                    //     }
-                    //     Texas.GameRound.setAchipInvisible($('#stack-' + s));
-                    // }
-                    $('.seat[seated-player-id=' + userid + '] .player-img').css('opacity', '0.8');
-                    $('.seat[seated-player-id=' + userid + '] .player-info').css('opacity', '0.8');
+                    $('.seat[seated-player-id=' + userid + '] .player-img').css('opacity', '0.5');
+                    $('.seat[seated-player-id=' + userid + '] .player-info').css('opacity', '0.5');
                     Texas.GameRound.setAchipInvisible($('.stack[seated-player-id=' + userid + ']'));
                 }
             } else {
@@ -266,19 +247,24 @@ Texas = {
             }
         },
 
+        resetUserOpacity: function () {
+            var players = Texas.Game.players;
+          for (p in players) {
+              $('.seat[seated-player-id=' + players[p] + '] .player-img').css('opacity', '1');
+              $('.seat[seated-player-id=' + players[p] + '] .player-info').css('opacity', '1');
+          }
+        },
+
         newRound: function (data) {
             Texas.GameRound.roundId = data.round_id;
-            // var countdown = $('.wrapper');
-            // var newone = countdown.clone(true);
-            // countdown.replaceWith(newone);
-            // newone.css('visibility', 'visible');
             // start game in 5 seconds
             setTimeout(function () {
                 $('.game-result').css('visibility', 'hidden');
                 Texas.GameRound.setDealerCardsInvisible();
                 Texas.GameRound.hidePlayerCards();
                 Texas.GameRound.setOperationInvisible();
-                // $('.wrapper').css('visibility', 'hidden');
+                Texas.GameRound.setChipsInvisible();
+                Texas.GameRound.resetUserOpacity();
                 // get cards info
                 var my_player_cards = data.player_cards;
                 // set cards
@@ -296,12 +282,6 @@ Texas = {
                 case 'new-game':
                     Texas.GameRound.newRound(data);
                     break;
-                // case 'small-blind-bet':
-                //     Texas.GameRound.smallBlindBet(data);
-                //     break;
-                // case 'big-blind-bet':
-                //     Texas.GameRound.bigBlindBet(data);
-                //     break;
                 case 'player-action':
                     Texas.Player.onPlayerAction(data);
                     break;
@@ -326,7 +306,11 @@ Texas = {
         currPlayer: null,
 
         resetTimers: function () {
-
+            $('#timer0').TimeCircles().destroy();
+            var players = Texas.Game.players;
+            for (p in players) {
+                $('#timer' + players[p]).TimeCircles().destroy();
+            }
         },
 
         enableBet: function (data) {
@@ -355,22 +339,6 @@ Texas = {
             // if (min >= max) {
             //     $('#btn_fold').css('visibility', 'visible');
             //     $('#btn_allin').css('display', 'inline');
-            // } else {
-            //     $('#btn_check').css('visibility', 'visible');
-            //     $('#btn_fold').css('visibility', 'visible');
-            //     $('#btn_bet').css('visibility', 'visible');
-            //     var slider = $('#myRange');
-            //     slider.attr({
-            //         min: data.min_bet,
-            //         max: data.max_bet,
-            //         value: data.min_bet
-            //     });
-            //     var output = $('#demo');
-            //     output.text(slider.val());
-            //     slider.on('input', function () {
-            //         output.text($(this).val())
-            //     });
-            //     $('#chips').css('visibility', 'visible');
             // }
         },
 
@@ -570,39 +538,61 @@ Texas = {
             Texas.Game.seats = player_num - 1;
             var players = data.players;
             var current_player_id = $('#current-player-id').val();
-            var order = 1;
-            for (p in players) {
-                player = players[p];
-                if (player.id.toString() === current_player_id) {
-                    order = parseInt(p) + 1;
+            // find my order
+            for (i = 0; i < players.length; i++) {
+                if (players[i].id == current_player_id) {
+                    my_order = i;
                 }
             }
-            if (order !== 1) {
-                Texas.Game.availableSeat = player_num - order;
-            } else {
-                Texas.Game.availableSeat = 0;
-            }
-            for (p in players) {
-                player = players[p];
-                if (player.id.toString() !== current_player_id) {
-                    $seat = $('#player-' + Texas.Game.availableSeat);
-                    $stack = $('#stack-' + Texas.Game.availableSeat);
-                    Texas.Game.createPlayer($seat, player);
-                    Texas.Game.setBetChips($stack, player);
-                    $seat.attr('seated-player-id', player.id);
-                    Texas.Game.players.push(player.id);
-                    if (Texas.Game.availableSeat === (Texas.Game.seats - 1)) {
-                        Texas.Game.availableSeat = 0;
-                    } else {
-                        Texas.Game.availableSeat += 1;
-                    }
-                } else {
+            for (p = 0; p < players.length; p++) {
+                var player = players[p];
+                if (p == my_order) {
                     $('#txt_myfund').css('visibility', 'visible');
                     $('#my_fund').text(player.money);
+                    continue;
+                } else if (p < my_order) {
+                    order = p + 7 - my_order;
+                } else {
+                    order = p - my_order - 1;
                 }
+                $seat = $('#player-' + order);
+                Texas.Game.createPlayer($seat, player);
+                $stack = $('#stack-' + order);
+                Texas.Game.setBetChips($stack, player);
+                Texas.Game.players.push(player.id);
             }
-            var seats = Texas.Game.seats;
-            for (s = 0; s < seats; s++) {
+            Texas.Game.availableSeat = p - my_order - 1;
+            // var order = 1;
+            // for (p in players) {
+            //     player = players[p];
+            //     if (player.id.toString() === current_player_id) {
+            //         order = parseInt(p) + 1;
+            //     }
+            // }
+            // if (order !== 1) {
+            //     Texas.Game.availableSeat = player_num - order;
+            // } else {
+            //     Texas.Game.availableSeat = 0;
+            // }
+            // for (p in players) {
+            //     player = players[p];
+            //     if (player.id.toString() !== current_player_id) {
+            //         $seat = $('#player-' + Texas.Game.availableSeat);
+            //         $stack = $('#stack-' + Texas.Game.availableSeat);
+            //         Texas.Game.createPlayer($seat, player);
+            //         Texas.Game.setBetChips($stack, player);
+            //         Texas.Game.players.push(player.id);
+            //         if (Texas.Game.availableSeat === (Texas.Game.seats - 1)) {
+            //             Texas.Game.availableSeat = 0;
+            //         } else {
+            //             Texas.Game.availableSeat += 1;
+            //         }
+            //     } else {
+            //         $('#txt_myfund').css('visibility', 'visible');
+            //         $('#my_fund').text(player.money);
+            //     }
+            // }
+            for (s = 0; s < 7; s++) {
                 $seat = $('#player-' + s);
                 if ($seat.attr('seated-player-id') == undefined) {
                     $seat.attr('seated-player-id', null);
@@ -626,29 +616,41 @@ Texas = {
                                 player = data.players[p];
                             }
                         }
-                        $seat = $('#player-' + Texas.Game.availableSeat);
+                        var available_seat = Texas.Game.availableSeat;
+                        $seat = $('#player-' + available_seat);
                         Texas.Game.createPlayer($seat, player);
-                        $stack = $('#stack-' + Texas.Game.availableSeat);
+                        $stack = $('#stack-' + available_seat);
                         Texas.Game.setBetChips($stack, player);
                         Texas.Game.players.push(player.id);
-                        if (Texas.Game.availableSeat === (Texas.Game.seats - 1)) {
-                            Texas.Game.availableSeat = 0;
-                        } else {
-                            Texas.Game.availableSeat += 1;
+                        for (i = 0; i < 7; i++) {
+                            available_seat = (available_seat + 1) % 7;
+                            if ($('#player-' + available_seat).attr('seated-player-id') == null) {
+                                Texas.Game.availableSeat = available_seat;
+                                break;
+                            }
                         }
+                        // if (Texas.Game.availableSeat === (Texas.Game.seats - 1)) {
+                        //     Texas.Game.availableSeat = 0;
+                        // } else {
+                        //     Texas.Game.availableSeat += 1;
+                        // }
                     }
                     break;
 
                 case 'player-remove':
                     playerId = data.player_id;
-                    for (i = 0; i < Texas.Game.seats; i++) {
-                        $seat = $('#player-' + i);
-                        var id = $seat.attr('seated-player-id');
-                        if (id == playerId) {
-                            $seat.empty();
-                            $seat.attr('seated-player-id', null);
-                        }
-                    }
+                    $seat = $('.seat[seated-player-id=' + data.player_id + ']');
+                    $seat.empty();
+                    $seat.attr('seated-player-id', null);
+                    Texas.Game.players.splice($.inArray(playerId, Texas.Game.players), 1);
+                    // for (i = 0; i < Texas.Game.seats; i++) {
+                    //     $seat = $('#player-' + i);
+                    //     var id = $seat.attr('seated-player-id');
+                    //     if (id == playerId) {
+                    //         $seat.empty();
+                    //         $seat.attr('seated-player-id', null);
+                    //     }
+                    // }
                     break;
             }
         },
