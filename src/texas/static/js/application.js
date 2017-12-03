@@ -204,6 +204,11 @@ Texas = {
 
         newRound: function (data) {
             Texas.GameRound.roundId = data.round_id;
+            if (Texas.Game.firstGame) {
+                $('.font-win').text("Game will start soon...");
+                $('.game-result').css('visibility', 'visible');
+                Texas.Game.firstGame = false;
+            }
             // start game in 5 seconds
             setTimeout(function () {
                 $('.game-result').css('visibility', 'hidden');
@@ -430,6 +435,7 @@ Texas = {
         players: [],
         seats: 0,
         availableSeat: 0,
+        firstGame: true,
 
         createPlayer: function ($seat, player) {
             $seat.addClass("seat");
