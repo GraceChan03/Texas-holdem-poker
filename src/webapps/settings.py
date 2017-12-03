@@ -25,8 +25,7 @@ SECRET_KEY = os.environ.get('SECRET_KEY')
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    '54.208.15.77', 'cmu-texas.ml',
-    '127.0.0.1', 'localhost'
+    os.environ.get('ALLOWED_HOST')
 ]
 
 # Application definition
