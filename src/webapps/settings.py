@@ -24,7 +24,10 @@ SECRET_KEY = '#wtk+=yv*avx7mju7i*#=hh(=uqof$g8a^w=e2wa=l2il^jlk!'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['54.208.15.77', 'cmu-texas.ml', '127.0.0.1']
+ALLOWED_HOSTS = [
+    '54.208.15.77', 'cmu-texas.ml',
+    '127.0.0.1', 'localhost'
+]
 
 # Application definition
 
@@ -159,7 +162,7 @@ CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "asgi_redis.RedisChannelLayer",
         "CONFIG": {
-            "hosts": [os.environ.get('REDIS_URL', 'redis://54.208.15.77:6379')],
+            "hosts": [os.environ.get('REDIS_URL', 'redis://52.90.224.136:6379')],
         },
         "ROUTING": "webapps.routing.channel_routing",
     },
