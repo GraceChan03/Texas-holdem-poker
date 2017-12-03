@@ -30,6 +30,7 @@ urlpatterns = [
     # url(r'^delete_friend/(?P<user_name>.+)$', views.delete_friend, name='delete_friend'),
 
     url(r'^new_game$', views_game.new_game, name='new_game'),
+    url(r'^email_invite$', views.email_invite, name='email_invite'),
     url(r'^dashboard$', views_game.dashboard, name='dashboard'),
     url(r'^myfriends$', views_game.myfriends, name='myfriends'),
     url(r'^scoreboard$', views_game.scoreboard, name='scoreboard'),
