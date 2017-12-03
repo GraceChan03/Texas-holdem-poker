@@ -370,3 +370,4 @@ class FriendshipRequests(models.Model):
     replied_time = models.DateTimeField(null=True, blank=True)
     is_accepted = models.BooleanField(default=False)
     is_declined = models.BooleanField(default=False)
+    is_notified = models.BooleanField(default=False)
