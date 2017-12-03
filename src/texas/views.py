@@ -7,7 +7,6 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.core.mail import send_mail, BadHeaderError
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render, redirect, get_object_or_404
-from datetime import date
 from django.contrib import auth
 from django.urls import reverse
 
@@ -304,3 +303,34 @@ def station_invite(request):
             newchat.save()
         return HttpResponse("success")
     return HttpResponse("no user invited")
+
+def get_coupon(request):
+    context = {}
+    context['couponForm'] = GetCoupon()
+    context['searchForm'] = SearchUser()
+    if request.method == 'GET':
+        return render(request, 'get_coupon.html', context)
+    form = GetCoupon(request.POST)
+    context['form'] = form
+    if not form.is_valid():
+        # should be handled better
+        context['warnning'] = "Please input valid coupon"
+        return render(request, 'get_coupon.html', context)
+    if not Coupon.objects.get(coupon_id=form.cleaned_data['coupon_id']):
+        context['warnning'] = "Please input valid coupon"
+        return render(request, 'get_coupon.html', context)
+    coupon = Coupon.objects.get(coupon_id=form.cleaned_data['coupon_id'])
+    if coupon.expire_date.replace(tzinfo=None) < datetime.now():
+        context['warnning'] = "Your coupon was out of date"
+        return render(request, 'get_coupon.html', context)
+    if not coupon.is_active:
+        context['warnning'] = "Your coupon was already consumed"
+        return render(request, 'get_coupon.html', context)
+    useInfo = UserInfo.objects.get(user=request.user)
+    currentBalance = useInfo.balance
+    useInfo.balance = (currentBalance + int(coupon.amount))
+    useInfo.save()
+    coupon.is_active = False
+    coupon.save()
+    context['warnning'] = "You successfully consume your coupon"
+    return render(request, 'get_coupon.html', context)

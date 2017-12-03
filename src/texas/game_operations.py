@@ -52,3 +52,31 @@ def remove_user_from_game(game, user):
     user.userinfo.save()
 
 
+def winner_history_save(game_round, user):
+
+    # Fetch data from round info
+
+    if game_round.player_cards and game_round.player_cards != '':
+        player_cards_dict = eval(game_round.player_cards)
+        user_cards = player_cards_dict[user.id]
+    else:
+        user_cards = ''
+
+    bet = game_round.get_player_prev_bet(user.id)
+
+    # 1. Create
+    new_winner_history = WinnerHistory(
+        game_round=game_round,
+        user=user,
+        dealer_cards=game_round.dealer_cards,
+        user_cards=user_cards,
+        current_approach=game_round.current_approach,
+        pot=game_round.pot,
+        bet=bet,
+    )
+
+    if game_round.current_approach == 5:
+        new_winner_history.hand_rank = game_round.process_user_class()[user.id]
+
+    new_winner_history.save()
+

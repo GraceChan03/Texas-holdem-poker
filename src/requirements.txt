@@ -10,3 +10,4 @@ pyOpenSSL==17.3.0
 asgi_redis==1.4.3
 service_identity==17.0.0
 social-auth-app-django==2.0.0
+django-paypal==0.4.1

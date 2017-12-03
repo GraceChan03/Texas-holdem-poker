@@ -180,3 +180,9 @@ class SearchUser(forms.Form):
     keyword = forms.CharField(max_length=30,
                               widget=forms.TextInput(
                                   attrs={'type': 'text', 'class': 'form-control', 'placeholder': 'Search user..'}))
+
+
+class GetCoupon(forms.Form):
+    coupon_id = forms.CharField(max_length=30,
+                              widget=forms.TextInput(
+                                  attrs={'type': 'text', 'class': 'form-control', 'placeholder': 'Type your coupon'}))
