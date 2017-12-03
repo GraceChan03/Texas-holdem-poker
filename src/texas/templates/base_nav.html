@@ -40,8 +40,9 @@
                 </ul>
                 <ul class="nav navbar-nav navbar-right pull-right">
                     <li>
-                        <a href="{% url 'friend_requests' %}" class="notification texas-tooltip" notify="false" style="width: 60px; padding-left: 0;padding-right: 0">
-                            <img src="{% static 'media/default/svg/people.svg' %}" alt="icon name" style="width: 20px">
+                        <a href="{% url 'friend_requests' %}" class="texas-tooltip friend-notify"
+                           notify="false" style="padding-left: 0;padding-right: 0">
+                            <img src="{% static 'media/default/svg/people.svg' %}" alt="icon name" class="notify-icon">
                             <span class="texas-tooltiptext">Friend requests</span>
                         </a>
                     </li>

@@ -756,3 +756,13 @@ body, html {
 .texas-tooltip:hover .texas-tooltiptext {
     visibility: visible;
 }
+
+.friend-notify {
+    width: 60px;
+    padding-left: 0;
+    padding-right: 0;
+}
+
+.notify-icon {
+    width: 20px
+}

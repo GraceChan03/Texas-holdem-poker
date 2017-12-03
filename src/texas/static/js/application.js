@@ -4,10 +4,7 @@ Texas = {
 
     GameRound: {
         roundId: null,
-        dealerCards: null,
         dealerCardTurn: null,
-        smallBlindBetFund: 1,
-        bigBlindBetFund: 2,
         start: true,
 
         setCard: function (card, $card, size) {
@@ -173,56 +170,6 @@ Texas = {
             // new form of showing winner!!!!!!!!!!!!!!!!!!!!!!!!!!!
             $('.font-win').text(data.winner + " wins!");
             $('.game-result').css('visibility', 'visible');
-        },
-
-        smallBlindBet: function (data) {
-            var dealer = data.dealer_id;
-            var currentPlayer = $('#current-player-id').val();
-            var seats = Texas.Game.seats;
-            var isSmallBlind = false;
-            if (seats === 1 && dealer.toString() !== currentPlayer) {
-                isSmallBlind = true;
-            } else if (dealer.toString() !== currentPlayer) {
-                var final = seats - 1;
-                if ($('#player-' + final).attr('seated-player-id') == dealer) {
-                    isSmallBlind = true;
-                }
-            }
-            if (isSmallBlind) {
-                var bet = Texas.GameRound.smallBlindBetFund;
-                var origin = parseInt($('#my_fund').text());
-                $('#my_fund').text(origin - bet);
-                Texas.socket.send(JSON.stringify({
-                    'message_type': 'bet',
-                    'bet': bet,
-                    'round_id': Texas.GameRound.roundId
-                }));
-            }
-        },
-
-        bigBlindBet: function (data) {
-            var dealer = data.dealer_id;
-            var currentPlayer = $('#current-player-id').val();
-            var seats = Texas.Game.seats;
-            var isBigBlind = false;
-            if (seats === 1 && dealer.toString() === currentPlayer) {
-                isBigBlind = true;
-            } else if (dealer.toString() !== currentPlayer) {
-                var final = seats - 2;
-                if ($('#player-' + final).attr('seated-player-id') == dealer) {
-                    isBigBlind = true;
-                }
-            }
-            if (isBigBlind) {
-                var bet = Texas.GameRound.bigBlindBetFund;
-                var origin = parseInt($('#my_fund').text());
-                $('#my_fund').text(origin - bet);
-                Texas.socket.send(JSON.stringify({
-                    'message_type': 'bet',
-                    'bet': bet,
-                    'round_id': Texas.GameRound.roundId
-                }));
-            }
         },
 
         updatePlayer: function (data) {
@@ -562,36 +509,6 @@ Texas = {
                 Texas.Game.players.push(player.id);
             }
             Texas.Game.availableSeat = p - my_order - 1;
-            // var order = 1;
-            // for (p in players) {
-            //     player = players[p];
-            //     if (player.id.toString() === current_player_id) {
-            //         order = parseInt(p) + 1;
-            //     }
-            // }
-            // if (order !== 1) {
-            //     Texas.Game.availableSeat = player_num - order;
-            // } else {
-            //     Texas.Game.availableSeat = 0;
-            // }
-            // for (p in players) {
-            //     player = players[p];
-            //     if (player.id.toString() !== current_player_id) {
-            //         $seat = $('#player-' + Texas.Game.availableSeat);
-            //         $stack = $('#stack-' + Texas.Game.availableSeat);
-            //         Texas.Game.createPlayer($seat, player);
-            //         Texas.Game.setBetChips($stack, player);
-            //         Texas.Game.players.push(player.id);
-            //         if (Texas.Game.availableSeat === (Texas.Game.seats - 1)) {
-            //             Texas.Game.availableSeat = 0;
-            //         } else {
-            //             Texas.Game.availableSeat += 1;
-            //         }
-            //     } else {
-            //         $('#txt_myfund').css('visibility', 'visible');
-            //         $('#my_fund').text(player.money);
-            //     }
-            // }
             for (s = 0; s < 7; s++) {
                 $seat = $('#player-' + s);
                 if ($seat.attr('seated-player-id') == undefined) {
@@ -629,11 +546,6 @@ Texas = {
                                 break;
                             }
                         }
-                        // if (Texas.Game.availableSeat === (Texas.Game.seats - 1)) {
-                        //     Texas.Game.availableSeat = 0;
-                        // } else {
-                        //     Texas.Game.availableSeat += 1;
-                        // }
                     }
                     break;
 

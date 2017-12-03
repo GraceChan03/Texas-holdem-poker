@@ -1,6 +1,6 @@
 $(document).ready(function () {
     setInterval(getRequests, 5000);
-    $('.notification').click(disableNotification);
+    $('.friend-notify').click(disableNotification);
 
     // CSRF set-up copied from Django docs
     function getCookie(name) {
@@ -31,13 +31,13 @@ function getRequests() {
         url: "/check_friend_requests",
         type: "get",
         success: function(data){
-            if (data != 0 && $('.notification').attr('notify') == 'false') {
+            if (data != 0 && $('.friend-notify').attr('notify') == 'false') {
                 var span = $('<span></span>');
                 span.addClass("badge").addClass("badge-pill").addClass("badge-danger");
                 span.addClass("friend-request");
                 span.text(data);
-                $('.notification').append(span);
-                $('.notification').attr('notify', 'true');
+                $('.friend-notify').append(span);
+                $('.friend-notify').attr('notify', 'true');
             }
         }
     })
@@ -50,7 +50,7 @@ function disableNotification() {
         data: {"timestamp" : $.now()},
         success: function () {
             $('.friend-request').remove();
-            $('.notification').attr('notify', 'false');
+            $('.friend-notify').attr('notify', 'false');
         }
     })
 }
