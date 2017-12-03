@@ -21,7 +21,14 @@
                         {% if profile_user == user %}<i class="fa fa-money"></i> Balance:
                             {{ profile.balance }}<br>{% endif %}
                     </p>
-                    {% if profile_user != user %}<h5>Balance: {{ profile.balance }}</h5><br>{% endif %}
+                    {% if profile_user != user %}
+                        {% if isfriend %}
+                            <a href="#" class="btn btn-success">Friends</a>
+                        {% else %}
+                            <a href="{% url 'add_friend' profile_user.username %}" class="btn btn-info">Send Request</a>
+                        {% endif %}
+                    {% endif %}
+
                 </div>
             </div>
 

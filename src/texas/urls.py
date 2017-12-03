@@ -1,4 +1,4 @@
-from django.conf.urls import url,include
+from django.conf.urls import url, include
 from . import views, views_account, views_game
 from django.contrib.auth import views as auth_views
 from .forms import *
@@ -8,7 +8,7 @@ urlpatterns = [
     url(r'^login$', auth_views.LoginView.as_view(template_name='login.html', redirect_authenticated_user=True),
         name='login'),
     url(r'^logout$', auth_views.logout_then_login, name='logout'),
-    url(r'^oauth/', include('social_django.urls', namespace='social')), # facebook login
+    url(r'^oauth/', include('social_django.urls', namespace='social')),  # facebook login
     url(r'^activate/(?P<user_name>.+)/(?P<token>.+)$', views_account.activate, name='activate'),
     url(r'^get_profile_image/(?P<id>.+)$', views.get_profile_image, name='get_profile_image'),
 
@@ -24,7 +24,10 @@ urlpatterns = [
     # url(r'^reset_password_submit/(?P<user_name>.+)$', views.reset_password_submit, name='reset_password_submit'),
 
     url(r'^add_friend/(?P<user_name>.+)$', views.add_friend, name='add_friend'),
-    url(r'^delete_friend/(?P<user_name>.+)$', views.delete_friend, name='delete_friend'),
+    url(r'^friend_requests$', views.friend_requests, name='friend_requests'),
+    url(r'^confirm_request/(?P<user_name>.+)/(?P<sent_time>.+)$', views.confirm_request, name='confirm_request'),
+    url(r'^decline_request/(?P<user_name>.+)/(?P<sent_time>.+)$', views.decline_request, name='decline_request'),
+    # url(r'^delete_friend/(?P<user_name>.+)$', views.delete_friend, name='delete_friend'),
 
     url(r'^new_game$', views_game.new_game, name='new_game'),
     url(r'^dashboard$', views_game.dashboard, name='dashboard'),
@@ -38,5 +41,5 @@ urlpatterns = [
     url(r'^game_ongoing/(?P<game_no>.+)$', views_game.game_ongoing, name='game_ongoing'),
     url(r'^exit_room/(?P<game_no>.+)/(?P<id>.+)$', views_game.exit_room, name='exit_room'),
     url(r'^game_result$', views_game.game_result, name='game_result'),
-    url(r'^about$', views.about, name='about'),
+
 ]

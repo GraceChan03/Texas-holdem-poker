@@ -15,6 +15,7 @@ from .forms import *
 from .models import *
 from .util import send_email
 from mimetypes import guess_type
+from datetime import datetime
 
 
 @login_required(login_url='login')
@@ -22,7 +23,7 @@ from mimetypes import guess_type
 def home(request):
     # connect social network user with a profile
     try:
-        UserInfo.objects.get(user = request.user)
+        UserInfo.objects.get(user=request.user)
     except:
         user_info = UserInfo.objects.create(user=request.user, balance=1000, activation=True)
         user_info.save()
@@ -47,6 +48,8 @@ def profile(request, user_name):
         userinfo = UserInfo.objects.get(user=user)
         context['profile_user'] = user
         context['profile'] = userinfo
+        if UserInfo.objects.get(user = request.user).friends.get(username = user_name):
+            context['isfriend'] = True
     except ObjectDoesNotExist:
         # when there is not such id for retrieve
         # messages.error(request, 'The user id does not exist!')
@@ -160,33 +163,46 @@ def add_friend(request, user_name):
     user = request.user
     if User.objects.filter(username=user_name):
         friend = User.objects.get(username=user_name)
-        user.userinfo.friends.add(friend)
+        friend_request = FriendshipRequests(from_user=user, to_user=friend)
+        friend_request.save()
         return redirect('/profile/' + user_name)
     else:
         return HttpResponseRedirect('/')
 
 
 @login_required(login_url='login')
-def delete_friend(request, user_name):
-    user = request.user
-    # check if the user exists in follow table
-    if User.objects.filter(username=user_name):
-        deletedfriend = User.objects.get(username=user_name)
-        user.friends.remove(deletedfriend)
-    return redirect('/profile/' + user_name)
+def friend_requests(request):
+    context = {}
+    context['searchForm'] = SearchUser()
+    requests = FriendshipRequests.objects.filter(to_user=request.user).order_by('-sent_time')
+    context['requests'] = requests
+    return render(request, 'friend_requests.html', context)
 
 
 @login_required(login_url='login')
-# url not written
-def my_friend(request):
-    # show all friends list
-    return
-
-
-# @login_required(login_url='login')
-def about(request):
-    context = {}
-    context['searchForm'] = SearchUser()
+def confirm_request(request, user_name, sent_time):
     user = request.user
-    # edit here
-    return render(request, 'about.html', context)
+    if User.objects.get(username=user_name):
+        from_user = User.objects.get(username=user_name)
+        if FriendshipRequests.objects.get(from_user=from_user, sent_time=sent_time):
+            friendRequest = FriendshipRequests.objects.get(from_user=from_user,sent_time=sent_time)
+            UserInfo.objects.get(user=user).friends.add(from_user)
+            UserInfo.objects.get(user=from_user).friends.add(user)
+            friendRequest.is_accepted = True
+            friendRequest.is_replied = True
+            friendRequest.replied_time = datetime.now()
+            friendRequest.save()
+    return redirect(reverse('friend_requests'))
+
+
+@login_required(login_url='login')
+def decline_request(request, user_name, sent_time):
+    if User.objects.get(username=user_name):
+        from_user = User.objects.get(username=user_name)
+        if FriendshipRequests.objects.get(from_user=from_user,sent_time=sent_time):
+            friendRequest = FriendshipRequests.objects.get(from_user=from_user,sent_time=sent_time)
+            friendRequest.is_declined = True
+            friendRequest.is_replied = True
+            friendRequest.replied_time = datetime.now()
+            friendRequest.save()
+    return redirect(reverse('friend_requests'))

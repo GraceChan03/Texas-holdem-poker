@@ -217,6 +217,6 @@ SOCIAL_AUTH_PIPELINE = (
     'social_core.pipeline.social_auth.associate_by_email',
 )
 
-LOGIN_URL = 'login'
+# LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
-LOGIN_REDIRECT_URL = 'homepage'
+# LOGIN_REDIRECT_URL = 'homepage'
