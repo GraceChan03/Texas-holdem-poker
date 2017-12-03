@@ -295,6 +295,8 @@ def station_invite(request):
     friends = request.POST['friends']
     friends = str(friends).split("|")
     for f in friends:
+        if f == request.user:
+            continue
         if User.objects.filter(username=f):
             touser = User.objects.get(username=f)
             newchat = Chat(from_user=request.user,
