@@ -3,7 +3,7 @@ import logging
 from channels import Group
 from channels.sessions import channel_session
 
-from texas import consumers_round_update, consumers_game_update
+from texas import consumers_round_update, consumers_game_update, game_operations
 from texas.models import *
 
 log = logging.getLogger(__name__)
@@ -96,6 +96,7 @@ def ws_receive(message):
     if data:
         log.debug('bet room=%s message_type=%s bet=%s',
                   game.game_no, data['message_type'], data['bet'])
+        userid = int(userid)
 
         # 1. Check message type is bet or not
         message_type = data['message_type']
@@ -114,25 +115,8 @@ def ws_receive(message):
         # 4. Perform different operation
         # FOLD
         if bet == -1:
-            # a. modify db
-            op = "folds"
-            game_round.set_player_inactive(userid)
-            game_round.save()
-            # b. check if one active users
-            active_user = game_round.only_active_user()
-            if active_user:
-                # b1. set winner
-                winner_id = active_user
-                winner = User.objects.get(id=winner_id)
+            consumers_round_update.fold_action(game, game_round, user, min_bet, message.channel_layer)
 
-                # b2. Update the previous user's fund
-                # TODO [Handle] maybe don't return here, and if not return, don't send this websocket
-                consumers_round_update.fund_update(game, game_round, user, op, min_bet, message.channel_layer)
-
-                # b3. Send a new WS for [SHOW-Result-CARD]
-                consumers_round_update.game_over_then_start_new_game(game, game_round, winner, message.channel_layer)
-
-                return
         # CHECK
         elif bet == 0:
             # don't need to change pot, min_bet, max_player
@@ -159,7 +143,7 @@ def ws_receive(message):
         else:
             op = "bets"
             # a. change pot and min_bet
-            game_round.set_player_prev_bet(userid, bet)
+            game_round.set_player_prev_bet(int(userid), bet)
             # b. change max_player
             if min_bet < bet:
                 # change min_bet
@@ -175,10 +159,10 @@ def ws_receive(message):
         # If yes: go to the first one
         # If no: go the the next one
         player_order = eval(game_round.player_order)
-        if int(userid) == int(player_order[-1]):
+        if userid == int(player_order[-1]):
             next_index = 0
         else:
-            next_index = player_order.index(int(userid)) + 1
+            next_index = player_order.index(userid) + 1
         next_user_id = player_order[next_index]
 
         # B. Is this the first player with max bet?
@@ -254,20 +238,24 @@ def ws_disconnect(message):
 
     Group('bet-' + game_no, channel_layer=message.channel_layer).discard(message.reply_channel)
 
-    # Update this person's balance
-    # ---------------get fund-------------
+    # TODO
+    # A. Send a new ws for [PLAYER-ACTION] to all the other users----------
+    player_remove_dict = {}
+    player_remove_dict["message_type"] = "game-update"
+    player_remove_dict["event"] = "player-remove"
+    player_remove_dict["player_id"] = user.id
+    Group('bet-' + game.game_no, channel_layer=message.channel_layer).send({"text": json.dumps(player_remove_dict)})
+
+    # B. If this person is in a game_round, (i.e. active gameround exists)
     try:
-        game_round = GameRound.objects.get(game=game)
-        funds = json.loads(game_round.player_fund_dict)
-        round_balance = funds[str(userid)]
-        user.userinfo.balance += round_balance
-        user.userinfo.save()
+        game_round = GameRound.objects.get(game=game, is_active=True)
+        if game_round:
+            game_operations.remove_user_from_gameround(game, game_round, user)
+        min_bet = game_round.min_bet
+        consumers_round_update.fold_action(game, game_round, user, min_bet, message.channel_layer)
 
-        # Remove current user from database
-        game_round.remove_user(userid)
-
-        # ----------- Send a new ws for [PLAYER-ACTION] ----------
-        consumers_game_update.player_remove(game_no, userid, message.channel_layer)
     except GameRound.DoesNotExist:
-        log.debug('ws game round does not exist label=%s', game_no)
-        return
+        log.debug('ws game round does not exist label=%s', game.game_no)
+
+    # C. Remove this person from game, including update funds
+    game_operations.remove_user_from_game(game, user)
