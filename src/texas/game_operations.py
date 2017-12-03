@@ -28,8 +28,17 @@ def remove_user_from_gameround(game, game_round, user):
 
 def remove_user_from_game(game, user):
     # 1. Modify player order
-    player_order = game.player_order.split(",")
-    game.player_order = str(player_order.remove(str(user.id)))
+    player_order = game.player_order.split(',')
+
+    new_player_order = []
+    for i in xrange(len(player_order)):
+        if int(player_order[i]) != user.id:
+            new_player_order.append(int(player_order[i]))
+
+    game.player_order = str(new_player_order)[1:-1]
+
+    game.save()
+
     # 2. Remove the relationship
     game.players.remove(user)
     # 3. Give back and update this person's balance
@@ -40,7 +49,6 @@ def remove_user_from_game(game, user):
     round_balance = funds[user.id]
     user.userinfo.balance += round_balance
 
-    game.save()
     user.userinfo.save()
 
 
