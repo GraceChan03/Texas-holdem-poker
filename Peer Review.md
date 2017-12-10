@@ -1,17 +1,17 @@
 #### Zhenyu Li
--Facebook login
--Change profile
--change password
--searching user
--making friends
--invite via email
--redeem coupon
--background music
--register
--login
--logout
--Static HTML
--Animation (Logo, background)
+- Facebook login
+- Change profile
+- change password
+- searching user
+- making friends
+- invite via email
+- redeem coupon
+- background music
+- register
+- login
+- logout
+- Static HTML
+- Animation (Logo, background)
 
 #### Xiaoyi Chen
  - Developed the frontend of the application, especially the game logic using websocket.
