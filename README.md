@@ -1,5 +1,1 @@
-This repository is for your course final project. Your project team
-should complete all project work using this repository.
-
-Before your project demo, add to this file a link to your deployed
-web site:  http://cmu-texas.ml/
+This is an online texas holdem poker game implementing using Django
